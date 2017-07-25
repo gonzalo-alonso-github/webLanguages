@@ -1,0 +1,127 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<!-- Esta barra de paginacion es una serie de botones (enlaces) outputLink.
+Si en lugar de ello se utilizaran enlaces commandLink, entonces al hacer click derecho - 'abrir en nueva pestana',
+conduciran a la primera pagina de la noticia, no a la pagina elegida.
+Eso sucederia porque, aunque el action del commandLink clickado haya actualizado el estado del beanForumThread,
+ese estado se pierde al abrir una nueva pestana dado que beanForumThread es de scope view.
+Sin embargo este problema no existe con los outputLink.
+-->
+	
+	<!-- Barra simple de paginacion -->
+	<div class="forum_pagination">
+		#{msgs.titleSwitchTo}:
+	</div>
+	<h:panelGroup class="forum_pagination" rendered="#{typePaginationBar == 1}">
+		<ul class="pagination pagination-sm">
+			<ui:repeat var="number" value="#{beanPaginationBar.loadListNumbersForSimpleTypePaginationBar(sizePaginationBar)}">
+			<li>
+				<!-- outputLink en lugar de commandLink -->
+				<h:outputLink styleClass="#{beanPaginationBar.markButton(number,beanForumThread.offsetPage) ? 'general_pagination_activeBtn' : ''}"
+					value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,number)}">#{number}</h:outputLink>
+			</li>
+			</ui:repeat>
+		</ul>
+	</h:panelGroup>
+	<h:panelGroup class="forum_pagination" rendered="#{typePaginationBar == 2}">
+		<ul class="pagination pagination-sm">
+		<li>
+			<h:outputLink styleClass="#{beanPaginationBar.markButton(1,beanForumThread.offsetPage) ? 'general_pagination_activeBtn' : ''}"
+				value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,1)}">1</h:outputLink>
+		</li>
+		<li>
+			<h:outputLink styleClass="#{beanPaginationBar.markButton(2,beanForumThread.offsetPage) ? 'general_pagination_activeBtn' : ''}"
+				value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,2)}">2</h:outputLink>
+		</li>
+		<li>
+			<h:outputLink value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,3)}">3</h:outputLink>
+		</li>
+		<li class="disabled"><a>...</a>
+		</li>
+		<li>
+			<h:outputLink value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,sizePaginationBar-2)}">#{sizePaginationBar-2}</h:outputLink>
+		</li>
+		<li>
+			<h:outputLink styleClass="#{beanPaginationBar.markButton(sizePaginationBar-1,beanForumThread.offsetPage) ? 'general_pagination_activeBtn' : ''}"
+				value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,sizePaginationBar-1)}">#{sizePaginationBar-1}</h:outputLink>
+		</li>
+		<li>
+			<h:outputLink styleClass="#{beanPaginationBar.markButton(sizePaginationBar,beanForumThread.offsetPage) ? 'general_pagination_activeBtn' : ''}"
+				value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,sizePaginationBar)}">#{sizePaginationBar}</h:outputLink>
+		</li>
+		</ul>
+	</h:panelGroup>
+	<h:panelGroup class="forum_pagination" rendered="#{typePaginationBar == 3}">
+		<ul class="pagination pagination-sm">
+		<li>
+			<h:outputLink value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,1)}">1</h:outputLink>
+		</li>
+		<li>
+			<h:outputLink value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,2)}">2</h:outputLink>
+		</li>
+		<li>
+			<h:outputLink styleClass="general_pagination_activeBtn"
+				value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,3)}">3</h:outputLink>
+		</li>
+		<li>
+			<h:outputLink value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,4)}">4</h:outputLink>
+		</li>
+		<li class="disabled"><a>...</a></li>
+		<li>
+			<h:outputLink value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,sizePaginationBar-1)}">#{sizePaginationBar-1}</h:outputLink>
+		</li>
+		<li>
+			<h:outputLink value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,sizePaginationBar)}">#{sizePaginationBar}</h:outputLink>
+		</li>
+		</ul>
+	</h:panelGroup>
+	<h:panelGroup class="forum_pagination" rendered="#{typePaginationBar == 4}">
+		<ul class="pagination pagination-sm">
+		<li>
+			<h:outputLink value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,1)}">1</h:outputLink>
+		</li>
+		<li>
+			<h:outputLink value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,2)}">2</h:outputLink>
+		</li>
+		<li class="disabled"><a>...</a></li>
+		<li>
+			<h:outputLink value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,sizePaginationBar-3)}">#{sizePaginationBar-3}</h:outputLink>
+		</li>
+		<li>
+			<h:outputLink styleClass="general_pagination_activeBtn"
+				value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,sizePaginationBar-2)}">#{sizePaginationBar-2}</h:outputLink>
+		</li>
+		<li>
+			<h:outputLink value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,sizePaginationBar-1)}">#{sizePaginationBar-1}</h:outputLink>
+		</li>
+		<li>
+			<h:outputLink value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,sizePaginationBar)}">#{sizePaginationBar}</h:outputLink>
+		</li>
+		</ul>
+	</h:panelGroup>
+	<h:panelGroup class="forum_pagination" rendered="#{typePaginationBar == 5}">
+		<ul class="pagination pagination-sm">
+		<li>
+			<h:outputLink value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,1)}">1</h:outputLink>
+		</li>
+		<li class="disabled"><a>...</a></li>
+		<li>
+			<h:outputLink value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,beanForumThread.offsetPage-1)}">#{beanForumThread.offsetPage-1}</h:outputLink>
+		</li>
+		<li>
+			<h:outputLink styleClass="general_pagination_activeBtn"
+				value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,beanForumThread.offsetPage)}">#{beanForumThread.offsetPage}</h:outputLink>
+		</li>
+		<li>
+			<h:outputLink value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,beanForumThread.offsetPage+1)}">#{beanForumThread.offsetPage+1}</h:outputLink>
+		</li>
+		<li class="disabled"><a>...</a></li>
+		<li>
+			<h:outputLink value="#{beanForumThread.getOutputLinkToThread(selectedThread.id,sizePaginationBar)}">#{sizePaginationBar}</h:outputLink>
+		</li>
+		</ul>
+	</h:panelGroup>
+</ui:composition>

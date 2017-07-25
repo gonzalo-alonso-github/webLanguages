@@ -1,0 +1,305 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+<ui:fragment rendered="#{beanUserView.loggedUserIsAuthorOfData(beanUserView.user)}">
+<div class="friends_section_margin friends_top_margin">
+	<div class="general_header_tittleText" style="float:left; margin-left:0px; padding-left:0px;">
+		<label for="contactSearch768screen">#{msgs.titleContactsSearch}</label>
+	</div>
+	<div class="noDisplayOver768screen" style="clear:both"></div>
+	<div>
+	<ui:param name="idFormSearchUser" value="form_searchUser1" />
+	<ui:include src="/snippets/general/menu_horizontal/menu_elements/users_searcher.xhtml" />
+	</div>
+</div>
+</ui:fragment>
+
+<!-- LISTA DE SOLICITUDES DE CONTACTOS PENDIENTES -->
+<h:form id="form_listPendingContactRequests" prependId="false">
+<ui:fragment rendered="#{beanUserView.loggedUserIsAdminOrAuthorOfData(beanUserView.user)}">
+<ui:fragment class="row"
+		rendered="#{not empty beanUserContacts.getContactRequestsReceivedByUser(beanUserView.user.id)}">
+	<div class="general_textCenter friends_section_tittle">
+		#{msgs.descriptionYouHaveContactRequests}:
+	</div>
+	<div class="friends_listUsers">
+	<div class="friends_listUsers_content">
+		<ul>
+		<ui:repeat var="pendingRequest"
+				value="#{beanUserContacts.getContactRequestsReceivedByUser(beanUserView.user.id)}">
+			<li>
+			<!-- El estilo "friends_listElementUser" es quien indica la anchura del elemento -->
+			<div class="friends_listElementUser">
+			<div class="general_section">
+			<div class="general_section_content">
+				<div class="profile_face_publications_table">
+				<div class="profile_face_publications_tableRow">
+				<div class="profile_face_publications_tableLastCell">
+					<!-- Mismo margin-right y left que el padding de "general_section_body" -->
+					<div style="margin-right: 8px; margin-left: 8px;">
+					<h:outputLink value="#{beanUserView.getOutputLinkToProfile(pendingRequest.userSender.id)}">
+						#{beanUtils.limitTextLength(16, pendingRequest.userSender.nick)}
+					</h:outputLink>
+					<ui:fragment rendered="#{beanUserView.shouldBeShownByPrivacity(pendingRequest.userSender, pendingRequest.userSender.privacityData.countryOrigin)}">
+					<ui:fragment rendered="#{beanUserView.isCountryOriginAvailable(pendingRequest.userSender)}">
+					<o:graphicImage dataURI="true"
+							value="#{beanUserImages.getUserOriginImage(pendingRequest.userSender)}"
+							alt="#{msgsCountries.title_flagOf} #{beanUserView.getCountryOriginName(pendingRequest.userSender)}"/>
+					</ui:fragment>
+					<span style="margin-left: 2px;"></span>
+					<ui:fragment rendered="#{beanUserView.isCountryLocationAvailable(pendingRequest.userSender)==false}">
+					<o:graphicImage dataURI="true"
+							value="#{beanUserImages.getUserLocationImage(pendingRequest.userSender)}"
+							alt="#{msgsCountries.title_flagOf} #{beanUserView.getCountryLocationName(pendingRequest.userSender)}"/>
+					</ui:fragment>
+					</ui:fragment>					
+					</div>
+				</div>
+				</div>
+				</div>
+				<div class="profile_face_publications_table">
+				<div class="profile_face_publications_tableRow">
+				<!-- Mismo margin-right y left que el padding de "general_section_body" -->
+				<div style="float:left; margin-right: 8px; margin-left: 8px;">
+					<div class="general_section_userAvatar">
+						<span class="general_section_userAvatarHelper"></span><o:graphicImage dataURI="true" style="float:left" value="#{beanUserImages.getUserImage(pendingRequest.userSender)}" alt="#{msgs.titleImgAltAvatar}"/>
+					</div>
+				</div>
+				<div class="general_section_body">
+					<div style="display: block">
+						#{msgs.titleDateReceived} #{beanSettingsSession.getFormattedDate(pendingRequest.dateRequest)}
+					</div>
+					<div style="display: block">
+					<h:commandLink id="#{'acceptRequestFromContactsList'.concat(pendingRequest.userSender.id)}"
+							class="btn btn-default btn-sm friends_buttonRequestUser" 
+							a:data-target="#acceptRequest" a:data-toggle="modal" a:data-backdrop="false"
+							actionListener="#{beanUserContacts.setBothUsers(pendingRequest.userReceiver, pendingRequest.userSender)}">
+						<span class="glyphicon glyphicon-ok"> #{msgs.titleAccept}</span>
+						<f:ajax render="@none"/>
+					</h:commandLink>
+					<h:commandLink id="#{'rejectRequestFromContactsList'.concat(pendingRequest.userSender.id)}"
+							class="btn btn-default btn-sm friends_buttonRequestUser" 
+							a:data-target="#rejectRequest" a:data-toggle="modal" a:data-backdrop="false"
+							actionListener="#{beanUserContacts.setBothUsers(pendingRequest.userReceiver, pendingRequest.userSender)}">
+						<span class="glyphicon glyphicon-remove"> #{msgs.titleReject}</span>
+						<f:ajax render="@none"/>
+					</h:commandLink>
+					</div>
+				</div>
+				</div>
+				</div>
+			</div>
+			</div>
+			</div>
+			</li>
+		</ui:repeat>
+		</ul>
+	</div>
+	</div>
+</ui:fragment>
+</ui:fragment>
+</h:form>
+
+<!-- LISTA DE CONTACTOS DEL USUARIO -->
+<h:form id="form_listContacts" prependId="false">
+<ui:fragment rendered="#{not beanUserView.shouldBeShownByPrivacity(beanUserView.user, beanUserView.user.privacityData.contactsList)}">
+<ui:fragment class="row">	
+	<div class="general_textCenter friends_section_tittle">
+		#{msgs.descriptionHiddenContactList}
+	</div>
+</ui:fragment>
+</ui:fragment>
+<ui:fragment rendered="#{beanUserView.shouldBeShownByPrivacity(beanUserView.user, beanUserView.user.privacityData.contactsList)}">
+<ui:fragment class="row friends_section_margin"
+		rendered="#{empty beanUserContacts.getContactsByUser(beanUserView.user.id)}">	
+	<div class="general_textCenter friends_section_tittle">
+		#{msgs.descriptionEmptyContactList}
+	</div>
+</ui:fragment>
+<ui:fragment class="row friends_section_margin"
+		rendered="#{not empty beanUserContacts.getContactsByUser(beanUserView.user.id)}">	
+	<div class="general_textCenter friends_section_tittle">
+		#{msgs.titleContactsList}:
+	</div>
+	<div class="friends_listUsers">
+	<div class="friends_listUsers_content">
+		<ul>
+		<ui:repeat var="contactOfList"
+				value="#{beanUserContacts.getContactsByUser(beanUserView.user.id)}">
+			<li>
+			<!-- El estilo "friends_listElementUser" es quien indica la anchura del elemento -->
+			<div class="friends_listElementUser">
+			<div class="general_section">
+			<div class="general_section_content">
+				<div class="profile_face_publications_table">
+				<div class="profile_face_publications_tableRow">
+				<div class="profile_face_publications_tableLastCell">
+					<!-- Mismo margin-right y left que el padding de "general_section_body" -->
+					<div style="margin-right: 8px; margin-left: 8px;">
+					<h:outputLink value="#{beanUserView.getOutputLinkToProfile(contactOfList.userContact.id)}">
+						#{beanUtils.limitTextLength(16, contactOfList.userContact.nick)}
+					</h:outputLink>
+					<ui:fragment rendered="#{beanUserView.shouldBeShownByPrivacity(contactOfList.userContact, contactOfList.userContact.privacityData.countryOrigin)}">
+					<ui:fragment rendered="#{beanUserView.isCountryOriginAvailable(contactOfList.userContact)}">
+					<o:graphicImage dataURI="true"
+							value="#{beanUserImages.getUserOriginImage(contactOfList.userContact)}"
+							alt="#{msgsCountries.title_flagOf} #{beanUserView.getCountryOriginName(contactOfList.userContact)}"/>
+					</ui:fragment>
+					<span style="margin-left: 2px;"></span>
+					<ui:fragment rendered="#{beanUserView.isCountryLocationAvailable(contactOfList.userContact)==false}">
+					<o:graphicImage dataURI="true"
+							value="#{beanUserImages.getUserLocationImage(contactOfList.userContact)}"
+							alt="#{msgsCountries.title_flagOf} #{beanUserView.getCountryLocationName(contactOfList.userContact)}"/>
+					</ui:fragment>
+					</ui:fragment>
+					</div>
+				</div>
+				</div>
+				</div>
+				<div class="profile_face_publications_table">
+				<div class="profile_face_publications_tableRow">
+				<!-- Mismo margin-right y left que el padding de "general_section_body" -->
+				<div style="float:left; margin-right: 8px; margin-left: 8px;">
+					<div class="general_section_userAvatar">
+						<span class="general_section_userAvatarHelper"></span><o:graphicImage dataURI="true" style="float:left"
+								value="#{beanUserImages.getUserImage(contactOfList.userContact)}" alt="#{msgs.titleImgAltAvatar}"/>
+					</div>
+				</div>
+				<div class="general_section_body">
+					<div style="display: block">
+					#{msgs.titleDateContact} #{beanSettingsSession.getFormattedDate(contactOfList.dateJoin)}
+					</div>
+					<div style="display: block">
+					#{msgs.titleDateRegistered} #{beanSettingsSession.getFormattedDate(contactOfList.dateJoin)}
+					</div>
+					<div style="display: block">
+					#{beanUtils.limitNumericValue(99999,contactOfList.userContact.userInfo.points)} #{msgs.title_points}
+					</div>
+					<div style="display: block">
+					<h:commandLink id="#{'deleteContactFromList'.concat(contactOfList.userContact.id)}"
+							class="btn btn-default btn-sm friends_buttonRequestUser" 
+							a:data-target="#deleteContact" a:data-toggle="modal" a:data-backdrop="false"
+							actionListener="#{beanUserContacts.setBothUsers(beanLogin.loggedUser, contactOfList.userContact)}">
+						<span class="glyphicon glyphicon-remove"> #{msgs.titleDelete}</span>
+						<f:ajax render="@none"/>
+					</h:commandLink>
+					</div>
+				</div>
+				</div>
+				</div>
+			</div>
+			</div>
+			</div>
+			</li>
+		</ui:repeat>
+		</ul>
+	</div>
+	</div>	
+</ui:fragment>
+</ui:fragment>
+</h:form>
+
+<!-- CLASIFICACION DE AMIGOS -->
+<!--
+<div class="row friends_section_margin">
+	<div class="friends_section_tittle">
+		Clasificación de amigos
+	</div>
+	
+	<div class="friends_clasification">
+
+	<div class="container-fluid">
+		<div class="row clasification_headerButtons">
+			<input class="col-sm-6 col-xs-12 btn btn-default clasification_button active" type="button" id="buttonMostValuedUser" name="mostValuedUser" value="Los + valorados" onclick="changeButtonStatus(this.id);"/>
+			
+			<input class="col-sm-6 col-xs-12 btn btn-default clasification_button" type="button" id="buttonMostActiveUser" name="mostActiveUser" value="Los + activos" onclick="changeButtonStatus(this.id);"/>
+		</div>
+	</div>
+	
+	<div class="noDisplayUnder992screen">
+		<div class="row clasification_headerBar">
+			<div style="float: left;" class="clasification_table_headerInfo general_textRight">
+				<ul><li><a href="#">Ir a mi posición: #15</a></li></ul>
+			</div>
+			<div style="clear: both;"></div>
+		</div>
+		
+		<div class="row clasification_table_subheaderBar">
+			<div class="left-side col-sm-5 general_headerSearch">
+				<div class="input-group input-group-sm">
+					<input type="text" id="contactSearch" title="contactSearch" name="contactSearch"
+						class="form-control" placeholder="buscador de usuarios..."/>
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button">Buscar</button>
+					</span>
+				</div>
+			</div>
+			<div class="right-side col-sm-7 general_pagination">
+				<div style="vertical-align:middle; display:inline-block">
+					Ver más:
+				</div>
+				<div style="vertical-align:middle; display:inline-block">
+					<ul class="pagination pagination-sm">
+						<li><a href="#">1</a></li>
+						<li><a href="#">2</a></li>
+						<li class="disabled"><a>...</a></li>
+						<li><a href="#">100</a></li>
+						<li><a href="#">101</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="noDisplayOver992screen">
+		<div class="row clasification_headerBar">
+		
+			<div style="float: left;" class="clasification_table_headerInfo">
+				<div class="general_inline-block">
+					<label for="selectElementsListOver992screen">Mostrar usuarios:</label>
+				</div>
+				<div class="general_inline-block">
+					<select id="selectElementsListOver992screen" class="form-control  general_input_selectButton">
+						<option id="optionELall" value="all">Todos</option>
+						<option id="optionELfriends" value="friends">Sólo amigos</option>
+					</select>
+				</div>
+			</div>
+			<div style="float: left;" class="clasification_table_headerInfo">
+				<ul><li><a href="#">Ir a mi posición: #95</a></li></ul>
+			</div>
+			<div style="clear: both;"></div>
+		</div>	
+		<div class="row clasification_table_subheaderBar">	
+			<div class="right-side col-sm-12 general_pagination">
+				<div style="vertical-align:middle; display:inline-block">
+					Ver más:
+				</div>
+				<div style="vertical-align:middle; display:inline-block">
+					<ul class="pagination pagination-sm">
+						<li><a href="#">1</a></li>
+						<li><a href="#">2</a></li>
+						<li class="disabled"><a>...</a></li>
+						<li><a href="#">100</a></li>
+						<li><a href="#">101</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	-->
+	<!-- Ahora la tabla: -->
+	<!--
+	<ui:include src="/snippets/clasification/clasification_table_users.xhtml" />
+
+	</div>
+</div>
+-->
+<!-- FIN DE CLASIFICACION DE AMIGOS -->
+
+</ui:composition>

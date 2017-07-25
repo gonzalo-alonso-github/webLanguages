@@ -1,0 +1,215 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+<!-- Barra superior de navegacion -->
+<div class="navbar navbar-inverse navbar-fixed-top"
+		style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 4px 8px 0 rgba(0, 0, 0, 0.2);">
+	<div class="container-fluid">
+	<div class="navbar-header">
+		<div class="btn navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>                        
+		</div>
+		<div class="navbar-brand general_mainHeader_tittleText">
+			<h:link outcome="linkRegisteredIndex" class="general_inline-block">Loqua</h:link>
+			<div class="noDisplayOver768screen general_mainHeader_tittlePage general_inline-block">
+				<span class="glyphicon glyphicon-chevron-right" style="vertical-align:middle;"></span>
+				<h:link outcome="linkRegisteredForum"> #{msgs.titleForumIndex}</h:link>
+			</div>
+		</div>
+	</div>
+	<div class="collapse navbar-collapse" id="myNavbar">
+		<ul class="nav navbar-nav">
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+					#{beanUtils.limitTextLength(12, beanLogin.loggedUser.nick)}<span class="caret"></span>
+					<span class="general_noDisplay">This span just performs the 'H30' technique of WCAG 2.0 evaluation</span>
+				</a>
+				<ul class="dropdown-menu">
+					<li><h:link outcome="linkProfileMe" class="general_inline-block">#{msgs.titleMyProfile}</h:link></li>
+					<!-- <li><a href="clasification.xhtml">#{msgs.titleStats}</a></li> -->
+					<li><a href="profile_contacts_me.xhtml">#{msgs.titleContacts}</a></li>
+					<li><a href="profile_edit.xhtml">#{msgs.titleEditProfile}</a></li>
+				</ul>
+			</li>
+			<li><a href="forum.xhtml">#{msgs.titleForumIndex}</a></li>
+			<!--
+			<li>
+				<a href="messages.xhtml">
+					#{msgs.titleMessages}
+					<h:panelGroup class="general_notification_counter"
+							rendered="#{beanMessage.numUnreadMessages!=0}">
+						#{beanMessage.numUnreadMessages}
+					</h:panelGroup>
+				</a>
+			</li>
+			-->
+			<!-- Notificaciones: para pantallas > 768px -->
+			<h:form id="form_mainMenuNotifications" prependId="false" class="nav navbar-nav">
+			<li class="noDisplayUnder768screen dropdown">
+				<h:commandLink class="dropdown-toggle" a:data-toggle="dropdown"
+						value="#{msgs.titleNotifications}"
+						actionListener="#{beanPublicationAsNotification.setNotificationsToRead()}">
+					<h:panelGroup id="num_notifications" class="general_notification_counter"
+							rendered="#{beanPublicationAsNotification.getNumUnreadNotifications()!=0}">
+						#{beanUtils.limitNumericValue(99,beanPublicationAsNotification.getNumUnreadNotifications())}
+					</h:panelGroup>
+					<h:panelGroup class="caret"></h:panelGroup>
+					<f:ajax render="@this :num_notifications"/>
+				</h:commandLink>
+				<ul class="dropdown-menu general_scrollableMenu">
+					<ui:repeat var="publicationOfList" value="#{beanPublicationAsNotification.lastNotifications}">
+					<li>
+					<div class="general_notification">
+						<div class="general_notification_section_content">
+							<div class="profile_face_publications_table">
+							<div class="profile_face_publications_tableRow">
+								<div class="profile_face_publications_tableCell">
+									<h:outputLink value="#{beanUserView.getOutputLinkToProfile(publicationOfList.user.id)}">
+										#{beanUtils.limitTextLength(16, publicationOfList.user.nick)}
+									</h:outputLink>
+								</div>
+								<div class="general_section_content_date profile_face_publications_tableLastCell">
+									<div class="profile_face_section_dateTime">#{beanSettingsSession.getFormattedDateTime(publicationOfList.datePub)}</div>
+								</div>
+							</div>
+							</div>
+							<div style="display:table; width:100%;">
+							<div style="display:table-row; width:100%;">
+							<div class="general_section_userAvatar">
+								<span class="general_section_userAvatarHelper"></span><o:graphicImage dataURI="true" style="float:left" value="#{beanUserImages.getUserImage(publicationOfList.user)}" alt="#{msgs.titleImgAltAvatar}"/>
+							</div>
+							<div class="general_section_body">
+							<h:panelGroup rendered="#{publicationOfList.selfGenerated==true}">
+								<h:panelGroup class="general_textBold">
+								#{beanPublication.getUserPublicationPart1(publicationOfList)}
+								<ui:param name="pubValueType" value="#{beanPublication.getPublicationValueType(publicationOfList)}" />
+								<h:panelGroup rendered="#{pubValueType==1}">
+									#{publicationOfList.eventValue}
+								</h:panelGroup>
+								<h:panelGroup rendered="#{pubValueType==2 or pubValueType==3}">
+									<h:panelGroup class="profile_face_threadTittle">
+										<h:outputLink value="#{beanComment.getOutputLinkToPost(publicationOfList.eventValue)}">
+											"#{beanUtils.limitTextLength(30, beanPublication.getThreadTitleByPost(publicationOfList))}"
+										</h:outputLink>
+									</h:panelGroup>
+									<h:panelGroup style="white-space: nowrap">:</h:panelGroup>
+								</h:panelGroup>
+								<h:panelGroup class="profile_face_threadTittle" rendered="#{pubValueType==4}">
+									<h:outputLink value="#{beanUserView.getOutputLinkToProfile(publicationOfList.eventValue)}">
+										#{beanUtils.limitTextLength(16, beanPublication.getUserNick(publicationOfList))}
+									</h:outputLink>
+								</h:panelGroup>
+								#{beanPublication.getUserPublicationPart2(publicationOfList)}
+								</h:panelGroup>
+								<h:panelGroup layout="block" rendered="#{pubValueType==2 or pubValueType==3}">
+								<div class="profile_face_comment">
+									"#{beanUtils.limitTextLength(80, beanComment.getCommnentTextByPost(publicationOfList.eventValue))}"
+								</div>
+								<div>
+									<h:outputLink value="#{beanComment.getOutputLinkToPost(publicationOfList.eventValue)}">#{msgs.titleGoToComment}</h:outputLink>
+								</div>
+								</h:panelGroup>
+							</h:panelGroup>
+							</div>
+							</div>
+							</div>
+						</div>
+					</div>
+					</li>
+					</ui:repeat>
+				</ul>
+			</li>
+			</h:form>
+			<!-- Notificaciones: para pantallas < 768px -->
+			<li class="noDisplayOver768screen">
+				<h:outputLink value="#{beanUserData.getOutputLinkToNotifications()}">
+					<h:panelGroup class="general_notification_counter"
+							rendered="#{beanPublicationAsNotification.getNumUnreadNotifications()!=0}">
+						#{beanUtils.limitNumericValue(99,beanPublicationAsNotification.getNumUnreadNotifications())}
+					</h:panelGroup>
+					#{msgs.titleNotifications}
+				</h:outputLink>
+			</li>
+		</ul>
+		<ul class="nav navbar-nav navbar-right">
+			<li>
+				<!-- o:form puede tener includeViewParams="true" o bien includeRequestParams="true" o bien useRequestURI="true" -->
+				<!-- Es util para reenviar los parametros al recargar la pagina,
+				puesto que de lo contrario los Filter no permitirian el acceso -->
+				<o:form includeViewParams="true" id="form-localeLanguage" prependId="false">
+				<div style="padding-top:15px; padding-bottom:15px; padding-left:15px;" >
+					<div class="general_mainHeader_tittleText noDisplayUnder992screen"
+							style="display:inline-block; font-weight: normal; padding-right:6px;">
+						<label for="localeLanguage" style="font-weight: normal;">#{msgs.titleLanguage}:</label>
+					</div>
+					<div style="display: inline-block; vertical-align: middle;">
+						<h:selectOneMenu class="form-control general_input_selectButton"
+								id="localeLanguage" value="#{beanSettingsSession.localeLanguage}"
+								onchange="document.getElementById('hidenBtnChangeLang').click();">             
+					    	<f:selectItems value="#{beanSettingsSession.allLanguagesFromProperties}"/>
+					    	<!-- Aqui habia un f:ajax render="@all". Se sustituye por el 'onchange' y el siguiente commandButton -->
+						</h:selectOneMenu>
+						<h:commandButton id="hidenBtnChangeLang" style="display:none;"
+								action="#{beanUtilsView.renderViewAgainFromCommandLink(null)}"
+								value="This value just performs the 'H91' technique of WCAG 2.0 evaluation">
+						</h:commandButton>
+					</div>
+				</div>
+				</o:form>
+			</li>
+			<li><a href="#logout" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-log-out"></span> #{msgs.titleLogOut}</a></li>
+		</ul>
+		
+		<!-- Ventana 'modal' para mostrar el logout -->
+		<div id="logout" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+		<div class="modal-dialog modal-xs">
+		<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal">×</button>
+			<div class="general_modal_tittle">#{msgs.titleLogOut}</div>
+		</div>
+		<div class="modal-body">
+			<div class="form-horizontal container-fluid">
+				<div>
+					<div class="form-group">
+					<o:form includeViewParams="true" id="form_logout">
+						<div class="form-group general_textCenter">
+							<span class="control-label login_sectionForm_margin">#{msgs.questionConfirmLogOut}</span>
+							<div class="login_sectionForm_margin" style="margin-top:6px;">
+								<h:commandButton id="btnAcceptLogout" value="#{msgs.titleAccept}"
+									action="#{beanLogin.close()}"
+									class="btn btn-default general_input_button">
+								</h:commandButton>
+								<button id="btnCancelLogout"
+									class="btn btn-default general_input_button"
+									data-dismiss="modal">#{msgs.titleCancel}</button>
+							</div>
+						</div>
+					</o:form>
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
+		</div>
+		</div>
+		
+		<f:verbatim>
+		<!-- Hacer que la ventana 'modal' del logout se pueda arrastrar -->
+		<script>
+			$( "#logout" ).draggable();
+		</script>
+		</f:verbatim>
+		
+	</div>
+	</div>
+</div>
+
+</ui:composition>

@@ -1,0 +1,89 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<!-- Barra de cabecera. Contiene un titulo, un buscador y, en determinadas pantallas, un boton de traductor y submenu de enlaces -->
+<div id="general_header_tittle">
+	<div class="container-fluid">
+		<div class="row" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 4px 8px 0 rgba(0, 0, 0, 0.2);">
+			
+			<!-- Pantallas >1300px: la barra de cabecera contiene un titulo y un buscador; y juntos ocupan las 12 columnas de ancho -->
+			<div class="noDisplayUnder1300screen">
+			<!-- Pantallas >1300px: Este es el titulo -->
+			<div class="left-side col-sm-7">
+				<div class="general_header_tittleText">
+					Loqua
+					<span class="glyphicon glyphicon-chevron-right" style="vertical-align:middle; margin-bottom:4px; margin-right:4px;"></span>
+					<h:outputText value="#{titleHeader}"/>
+				</div>
+				<div class="forum_themeDescription noDisplayUnder1300screen">
+						<ul><li>#{msgs.titleRegisteredMembers}: #{beanUtils.limitNumericValue(9999, beanUserData.getNumRegisteredUsers())}</li></ul>
+						<ul><li>#{msgs.titleOnlineMembers}: #{beanUserData.getNumOnlineUsers()}</li></ul>
+				</div>
+			</div>
+			<!-- Pantallas >1300px: Este es el buscador -->
+			<div class="right-side col-sm-5 general_headerSearch noDisplayUnder1300screen">
+				<ui:param name="idFormSearchUser" value="form_searchUser1" />
+				<ui:include src="/snippets/general/menu_horizontal/menu_elements/users_searcher.xhtml" />
+			</div>
+			</div>
+			
+			<!-- Pantallas < 1300px: la barra de cabecera no ocupa las 12 columnas de ancho, sino que reserva 2 columnas para el boton de traductor y otras 2 para el boton que muestra los temas (pantallas < 992px) -->
+			<div class="noDisplayOver1300screen general_subHeader_margin">
+			<!-- Pantallas < 1300px: Este es el titulo -->
+			<div class="general_subHeader_tittle noDisplayUnder768screen">
+				<div class="general_inline-block">
+					Loqua
+					<span class="glyphicon glyphicon-chevron-right" style="vertical-align:middle; margin-bottom:4px;"></span>
+					<h:outputText value="#{titleHeader}"/>
+				</div>
+			</div>
+			<!-- Pantallas < 1300px: Estos son los elementos a la derecha del titulo -->
+			<div class="general_subHeader_containerElements">
+				<!-- Pantallas < 1300px: Este es el buscador -->
+				<div class="general_subHeader_element">
+					<ui:param name="idFormSearchUser" value="form_searchUser2" />
+					<ui:include src="/snippets/general/menu_horizontal/menu_elements/users_searcher.xhtml" />
+				</div>
+				<!-- Pantallas < 1300px: Este es el boton para mostrar el traductor en una ventana 'modal' -->
+				<div class="general_subHeader_element">
+					<div class="input-group input-group-sm">
+						<span class="input-group-btn" style="display:inline">
+							<a href="#translator" class="btn btn-default" id="buttonTranslator"
+								data-toggle="modal" data-backdrop="false">
+								#{msgs.titleTranslator}
+							</a>
+						</span>
+					</div>
+				</div>
+				<!-- Pantallas < 1300px: Este es el boton para mostrar los temas del foro (pantallas < 992px) -->
+				<div class="general_subHeader_element noDisplayOver992screen">
+					<div class="input-group input-group-sm">
+						<span class="input-group-btn" style="display:inline">
+							<input class="btn btn-default" type="button" id="buttonThemes" name="themes" value="#{msgs.titleCategories}" data-toggle="collapse" data-target="#themes" onclick="changeButtonStyle(this.id);"/>
+						</span>
+					</div>
+				</div>
+			</div>
+			
+			<div class="general_clearBoth"></div>
+			
+			<div class="collapse general_header_submenu" id="themes">
+			<ul>
+			<ui:repeat id="repeat_categories_menu_horizontal" value="#{beanForum.allFeedCategories}" var="categoryOfListMenu">
+			<li>
+			<h:outputLink value="#{beanForum.getOutputLinkToForum(categoryOfListMenu.id,0)}">#{beanSettingsSession.getTranslation(categoryOfListMenu.name)}</h:outputLink>
+			</li>
+			</ui:repeat>
+			</ul>
+			</div>
+			
+			</div>
+		</div>
+	</div>
+</div>
+
+<ui:include src="/snippets/general/menu_horizontal/menu_elements/menu_elements_modal_windows.xhtml" />
+
+</ui:composition>

@@ -1,0 +1,84 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	template="/templates/template_general.xhtml">
+
+<!-- scripts y css propios de esta pagina -->
+<ui:define name="more_resources">
+	<!-- Dejamos la etiqueta vacia,
+	pues esta pagina no contiene mas scripts que los que ya tiene el template -->
+</ui:define>
+
+<!-- Barra superior de navegacion -->
+<ui:param name="titleMenuMain" value="Mensajes" />
+<ui:define name="menu_horizontal">
+	<ui:include src="/snippets/general/menu_horizontal/menu_main_registered.xhtml" />
+</ui:define>
+
+<!-- Contenido de la pagina -->
+<ui:define name="page">
+<div id="general_space_for_main_navbar"></div>
+<div id="general_container">
+
+	<!-- Barra de cabecera para pantallas < 1300px -->
+	<div id="general_header" class="noDisplayOver1300screen">
+		<ui:param name="titleHeader" value="Messages" />
+		<ui:include src="/snippets/general/menu_horizontal/menu_with_translator.xhtml" />
+	</div>
+	
+	<!-- Cuerpo bajo la barra de cabecera. Esta estructurado en 2 columnas, que son: -->
+	<!-- general_center y general_aside_right -->
+	<div id="general_body">
+	
+		<!-- Columna principal -->
+		<div class="general_center general_center_in2columns">
+			
+			<article>
+			<a href="pages/registeredUser/messages.xhtml">Ver mensajes recibidos</a>
+			<div class="general_border message_height">
+				<div class="message_header general_section_padding">
+					<div class="row">
+						<div class="col-sm-12">01/01/2016 a las 12:30</div>
+					</div>
+				</div>
+				<div class="message_body">
+					<div class="message_textBlock" style="padding-top:10px;">
+						<div class="message_read_userWrapAvatar">
+							<div class="general_textBold">
+								<a href="pages/registeredUser/profile_user.xhtml">usuarioX</a>
+							</div>
+							<div class="general_section_userAvatar">
+								<span class="general_section_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+							</div>
+							<div class="messages_listElementUser_body">
+								<div class="message_subject" style="padding: 0px 0px 10px 0px;">
+									Asunto: Mensaje enviado por usuarioX
+								</div>
+								<div class="message_text">
+								Texto completo del mensaje enviado por usuarioX. Texto completo del mensaje enviado por usuarioX. Texto completo del mensaje enviado por usuarioX. Texto completo del mensaje enviado por usuarioX. Texto completo del mensaje enviado por usuarioX. Texto completo del mensaje enviado por usuarioX.
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="message_footerForm">
+				<div class="general_textRight">
+					<a href="pages/registeredUser/message_write.xhtml" class="btn btn-default general_input_button" type="button" id="buttonReplyMessage">Responder</a>
+				</div>
+			</div>
+			</article>
+		</div>
+		
+		<!-- Columna derecha -->
+		<div class="general_aside_right noDisplayUnder1300screen">
+			<ui:include src="/snippets/general/right/translator_right.xhtml" />
+			<!-- aqui se podria incluir publicidad o mas contenido -->
+		</div>
+		
+	</div>
+</div>
+</ui:define>
+
+</ui:composition>

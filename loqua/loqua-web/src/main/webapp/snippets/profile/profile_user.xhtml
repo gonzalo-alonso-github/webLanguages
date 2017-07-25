@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<div id="general_space_for_main_navbar"></div>
+<div class="container" id="general_container">
+
+	<!-- Barra de cabecera para pantallas < 1300px -->
+	<div id="general_header" class="noDisplayOver1300screen">
+		<ui:include src="/snippets/general/menu_horizontal/menu_with_translatorUseroptions.xhtml"/>
+	</div>
+	
+	<!-- Cuerpo bajo la barra de cabecera. Esta estructurado en 3 columnas, que son: -->
+	<!-- general_aside_left, general_center y general_aside_right -->
+	<div id="general_body">
+	
+		<!-- Columna izquierda -->
+		<div class="general_aside_left noDisplayUnder992screen">
+			<!-- Seccion de enlaces -->
+			<ui:include src="/snippets/profile/left/menu_left_other_user.xhtml" />
+		</div>
+		
+		<!-- Columna central -->
+		<div class="general_center general_center_in3columns">
+			
+			<!-- Imagen y datos del usuario -->
+			<ui:include src="/snippets/profile/profile_header_userData.xhtml" />
+			
+			<div class="profile_container">
+				<div class="profile_index_form_margin">
+					<!-- Lista de publicaciones en el perfil personal del usuario -->
+					<ui:include src="/snippets/profile/profile_list_publications.xhtml" />
+				</div>
+			</div>
+		</div>
+		
+		<!-- Columna derecha -->
+		<div class="general_aside_right noDisplayUnder1300screen">
+			<div id="general_becameFixedOnScroll">
+			<ui:include src="/snippets/general/right/translator_right.xhtml" />
+			</div>
+			<!-- aqui se podria incluir publicidad o mas contenido -->
+		</div>
+		<script>
+			var elementPosition = $('#general_becameFixedOnScroll').offset();
+			$(window).scroll(function(){
+				if($(window).scrollTop() > elementPosition.top - 75){
+					$('#general_becameFixedOnScroll').addClass("forum_aside_translator_fixed");
+				} else {
+					$('#general_becameFixedOnScroll').removeClass("forum_aside_translator_fixed");
+				}    
+			});
+		</script>
+		
+	</div>
+</div>
+
+<!-- Ventanas modal para las paginas de profile -->
+<!-- Necesario para eliminar contacto, por ejemplo -->
+<ui:include src="/snippets/profile/modal_windows.xhtml" />
+
+</ui:composition>

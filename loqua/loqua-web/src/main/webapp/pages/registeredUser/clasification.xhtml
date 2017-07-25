@@ -1,0 +1,136 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	template="/templates/template_general.xhtml">
+
+<!-- scripts y css propios de esta pagina -->
+<ui:define name="more_resources">
+	<!-- Para que los botones cambien de aspecto al activarlos y desactivarlos -->
+	<h:outputScript name="js/buttonsClasification.js"/>
+</ui:define>
+
+<!-- Barra superior de navegacion -->
+<ui:param name="titleMenuMain" value="Clasificación" />
+<ui:define name="menu_horizontal">
+	<ui:include src="/snippets/general/menu_horizontal/menu_main_registered.xhtml" />
+</ui:define>
+
+<!-- Contenido de la pagina -->
+<ui:define name="page">
+<div id="general_space_for_main_navbar"></div>
+<div class="container" id="general_container">
+
+	<!-- Barra de cabecera para pantallas < 992px -->
+	<div id="general_header" class="noDisplayOver992screen">
+		<ui:param name="titleHeader" value="Clasificación" />
+		<ui:include src="/snippets/general/menu_horizontal/menu_with_searcher.xhtml" />
+	</div>
+	
+	<!-- Cuerpo bajo la barra de cabecera. Esta estructurado en 2 columnas, que son: -->
+	<!-- general_center y general_aside_right -->
+	<div id="general_body">
+		
+		<!-- Columna principal -->
+		<div class="general_center general_center_in3columns">
+			
+			<div class="container-fluid">
+				<div class="row clasification_headerButtons">
+					<input class="col-sm-6 col-xs-12 btn btn-default clasification_button active" type="button" id="buttonMostValuedUser" name="mostValuedUser" value="Los usuarios + valorados" onclick="changeButtonStatus(this.id);"/>
+					
+					<input class="col-sm-6 col-xs-12 btn btn-default clasification_button" type="button" id="buttonMostActiveUser" name="mostActiveUser" value="Los usuarios + activos" onclick="changeButtonStatus(this.id);"/>
+				</div>
+			</div>
+			
+			<div class="noDisplayUnder992screen">
+				<div class="row clasification_headerBar">
+					<div style="float: left;" class="clasification_table_headerInfo">
+						<div class="general_inline-block">
+							<label for="selectElementsList992screen">Mostrar usuarios:</label>
+						</div>
+						<div class="general_inline-block">
+							<select id="selectElementsList992screen" class="form-control  general_input_selectButton">
+								<option id="optionELall" value="all">Todos</option>
+								<option id="optionELfriends" value="friends">Sólo amigos</option>
+							</select>
+						</div>
+					</div>
+					<div style="float: right;" class="clasification_table_headerInfo general_textRight">
+						<ul><li><a href="#">Ir a mi posición: #95</a></li></ul>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				
+				<div class="row clasification_table_subheaderBar">
+					<div class="left-side col-sm-5 general_headerSearch">
+						<div class="input-group input-group-sm">
+							<input type="text" id="textSearch" title="textSearch" name="textSearch"
+								class="form-control" placeholder="buscador de usuarios..."/>
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="button">Buscar</button>
+							</span>
+						</div>
+					</div>
+					<div class="right-side col-sm-7 general_pagination">
+						<div style="vertical-align:middle; display:inline-block">
+							Ver más:
+						</div>
+						<div style="vertical-align:middle; display:inline-block">
+							<ul class="pagination pagination-sm">
+								<li><a href="#">1</a></li>
+								<li><a href="#">2</a></li>
+								<li class="disabled"><a>...</a></li>
+								<li><a href="#">100</a></li>
+								<li><a href="#">101</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="noDisplayOver992screen">
+				<div class="row clasification_headerBar">
+				
+					<div style="float: left;" class="clasification_table_headerInfo">
+						<div class="general_inline-block">
+							<label for="selectElementsListUnder992screen">Mostrar usuarios:</label>
+						</div>
+						<div class="general_inline-block">
+							<select id="selectElementsListUnder992screen" class="form-control  general_input_selectButton">
+								<option id="optionELall" value="all">Todos</option>
+								<option id="optionELfriends" value="friends">Sólo amigos</option>
+							</select>
+						</div>
+					</div>
+					<div style="float: left;" class="clasification_table_headerInfo">
+						<ul><li><a href="#">Ir a mi posición: #95</a></li></ul>
+					</div>
+					<div style="clear: both;"></div>
+				</div>	
+				<div class="row clasification_table_subheaderBar">	
+					<div class="right-side col-sm-12 general_pagination">
+						<div style="vertical-align:middle; display:inline-block">
+							Ver más:
+						</div>
+						<div style="vertical-align:middle; display:inline-block">
+							<ul class="pagination pagination-sm">
+								<li><a href="#">1</a></li>
+								<li><a href="#">2</a></li>
+								<li class="disabled"><a>...</a></li>
+								<li><a href="#">100</a></li>
+								<li><a href="#">101</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<!-- Tablas de usuarios -->
+			<ui:include src="/snippets/clasification/clasification_table_users.xhtml" />
+			
+		</div>
+	</div>
+</div>
+</ui:define>
+
+</ui:composition>

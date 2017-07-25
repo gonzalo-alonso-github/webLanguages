@@ -1,0 +1,913 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	template="/templates/template_general.xhtml">
+
+<!-- scripts y css propios de esta pagina -->
+<ui:define name="more_resources">
+	<!-- Para que los botones cambien de aspecto al activarlos y desactivarlos -->
+	<h:outputScript name="js/buttonsMessages.js"/>
+</ui:define>
+
+<!-- Barra superior de navegacion -->
+<ui:param name="titleMenuMain" value="Mensajes" />
+<ui:define name="menu_horizontal">
+	<ui:include src="/snippets/general/menu_horizontal/menu_main_registered.xhtml" />
+</ui:define>
+
+<!-- Contenido de la pagina -->
+<ui:define name="page">
+<div id="general_space_for_main_navbar"></div>
+<div id="general_container">
+	
+	<!-- El cuerpo solo tiene 1 columna, que es general_center-->
+	<div id="general_body">
+		
+		<!-- Columna principal -->
+		<div class="general_center general_center_in3columns">
+			
+			<div class="container-fluid">
+				<div class="row messages_headerButtons">
+					<input class="col-sm-6 col-xs-12 btn btn-default messages_button active" type="button" id="buttonReceivedMessages" name="receivedMessages" value="Mensajes recibidos" onclick="changeButtonStatus(this.id);"/>
+					
+					<input class="col-sm-6 col-xs-12 btn btn-default messages_button" type="button" id="buttonSentMessages" name="sentMessages" value="Mensajes enviados" onclick="changeButtonStatus(this.id);"/>
+				</div>
+			</div>
+			
+			<!-- Tabla de mensajes recibidos -->
+			<article id="tableReceivedMessages">
+			
+			<div class="container-fluid">
+				<div class="row" style="margin-bottom: 10px">
+					<button  class="btn btn-default btn-sm messages_buttonSmall" type="button" id="messagesReadSelected" name="messagesReadSelected">Marcar leídos</button >
+					
+					<button  class="btn btn-default btn-sm messages_buttonSmall" type="button" id="messagesDeleteSelected" name="messagesDeleteSelected">Eliminar selección</button >
+					
+					<button  class="btn btn-default btn-sm messages_buttonSmall" type="button" id="messagesDeleteAll" name="messagesDeleteAll">Eliminar todos</button >
+				</div>
+			</div>
+			
+				<div class="messages_table messages_bigTable noDisplayUnder768screen">
+				<table>
+					<thead>
+						<tr>
+							<th>
+								<fieldset class="general_disableFieldset">
+									<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+									<input type="checkbox" title="all_selected" name="all_selected"
+										value="all_selected"
+										onclick="selectAllMessages(this.checked);"
+										onkeypress="selectAllMessagesWithKeyboard(event, this);"/>
+								</fieldset>
+								<span class="general_noDisplay">This span just performs some techniques of WCAG 2.0 evaluation</span>
+							</th>
+							<th>De</th>
+							<th>Asunto</th>
+							<th colspan="2">Fecha</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr tabindex="1"
+							onmouseover="$('#biglTable_trashIcon1').removeClass('general_noDisplay');" onmouseout="$('#biglTable_trashIcon1').addClass('general_noDisplay');"
+							onfocus="$('#biglTable_trashIcon1').removeClass('general_noDisplay');" onblur="$('#biglTable_trashIcon1').addClass('general_noDisplay');">
+							<td>
+								<fieldset class="general_disableFieldset">
+									<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+									<input type="checkbox" title="chk_message1" name="chk_message1" value="message_selected"/>
+									<br/>
+								</fieldset>
+								<span class="glyphicon glyphicon-envelope" data-toggle="tooltip" data-placement="bottom" title="No leído" style="cursor:pointer;"></span>
+							</td>
+							<td>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+									<div class="messages_listElementUser_body">
+										<div class="general_textBold">
+											<a href="pages/registeredUser/profile_user.xhtml">usuario1</a>
+										</div>
+									</div>
+								</div>
+							</td>
+							<td>
+								<a href="pages/registeredUser/message_read.xhtml">Mensaje enviado por usuario1</a>
+							</td>
+							<td>01-01-2016</td>
+							<td>
+								<span data-toggle="tooltip" data-placement="bottom" title="Eliminar mensaje">
+									<a id="biglTable_trashIcon1" class="messages_trashIcon general_noDisplay" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+										<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+										<span class="general_noDisplay">x</span>
+									</a>
+								</span>
+							</td>
+						</tr>
+						<tr tabindex="2"
+							onmouseover="$('#biglTable_trashIcon2').removeClass('general_noDisplay');" onmouseout="$('#biglTable_trashIcon2').addClass('general_noDisplay');"
+							onfocus="$('#biglTable_trashIcon2').removeClass('general_noDisplay');" onblur="$('#biglTable_trashIcon2').addClass('general_noDisplay');">
+							<td>
+								<fieldset class="general_disableFieldset">
+									<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+									<input type="checkbox" title="chk_message2" name="chk_message2" value="message_selected"/>
+									<br/>
+								</fieldset>
+								<span class="glyphicon glyphicon-envelope" data-toggle="tooltip" data-placement="bottom" title="No leído" style="cursor:pointer;"></span>
+							</td>
+							<td>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+									<div class="messages_listElementUser_body">
+										<div class="general_textBold">
+											<a href="pages/registeredUser/profile_user.xhtml">usuario2</a>
+										</div>
+									</div>
+								</div>
+							</td>
+							<td>
+								<a href="pages/registeredUser/message_read.xhtml">Mensaje enviado por usuario2</a>
+							</td>
+							<td>01-01-2016</td>
+							<td>
+								<span data-toggle="tooltip" data-placement="bottom" title="Eliminar mensaje">
+									<a id="biglTable_trashIcon2" class="messages_trashIcon general_noDisplay" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+										<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+										<span class="general_noDisplay">x</span>
+									</a>
+								</span>							
+							</td>
+						</tr>
+						<tr tabindex="3"
+							onmouseover="$('#biglTable_trashIcon3').removeClass('general_noDisplay');" onmouseout="$('#biglTable_trashIcon3').addClass('general_noDisplay');"
+							onfocus="$('#biglTable_trashIcon3').removeClass('general_noDisplay');" onblur="$('#biglTable_trashIcon3').addClass('general_noDisplay');">							
+							<td>
+								<fieldset class="general_disableFieldset">
+									<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+									<input type="checkbox" title="chk_message3" name="chk_message3" value="message_selected"/>
+								</fieldset>
+							</td>						
+							<td>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+									<div class="messages_listElementUser_body">
+										<div class="general_textBold">
+											<a href="pages/registeredUser/profile_user.xhtml">usuario3</a>
+										</div>
+									</div>
+								</div>
+							</td>
+							<td>
+								<a href="pages/registeredUser/message_read.xhtml">Mensaje enviado por usuario3</a>
+							</td>
+							<td>01-01-2016</td>
+							<td>
+								<span data-toggle="tooltip" data-placement="bottom" title="Eliminar mensaje">
+									<a id="biglTable_trashIcon3" class="messages_trashIcon general_noDisplay" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+										<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+										<span class="general_noDisplay">x</span>
+									</a>
+								</span>								
+							</td>
+						</tr>
+						<tr tabindex="4"
+							onmouseover="$('#biglTable_trashIcon4').removeClass('general_noDisplay');" onmouseout="$('#biglTable_trashIcon4').addClass('general_noDisplay');"
+							onfocus="$('#biglTable_trashIcon4').removeClass('general_noDisplay');" onblur="$('#biglTable_trashIcon4').addClass('general_noDisplay');">							
+							<td>
+								<fieldset class="general_disableFieldset">
+									<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+									<input type="checkbox" title="chk_message4" name="chk_message4" value="message_selected"/>
+								</fieldset>
+							</td>						
+							<td>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+									<div class="messages_listElementUser_body">
+										<div class="general_textBold">
+											<a href="pages/registeredUser/profile_user.xhtml">usuario4</a>
+										</div>
+									</div>
+								</div>							
+							</td>
+							<td>
+								<a href="pages/registeredUser/message_read.xhtml">Mensaje enviado por usuario4</a>
+							</td>
+							<td>01-01-2016</td>
+							<td>
+								<span data-toggle="tooltip" data-placement="bottom" title="Eliminar mensaje">
+									<a id="biglTable_trashIcon4" class="messages_trashIcon general_noDisplay" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+										<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+										<span class="general_noDisplay">x</span>
+									</a>
+								</span>							
+							</td>
+						</tr>
+						<tr tabindex="6"
+							onmouseover="$('#biglTable_trashIcon5').removeClass('general_noDisplay');" onmouseout="$('#biglTable_trashIcon5').addClass('general_noDisplay');"
+							onfocus="$('#biglTable_trashIcon5').removeClass('general_noDisplay');" onblur="$('#biglTable_trashIcon5').addClass('general_noDisplay');">							
+							<td>
+								<fieldset class="general_disableFieldset">
+									<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+									<input type="checkbox" title="chk_message5" name="chk_message5" value="message_selected"/>
+								</fieldset>
+							</td>						
+							<td>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+									<div class="messages_listElementUser_body">
+										<div class="general_textBold">
+											<a href="pages/registeredUser/profile_user.xhtml">usuario5</a>
+										</div>
+									</div>
+								</div>							
+							</td>
+							<td>
+								<a href="pages/registeredUser/message_read.xhtml">Mensaje enviado por usuario5</a>
+							</td>
+							<td>01-01-2016</td>
+							<td>
+								<span data-toggle="tooltip" data-placement="bottom" title="Eliminar mensaje">
+									<a id="biglTable_trashIcon5" class="messages_trashIcon general_noDisplay" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+										<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+										<span class="general_noDisplay">x</span>
+									</a>
+								</span>							
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+
+				<div class="messages_table messages_smallTable noDisplayOver768screen">
+				<fieldset class="general_disableFieldset">
+					<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+					<input type="checkbox" id="all_selected" title="all_selected" name="all_selected"
+						value="all_selected"
+						onclick="selectAllMessages(this.checked);"
+						onkeypress="selectAllMessagesWithKeyboard(event, this);"/> <label for="all_selected">Seleccionar todos</label>
+				</fieldset>
+				<table>
+					<tbody>
+						<tr>
+							<td>
+								<div class="general_inline-block">
+									<fieldset class="general_disableFieldset">
+										<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+										<input type="checkbox" title="chk_message1" name="chk_message1" value="message_selected"/>
+									</fieldset>
+									<span class="glyphicon glyphicon-envelope" data-toggle="tooltip" data-placement="bottom" title="No leído" style="cursor:pointer;"></span>
+								</div>
+								<div class="general_inline-block" style="float:right;">
+									01-01-2016
+									<span data-toggle="tooltip" data-placement="bottom" title="Eliminar">
+										<a class="messages_trashIcon" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+											<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+											<span class="general_noDisplay">x</span>
+										</a>
+									</span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="general_inline-block">De:</div>
+								<div class="general_inline-block general_textBold"><a href="pages/registeredUser/profile_user.xhtml">usuario1</a></div>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+								</div>	
+							</td>
+						</tr>
+						<tr>
+							<td><a href="pages/registeredUser/message_read.xhtml">Mensaje enviado por usuario1</a></td>
+						</tr>
+					</tbody>
+				</table>
+				<table>
+					<tbody>
+						<tr>
+							<td>
+								<div class="general_inline-block">
+									<fieldset class="general_disableFieldset">
+										<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+										<input type="checkbox" title="chk_message2" name="chk_message2" value="message_selected"/>
+									</fieldset>
+									<span class="glyphicon glyphicon-envelope" data-toggle="tooltip" data-placement="bottom" title="No leído" style="cursor:pointer;"></span>
+								</div>
+								<div class="general_inline-block" style="float:right;">
+									01-01-2016
+									<span data-toggle="tooltip" data-placement="bottom" title="Eliminar">
+										<a class="messages_trashIcon" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+											<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+											<span class="general_noDisplay">x</span>
+										</a>
+									</span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="general_inline-block">De:</div>
+								<div class="general_inline-block general_textBold"><a href="pages/registeredUser/profile_user.xhtml">usuario2</a></div>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+								</div>	
+							</td>
+						</tr>
+						<tr>
+							<td><a href="pages/registeredUser/message_read.xhtml">Mensaje enviado por usuario2</a></td>
+						</tr>
+					</tbody>
+				</table>
+				<table>
+					<tbody>
+						<tr>
+							<td>
+								<div class="general_inline-block">
+									<fieldset class="general_disableFieldset">
+										<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+										<input type="checkbox" title="chk_message3" name="chk_message3" value="message_selected"/>
+									</fieldset>
+								</div>
+								<div class="general_inline-block" style="float:right;">
+									01-01-2016
+									<span data-toggle="tooltip" data-placement="bottom" title="Eliminar">
+										<a class="messages_trashIcon" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+											<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+											<span class="general_noDisplay">x</span>
+										</a>
+									</span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="general_inline-block">De:</div>
+								<div class="general_inline-block general_textBold"><a href="pages/registeredUser/profile_user.xhtml">usuario3</a></div>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+								</div>	
+							</td>
+						</tr>
+						<tr>
+							<td><a href="pages/registeredUser/message_read.xhtml">Mensaje enviado por usuario3</a></td>
+						</tr>
+					</tbody>
+				</table>
+				<table>
+					<tbody>
+						<tr>
+							<td>
+								<div class="general_inline-block">
+									<fieldset class="general_disableFieldset">
+									<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+										<input type="checkbox" title="chk_message4" name="chk_message4" value="message_selected"/>
+									</fieldset>
+								</div>
+								<div class="general_inline-block" style="float:right;">
+									01-01-2016
+									<span data-toggle="tooltip" data-placement="bottom" title="Eliminar">
+										<a class="messages_trashIcon" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+											<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+											<span class="general_noDisplay">x</span>
+										</a>
+									</span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="general_inline-block">De:</div>
+								<div class="general_inline-block general_textBold"><a href="pages/registeredUser/profile_user.xhtml">usuario4</a></div>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+								</div>	
+							</td>
+						</tr>
+						<tr>
+							<td><a href="pages/registeredUser/message_read.xhtml">Mensaje enviado por usuario4</a></td>
+						</tr>
+					</tbody>
+				</table>
+				<table>
+					<tbody>
+						<tr>
+							<td>
+								<div class="general_inline-block">
+									<fieldset class="general_disableFieldset">
+									<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+										<input type="checkbox" title="chk_message5" name="chk_message5" value="message_selected"/>
+									</fieldset>
+								</div>
+								<div class="general_inline-block" style="float:right;">
+									01-01-2016
+									<span data-toggle="tooltip" data-placement="bottom" title="Eliminar">
+										<a class="messages_trashIcon" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+											<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+											<span class="general_noDisplay">x</span>
+										</a>
+									</span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="general_inline-block">De:</div>
+								<div class="general_inline-block general_textBold"><a href="pages/registeredUser/profile_user.xhtml">usuario5</a></div>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+								</div>	
+							</td>
+						</tr>
+						<tr>
+							<td><a href="pages/registeredUser/message_read.xhtml">Mensaje enviado por usuario5</a></td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+			</article>
+			<!-- Fin de tabla de mensajes recibidos -->
+			
+			<!-- Tabla de mensajes enviados -->
+			<article id="tableSentMessages" class="general_noDisplay">
+			
+				<div class="container-fluid">
+					<div class="row" style="margin-bottom: 10px">
+						<button  class="btn btn-default btn-sm messages_buttonSmall" type="button" id="messagesDeleteSelected" name="messagesDeleteSelected">Eliminar selección</button >
+						
+						<button  class="btn btn-default btn-sm messages_buttonSmall" type="button" id="messagesDeleteAll" name="messagesDeleteAll">Eliminar todos</button >
+					</div>
+				</div>
+			
+				<div class="messages_table messages_bigTable noDisplayUnder768screen">
+				<table>
+					<thead>
+						<tr>
+							<th>
+								<fieldset class="general_disableFieldset">
+									<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+									<input type="checkbox" title="all_selected" name="all_selected"
+										value="all_selected"
+										onclick="selectAllMessages(this.checked);"
+										onkeypress="selectAllMessagesWithKeyboard(event, this);"/>
+								</fieldset>
+								<span class="general_noDisplay">This span just performs some techniques of WCAG 2.0 evaluation</span>
+							</th>
+							<th>Para</th>
+							<th>Asunto</th>
+							<th colspan="2">Fecha</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr tabindex="1"
+							onmouseover="$('#smallTable_trashIcon1').removeClass('general_noDisplay');" onmouseout="$('#smallTable_trashIcon1').addClass('general_noDisplay');"
+							onfocus="$('#smallTable_trashIcon1').removeClass('general_noDisplay');" onblur="$('#smallTable_trashIcon1').addClass('general_noDisplay');">							
+							<td>
+								<fieldset class="general_disableFieldset">
+									<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+									<input type="checkbox" title="chk_message1" name="chk_message1" value="message_selected"/>
+								</fieldset>
+							</td>
+							<td>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+									<div class="messages_listElementUser_body">
+										<div class="general_textBold">
+											<a href="pages/registeredUser/profile_user.xhtml">usuario1</a>
+										</div>
+									</div>
+								</div>
+							</td>
+							<td>
+								<a href="pages/registeredUser/message_read.xhtml">Mensaje enviado a usuario1</a>
+							</td>
+							<td>01-01-2016</td>
+							<td>
+								<span data-toggle="tooltip" data-placement="bottom" title="Eliminar mensaje">
+									<a id="smallTable_trashIcon1" class="messages_trashIcon general_noDisplay" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+										<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+										<span class="general_noDisplay">x</span>
+									</a>
+								</span>
+							</td>
+						</tr>
+						<tr tabindex="2"
+							onmouseover="$('#smallTable_trashIcon2').removeClass('general_noDisplay');" onmouseout="$('#smallTable_trashIcon2').addClass('general_noDisplay');"
+							onfocus="$('#smallTable_trashIcon2').removeClass('general_noDisplay');" onblur="$('#smallTable_trashIcon2').addClass('general_noDisplay');">							
+							<td>
+								<fieldset class="general_disableFieldset">
+									<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+									<input type="checkbox" title="chk_message2" name="chk_message2" value="message_selected"/>
+								</fieldset>
+							</td>
+							<td>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+									<div class="messages_listElementUser_body">
+										<div class="general_textBold">
+											<a href="pages/registeredUser/profile_user.xhtml">usuario2</a>
+										</div>
+									</div>
+								</div>
+							</td>
+							<td>
+								<a href="pages/registeredUser/message_read.xhtml">Mensaje enviado a usuario2</a>
+							</td>
+							<td>01-01-2016</td>
+							<td>
+								<span data-toggle="tooltip" data-placement="bottom" title="Eliminar mensaje">
+									<a id="smallTable_trashIcon2" class="messages_trashIcon general_noDisplay" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+										<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+										<span class="general_noDisplay">x</span>
+									</a>
+								</span>							
+							</td>
+						</tr>
+						<tr tabindex="3"
+							onmouseover="$('#smallTable_trashIcon3').removeClass('general_noDisplay');" onmouseout="$('#smallTable_trashIcon3').addClass('general_noDisplay');"
+							onfocus="$('#smallTable_trashIcon3').removeClass('general_noDisplay');" onblur="$('#smallTable_trashIcon3').addClass('general_noDisplay');">
+							<td>
+								<fieldset class="general_disableFieldset">
+									<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+									<input type="checkbox" title="chk_message3" name="chk_message3" value="message_selected"/>
+								</fieldset>
+							</td>						
+							<td>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+									<div class="messages_listElementUser_body">
+										<div class="general_textBold">
+											<a href="pages/registeredUser/profile_user.xhtml">usuario3</a>
+										</div>
+									</div>
+								</div>
+							</td>
+							<td>
+								<a href="pages/registeredUser/message_read.xhtml">Mensaje enviado a usuario3</a>
+							</td>
+							<td>01-01-2016</td>
+							<td>
+								<span data-toggle="tooltip" data-placement="bottom" title="Eliminar mensaje">
+									<a id="smallTable_trashIcon3" class="messages_trashIcon general_noDisplay" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+										<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+										<span class="general_noDisplay">x</span>
+									</a>
+								</span>								
+							</td>
+						</tr>
+						<tr tabindex="4"
+							onmouseover="$('#smallTable_trashIcon4').removeClass('general_noDisplay');" onmouseout="$('#smallTable_trashIcon4').addClass('general_noDisplay');"
+							onfocus="$('#smallTable_trashIcon4').removeClass('general_noDisplay');" onblur="$('#smallTable_trashIcon4').addClass('general_noDisplay');">							
+							<td>
+								<fieldset class="general_disableFieldset">
+									<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+									<input type="checkbox" title="chk_message4" name="chk_message4" value="message_selected"/>
+								</fieldset>
+							</td>						
+							<td>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+									<div class="messages_listElementUser_body">
+										<div class="general_textBold">
+											<a href="pages/registeredUser/profile_user.xhtml">usuario4</a>
+										</div>
+									</div>
+								</div>							
+							</td>
+							<td>
+								<a href="pages/registeredUser/message_read.xhtml">Mensaje enviado a usuario4</a>
+							</td>
+							<td>01-01-2016</td>
+							<td>
+								<span data-toggle="tooltip" data-placement="bottom" title="Eliminar mensaje">
+									<a id="smallTable_trashIcon4" class="messages_trashIcon general_noDisplay" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+										<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+										<span class="general_noDisplay">x</span>
+									</a>
+								</span>							
+							</td>
+						</tr>
+						<tr tabindex="5"
+							onmouseover="$('#smallTable_trashIcon5').removeClass('general_noDisplay');" onmouseout="$('#smallTable_trashIcon5').addClass('general_noDisplay');"
+							onfocus="$('#smallTable_trashIcon5').removeClass('general_noDisplay');" onblur="$('#smallTable_trashIcon5').addClass('general_noDisplay');">							
+							<td>
+								<fieldset class="general_disableFieldset">
+									<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+									<input type="checkbox" title="chk_message5" name="chk_message5" value="message_selected"/>
+								</fieldset>
+							</td>						
+							<td>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+									<div class="messages_listElementUser_body">
+										<div class="general_textBold">
+											<a href="pages/registeredUser/profile_user.xhtml">usuario5</a>
+										</div>
+									</div>
+								</div>							
+							</td>
+							<td>
+								<a href="pages/registeredUser/message_read.xhtml">Mensaje enviado a usuario5</a>
+							</td>
+							<td>01-01-2016</td>
+							<td>
+								<span data-toggle="tooltip" data-placement="bottom" title="Eliminar mensaje">
+									<a id="smallTable_trashIcon5" class="messages_trashIcon general_noDisplay" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+										<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+										<span class="general_noDisplay">x</span>
+									</a>
+								</span>							
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+
+				<div class="messages_table messages_smallTable noDisplayOver768screen">
+				<fieldset class="general_disableFieldset">
+					<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+					<input type="checkbox" id="all_selectedOver768screen" title="all_selected"
+						name="all_selected" value="all_selected"
+						onclick="selectAllMessages(this.checked);"
+						onkeypress="selectAllMessagesWithKeyboard(event, this);"/> <label for="all_selectedOver768screen">Seleccionar todos</label>
+				</fieldset>
+				<table>
+					<tbody>
+						<tr>
+							<td>
+								<div class="general_inline-block">
+									<fieldset class="general_disableFieldset">
+										<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+										<input type="checkbox" title="chk_message1" name="chk_message1" value="message_selected"/>
+									</fieldset>
+								</div>
+								<div class="general_inline-block" style="float:right;">
+									01-01-2016
+									<span data-toggle="tooltip" data-placement="bottom" title="Eliminar">
+										<a class="messages_trashIcon" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+											<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+											<span class="general_noDisplay">x</span>
+										</a>
+									</span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="general_inline-block">Para:</div>
+								<div class="general_inline-block general_textBold"><a href="pages/registeredUser/profile_user.xhtml">usuario1</a></div>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+								</div>	
+							</td>
+						</tr>
+						<tr>
+							<td><a href="pages/registeredUser/message_read.xhtml">Mensaje enviado a usuario1</a></td>
+						</tr>
+					</tbody>
+				</table>
+				<table>
+					<tbody>
+						<tr>
+							<td>
+								<div class="general_inline-block">
+									<fieldset class="general_disableFieldset">
+										<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+										<input type="checkbox" title="chk_message2" name="chk_message2" value="message_selected"/>
+									</fieldset>
+								</div>
+								<div class="general_inline-block" style="float:right;">
+									01-01-2016
+									<span data-toggle="tooltip" data-placement="bottom" title="Eliminar">
+										<a class="messages_trashIcon" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+											<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+											<span class="general_noDisplay">x</span>
+										</a>
+									</span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="general_inline-block">Para:</div>
+								<div class="general_inline-block general_textBold"><a href="pages/registeredUser/profile_user.xhtml">usuario2</a></div>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+								</div>	
+							</td>
+						</tr>
+						<tr>
+							<td><a href="pages/registeredUser/message_read.xhtml">Mensaje enviado a usuario2</a></td>
+						</tr>
+					</tbody>
+				</table>
+				<table>
+					<tbody>
+						<tr>
+							<td>
+								<div class="general_inline-block">
+									<fieldset class="general_disableFieldset">
+										<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+										<input type="checkbox" title="chk_message3" name="chk_message3" value="message_selected"/>
+									</fieldset>
+								</div>
+								<div class="general_inline-block" style="float:right;">
+									01-01-2016
+									<span data-toggle="tooltip" data-placement="bottom" title="Eliminar">
+										<a class="messages_trashIcon" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+											<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+											<span class="general_noDisplay">x</span>
+										</a>
+									</span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="general_inline-block">Para:</div>
+								<div class="general_inline-block general_textBold"><a href="pages/registeredUser/profile_user.xhtml">usuario3</a></div>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+								</div>	
+							</td>
+						</tr>
+						<tr>
+							<td><a href="pages/registeredUser/message_read.xhtml">Mensaje enviado a usuario3</a></td>
+						</tr>
+					</tbody>
+				</table>
+				<table>
+					<tbody>
+						<tr>
+							<td>
+								<div class="general_inline-block">
+									<fieldset class="general_disableFieldset">
+										<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+										<input type="checkbox" title="chk_message4" name="chk_message4" value="message_selected"/>
+									</fieldset>
+								</div>
+								<div class="general_inline-block" style="float:right;">
+									01-01-2016
+									<span data-toggle="tooltip" data-placement="bottom" title="Eliminar">
+										<a class="messages_trashIcon" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+											<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+											<span class="general_noDisplay">x</span>
+										</a>
+									</span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="general_inline-block">Para:</div>
+								<div class="general_inline-block general_textBold"><a href="pages/registeredUser/profile_user.xhtml">usuario4</a></div>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+								</div>	
+							</td>
+						</tr>
+						<tr>
+							<td><a href="pages/registeredUser/message_read.xhtml">Mensaje enviado a usuario4</a></td>
+						</tr>
+					</tbody>
+				</table>
+				<table>
+					<tbody>
+						<tr>
+							<td>
+								<div class="general_inline-block">
+									<fieldset class="general_disableFieldset">
+										<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+										<input type="checkbox" title="chk_message5" name="chk_message5" value="message_selected"/>
+									</fieldset>
+								</div>
+								<div class="general_inline-block" style="float:right;">
+									01-01-2016
+									<span data-toggle="tooltip" data-placement="bottom" title="Eliminar">
+										<a class="messages_trashIcon" href="#deleteMessage" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-trash"></span>
+											<!-- Next 'span' just performs the 'F89' technique of WCAG 2.0 evaluation -->
+											<span class="general_noDisplay">x</span>
+										</a>
+									</span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="general_inline-block">Para:</div>
+								<div class="general_inline-block general_textBold"><a href="pages/registeredUser/profile_user.xhtml">usuario5</a></div>
+								<div class="messages_listElementUser">
+									<div class="messages_listElementUser_userAvatar">
+										<span class="messages_listElementUser_userAvatarHelper"></span><h:graphicImage style="float:left" library="img" name="user_man.jpg" alt="imagen del usuario"/>
+									</div>
+								</div>	
+							</td>
+						</tr>
+						<tr>
+							<td><a href="pages/registeredUser/message_read.xhtml">Mensaje enviado a usuario5</a></td>
+						</tr>
+					</tbody>
+				</table>				
+				</div>
+			</article>
+			<!-- Fin de tabla de mensajes enviados -->
+			
+			<div class="row messages_headerBar">
+				<div class="right-side col-sm-12 general_pagination">
+					<div style="vertical-align:middle; display:inline-block">
+						Ver más:
+					</div>
+					<div style="vertical-align:middle; display:inline-block">
+						<ul class="pagination pagination-sm">
+							<li><a href="#">1</a></li>
+							<li><a href="#">2</a></li>
+							<li class="disabled"><a>...</a></li>
+							<li><a href="#">100</a></li>
+							<li><a href="#">101</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</div>
+
+<!-- Ventana 'modal' para confirmar eliminar mensaje -->
+<div id="deleteMessage" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<h4 class="modal-title">Eliminar mensaje</h4>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<form id="form_logout" >
+				
+				<div class="form-group general_textCenter">
+					<span class="control-label login_sectionForm_margin">¿Seguro que quieres borrar este mensaje?</span>
+					<div class="login_sectionForm_margin" style="margin-top:6px;">
+						<h:commandButton id="btnAcceptDeleteMessage" value="Aceptar"
+							class="btn btn-default general_input_button">
+						</h:commandButton>
+						<h:commandButton id="btnCancelDeleteMessage" value="Cancelar"
+							class="btn btn-default general_input_button">
+						</h:commandButton>
+					</div>
+				</div>
+				
+			</form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Hacer que las ventanas 'modal' se puedan arrastrar -->
+<script>
+	$( "#deleteMessage" ).draggable();
+</script>
+
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,183 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+<!--
+Vista para crear/editar una correccion a un comentario en el foro.
+Este fichero es un snippet: hay variables definidas en otras paginas que se usan aqui.
+En admin_user/forum_thread_correction.xhtml y en registeredUser/forum_thread_correction.xhtml
+es donde se reciben los parametros 'action', 'thread', 'correction' y 'comment'
+cuyos valores se guardan, respectivamente, beanCorrection y en beanForumThread:
+f:viewParam name="action" value="#{beanCorrection.actionType}"
+f:viewParam name="thread" value="#{beanForumThread.currentThreadId}"
+f:viewParam name="correction" value="#{beanCorrection.corrViewParam}"
+f:viewParam name="comment" value="#{beanCorrection.commViewParam}"
+f:viewAction action="#{beanCorrection.onLoad()}"
+-->
+
+<div id="general_space_for_main_navbar"></div>
+<div class="container" id="general_container">
+
+	<!-- Barra de cabecera. Contiene un titulo, un buscador y, en determinadas pantallas, un boton de traductor -->
+	<div id="general_header">	
+		<ui:param name="titleHeader" value="#{msgs.titleForumIndex}" />
+		<ui:include src="/snippets/general/menu_horizontal/menu_with_searcherTranslator.xhtml" />
+	</div>
+	
+	<!-- Cuerpo bajo la barra de cabecera. Esta estructurado en 2 columnas, que son: -->
+	<!-- general_center y general_aside_right -->
+	<div id="general_body">
+	
+		<!-- Columna principal -->
+		<div class="general_center general_center_in2columns">
+		
+			<!-- Barra de cabecera (en columna principal) -->
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-sm-12 forum_thread_firstPost_body_titular" style="padding-left:0px; padding-right:0px; padding-bottom:10px;">
+						#{beanUtils.limitTextLength(60, beanForumThread.currentThread.title)}
+					</div>
+				</div>
+			</div>
+			
+			<!-- La siguiente variable simplemente es para usarla a modo de etiquetas de formulario: -->
+			<c:set var="titleAction" value="#{beanCorrection.actionType==1 ? msgs.titleCommentCorrection : titleAction}" scope="view"/>
+			<c:set var="titleAction" value="#{beanCorrection.actionType==2 ? msgs.titleEditCorrection : titleAction}" scope="view"/>
+			
+			<o:form includeViewParams="true" id="form_correctionCRUD" prependId="false">
+			<article class="forum_thread">
+			<div class="forum_thread_border forum_thread_firstPost_height">
+				<div class="forum_thread_post_header general_section_padding">
+					<div class="row">
+						<div class="col-sm-12">
+						<h:outputText value="#{titleAction}"/>
+						</div>
+					</div>
+				</div>
+				<div class="forum_thread_post_body">
+					<div class="forum_thread_post_textBlock" style="padding-top:10px;">
+						<!-- <ui:fragment rendered="#{beanComment.actionType==1 or beanComment.actionType==2}"> -->
+						<!-- Si beanComment.actionType==1 entonces se desea crear una correccion de un comentario.
+						Si beanComment.actionType==2 entonces se desea editar una correccion de un comentario.
+						En ambos casos se muestra el boton 'desplegable' para mostrar el texto del comentario a corregir/corregido -->
+						<div class="container-fluid" style="padding-left:0px !important; margin-left:0px !important;">
+							<div class="panel panel-default">
+							<div class="panel-heading">
+								<button class="btn btn-default btn-block forum_thread_post_spoilerButton" type="button" id="btnCommentToCorrect" data-toggle="collapse" data-target="#commentToCorrect">#{msgs.titleOriginalComment}</button>
+							</div>
+							<div class="panel-collapse collapse in" id="commentToCorrect">
+							<div class="panel-body">
+								<div><h:outputText value="#{beanCorrection.commentToCorrect.textHtml}" escape="false"/></div>
+							</div>
+							</div>
+							</div>
+						</div>
+						<!-- </ui:fragment> -->
+						<!-- Editor de texto de SummerNote -->
+						<h:inputTextarea id="textareaCorrectionCRUD"
+								value="#{beanCorrection.textCodeCorrection}"
+								styleClass="summernote form-control">
+							<f:converter converterId="converterCleanSpaces" />
+							<f:validator validatorId="validatorLength" />
+								<f:attribute name="inputLabel" value="#{titleAction}" />
+								<f:attribute name="inputMaxLength" value="2500" />
+	                    </h:inputTextarea>
+	                    <!-- El siguiente inputHidden se inicializa en el evento 'onclick()' del boton 'Enviar',
+						concretamente en la llamada a getPlainText(), metodo que esta en el fichero 'summernoteInitialize.js'.
+						A su vez aqui se inicializa tambien la propiedad 'beanComment.plainTextComment' -->
+	                    <h:inputHidden id="hiddenCorrectionCRUD" value="#{beanCorrection.plainTextCorrection}" 
+	                    		required="true" requiredMessage="#{msgs.errorTextCorrectionRequired}">
+	                    	<f:converter converterId="converterCleanSpaces" />
+	                    	<f:validator validatorId="validatorLength" />
+								<f:attribute name="inputLabel" value="#{titleAction}" />
+								<f:attribute name="inputMaxLength" value="2000" />
+	                    </h:inputHidden>
+					</div>
+				</div>
+			</div>
+			<!-- Es mejor colocar los posibles mensajes de error bajo el boton de 'Enviar', asi que comento estos: -->
+			<!--
+			<h:message for="hiddenCorrectionCRUD" />
+			<h:outputText value="#{beanActionResult.msgActionResult}" />
+			-->
+			<div class="forum_thread_post_footerForm">
+				<div class="row">
+					<div class="left-side col-sm-6 noDisplayUnder768screen forum_thread_lastComments_header">
+						<a data-toggle="collapse" data-target="#collapseLastComments" class="collapsed">
+							#{msgs.titleMoreComments}<span class="caret"></span>
+						</a>
+					</div>
+					
+					<!-- Boton submit -->
+					<div class="right-side col-sm-6 col-xs-12" style="text-align:right;">
+						<!-- En esta version de la aplicacion no se muestra el boton de vista previa -->
+						<div class="general_inline-block">
+							<!-- En caso de problemas elimina el f:ajax y todo el onclick
+							salvo la llamada a getPlainText -->
+							<h:commandButton id="buttonSendCorrection"
+									class="btn btn-default btn-block general_input_button" value="#{msgs.titleSend}"
+									action="#{beanCorrection.getCommandLinkToSendCorrection(beanActionResult, beanForumThread.currentThread)}"
+									onclick="showElement('divWaitCorrectionCRUD');setSpinnerInLayout('spinnerWheelCorrectionCRUD');disableElement(this.id);getPlainText('textareaCorrectionCRUD','hiddenCorrectionCRUD');">
+								<f:ajax execute="@form :form_correctionCRUD" render="@form :form_correctionCRUD"/>
+							</h:commandButton>
+							<!-- Este h:outputScript es mejor alternativa que hacer ' onevent="reloadSummernote" ' en el 'f:ajax' -->
+							<h:outputScript rendered="#{facesContext.validationFailed or beanActionResult.finish}">
+								reloadSummernote();
+							</h:outputScript>
+						</div>
+					</div>
+					
+					<!-- Animacion 'spin' con mensage de espera, o mensaje de error -->
+					<div id="divWaitCorrectionCRUD" class="form-group general_textCenter general_noDisplay">
+						<div class="col-xs-12 col-sm-12">
+							<h:outputText id="msgRunningCorrectionCRUD" value="#{msgs.descriptionWait}"/>
+							<h:panelGroup id="spinnerWheelCorrectionCRUD" layout="block"
+								style="margin:25px auto auto auto;"/>
+						</div>
+					</div>
+					<div class="form-group general_textCenter">
+						<div class="col-xs-12 col-sm-12">
+							<div><h:message id="msgValidatorCorrTextCode" for="textareaCorrectionCRUD" /></div>			
+							<div><h:message id="msgValidatorCorrPlainText" for="hiddenCorrectionCRUD" /></div>
+						</div>
+					</div>
+					
+					<!-- Link 'desplegable' para mostrar los comentarios recientes -->
+					<div class="col-xs-12 forum_thread_lastComments_header noDisplayOver768screen">
+						<a data-toggle="collapse" data-target="#collapseLastComments" class="collapsed">
+							#{msgs.titleMoreComments}<span class="caret"></span>
+						</a>
+					</div>
+				</div>
+			</div>
+			</article>
+			</o:form>
+		</div>
+		
+		<!-- Columna derecha -->
+		<div class="general_aside_right noDisplayUnder1300screen">
+			<ui:include src="/snippets/general/right/translator_right.xhtml" />
+			<!-- aqui se podria incluir publicidad o mas contenido -->
+		</div>
+		
+		<div class="collapse" id="collapseLastComments">
+		<!--  Comentarios de usuarios -->
+		<div class="general_center general_center_in1column">
+		<h:form id="form_threadListComments" prependId="false">
+		<ui:repeat id="commentsList" varStatus="statusCommentsList"
+				var="commentOfList" value="#{beanForumThread.getListCommentsByThreadReverseOrder()}">
+			<ui:include src="/snippets/forum/forum_thread_list_comments.xhtml" />
+		</ui:repeat>
+		</h:form>
+		</div>
+		</div>
+	</div>
+	
+</div>
+
+</ui:composition>

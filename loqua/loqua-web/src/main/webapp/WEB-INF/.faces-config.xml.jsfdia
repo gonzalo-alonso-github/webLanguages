@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PROCESS model-entity="JSFProcess">
+ <PROCESS-ITEM NAME="rules:#pages#anonymousUser#*"
+  PATH="/pages/anonymousUser/*" SHAPE="32,657,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules:#pages#anonymousUser#*:0" NAME="item"
+   PATH="/pages/anonymousUser/*" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="linkPaginationBar::#pages#anonymousUser#forum.xhtml"
+    NAME="output" PATH="/pages/anonymousUser/forum.xhtml"
+    TARGET="rules:#pages#anonymousUser#forum.xhtml"
+    TITLE="linkPaginationBar" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="linkForumThread::#pages#anonymousUser#forum_thread.xhtml"
+    NAME="output1" PATH="/pages/anonymousUser/forum_thread.xhtml"
+    TARGET="rules:#pages#anonymousUser#forum_thread.xhtml"
+    TITLE="linkForumThread" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="errorUnexpected::#pages#anonymousUser#errorUnexpectedAnonymous.xhtml"
+    NAME="output2"
+    PATH="/pages/anonymousUser/errorUnexpectedAnonymous.xhtml"
+    TARGET="rules:#pages#anonymousUser#errorUnexpectedAnonymous.xhtml"
+    TITLE="errorUnexpected" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="errorUnexpectedAnonymous::#pages#anonymousUser#errorUnexpectedAnonymous.xhtml"
+    NAME="output3"
+    PATH="/pages/anonymousUser/errorUnexpectedAnonymous.xhtml"
+    TARGET="rules:#pages#anonymousUser#errorUnexpectedAnonymous.xhtml"
+    TITLE="errorUnexpectedAnonymous" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules:#pages#anonymousUser#register.xhtml"
+  PATH="/pages/anonymousUser/register.xhtml" SHAPE="304,1505,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules:#pages#anonymousUser#register.xhtml:0"
+   NAME="item" PATH="/pages/anonymousUser/register.xhtml" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="errorRegister::#pages#anonymousUser#register.xhtml"
+    NAME="output" PATH="/pages/anonymousUser/register.xhtml"
+    TARGET="rules:#pages#anonymousUser#register.xhtml"
+    TITLE="errorRegister" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="successRegister::#pages#anonymousUser#forum.xhtml"
+    NAME="output1" PATH="/pages/anonymousUser/forum.xhtml"
+    TARGET="rules:#pages#anonymousUser#forum.xhtml"
+    TITLE="successRegister" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules:#pages#anonymousUser#password_restore.xhtml"
+  PATH="/pages/anonymousUser/password_restore.xhtml"
+  SHAPE="304,1649,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules:#pages#anonymousUser#password_restore.xhtml:0"
+   NAME="item" PATH="/pages/anonymousUser/password_restore.xhtml" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="errorRestorePassword::#pages#anonymousUser#password_restore.xhtml"
+    NAME="output" PATH="/pages/anonymousUser/password_restore.xhtml"
+    TARGET="rules:#pages#anonymousUser#password_restore.xhtml"
+    TITLE="errorRestorePassword" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="successRestorePassword::#pages#anonymousUser#forum.xhtml"
+    NAME="output1" PATH="/pages/anonymousUser/forum.xhtml"
+    TARGET="rules:#pages#anonymousUser#forum.xhtml"
+    TITLE="successRestorePassword" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules:#pages#registeredUser#*"
+  PATH="/pages/registeredUser/*" SHAPE="32,321,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules:#pages#registeredUser#*:0" NAME="item"
+   PATH="/pages/registeredUser/*" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="linkRegisteredIndex::#pages#registeredUser#profile_index.xhtml"
+    NAME="output" PATH="/pages/registeredUser/profile_index.xhtml"
+    TARGET="rules:#pages#registeredUser#profile_index.xhtml"
+    TITLE="linkRegisteredIndex" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="linkIndex::#pages#registeredUser#profile_index.xhtml"
+    NAME="output1" PATH="/pages/registeredUser/profile_index.xhtml"
+    TARGET="rules:#pages#registeredUser#profile_index.xhtml"
+    TITLE="linkIndex" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="linkRegisteredForum::#pages#registeredUser#forum.xhtml"
+    NAME="output2" PATH="/pages/registeredUser/forum.xhtml"
+    TARGET="rules:#pages#registeredUser#forum.xhtml"
+    TITLE="linkRegisteredForum" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="successLogout::#pages#anonymousUser#forum.xhtml" NAME="output3"
+    PATH="/pages/anonymousUser/forum.xhtml"
+    TARGET="rules:#pages#anonymousUser#forum.xhtml"
+    TITLE="successLogout" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="linkProfileMe::#pages#registeredUser#profile_me.xhtml"
+    NAME="output10" PATH="/pages/registeredUser/profile_me.xhtml"
+    TARGET="rules:#pages#registeredUser#profile_me.xhtml"
+    TITLE="linkProfileMe" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="successEditUserProfile::#pages#registeredUser#profile_edit.xhtml"
+    NAME="output11" PATH="/pages/registeredUser/profile_edit.xhtml"
+    TARGET="rules:#pages#registeredUser#profile_edit.xhtml"
+    TITLE="successEditUserProfile" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="linkProfileUser::#pages#registeredUser#profile_user.xhtml"
+    NAME="output9" PATH="/pages/registeredUser/profile_user.xhtml"
+    TARGET="rules:#pages#registeredUser#profile_user.xhtml"
+    TITLE="linkProfileUser" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="linkPaginationBar::#pages#registeredUser#forum.xhtml"
+    NAME="output4" PATH="/pages/registeredUser/forum.xhtml"
+    TARGET="rules:#pages#registeredUser#forum.xhtml"
+    TITLE="linkPaginationBar" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="linkForumThread::#pages#registeredUser#forum_thread.xhtml"
+    NAME="output8" PATH="/pages/registeredUser/forum_thread.xhtml"
+    TARGET="rules:#pages#registeredUser#forum_thread.xhtml"
+    TITLE="linkForumThread" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="errorUnexpected::#pages#registeredUser#errorUnexpectedRegistered.xhtml"
+    NAME="output5"
+    PATH="/pages/registeredUser/errorUnexpectedRegistered.xhtml"
+    TARGET="rules:#pages#registeredUser#errorUnexpectedRegistered.xhtml"
+    TITLE="errorUnexpected" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="errorUnexpectedRegistered::#pages#registeredUser#errorUnexpectedRegistered.xhtml"
+    NAME="output6"
+    PATH="/pages/registeredUser/errorUnexpectedRegistered.xhtml"
+    TARGET="rules:#pages#registeredUser#errorUnexpectedRegistered.xhtml"
+    TITLE="errorUnexpectedRegistered" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules:#pages#registeredUser#profile_user.xhtml"
+  PATH="/pages/registeredUser/profile_user.xhtml" SHAPE="304,1393,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM
+  NAME="rules:#pages#anonymousUser#errorUnexpectedAnonymous.xhtml"
+  PATH="/pages/anonymousUser/errorUnexpectedAnonymous.xhtml"
+  SHAPE="256,2241,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#registeredUser#profile_edit.xhtml"
+  PATH="/pages/registeredUser/profile_edit.xhtml" SHAPE="240,2385,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#registeredUser#profile_me.xhtml"
+  PATH="/pages/registeredUser/profile_me.xhtml" SHAPE="304,977,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM
+  NAME="rules:#pages#registeredUser#errorUnexpectedRegistered.xhtml"
+  PATH="/pages/registeredUser/errorUnexpectedRegistered.xhtml"
+  SHAPE="304,2129,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#*" PATH="/pages/*" SHAPE="32,1857,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules:#pages#*:0" NAME="item" PATH="/pages/*" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="linkAnonymousIndex::#pages#anonymousUser#forum.xhtml"
+    NAME="output" PATH="/pages/anonymousUser/forum.xhtml"
+    TARGET="rules:#pages#anonymousUser#forum.xhtml"
+    TITLE="linkAnonymousIndex" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="linkRegisteredIndex::#pages#registeredUser#profile_index.xhtml"
+    NAME="output1" PATH="/pages/registeredUser/profile_index.xhtml"
+    TARGET="rules:#pages#registeredUser#profile_index.xhtml"
+    TITLE="linkRegisteredIndex" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="successLoginUser::#pages#registeredUser#profile_index.xhtml"
+    NAME="output2" PATH="/pages/registeredUser/profile_index.xhtml"
+    TARGET="rules:#pages#registeredUser#profile_index.xhtml"
+    TITLE="successLoginUser" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="successLoginAdmin::#pages#admin_user#profile_index.xhtml"
+    NAME="output3" PATH="/pages/admin_user/profile_index.xhtml"
+    TARGET="rules:#pages#admin_user#profile_index.xhtml"
+    TITLE="successLoginAdmin" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="linkRegister::#pages#anonymousUser#register.xhtml"
+    NAME="output4" PATH="/pages/anonymousUser/register.xhtml"
+    TARGET="rules:#pages#anonymousUser#register.xhtml"
+    TITLE="linkRegister" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="linkPasswordRestore::#pages#anonymousUser#password_restore.xhtml"
+    NAME="output5" PATH="/pages/anonymousUser/password_restore.xhtml"
+    TARGET="rules:#pages#anonymousUser#password_restore.xhtml"
+    TITLE="linkPasswordRestore" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="linkAnonymousForum::#pages#anonymousUser#forum.xhtml"
+    NAME="output6" PATH="/pages/anonymousUser/forum.xhtml"
+    TARGET="rules:#pages#anonymousUser#forum.xhtml"
+    TITLE="linkAnonymousForum" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules:#pages#registeredUser#profile_index.xhtml"
+  PATH="/pages/registeredUser/profile_index.xhtml" SHAPE="304,2577,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#admin_user#*"
+  PATH="/pages/admin_user/*" SHAPE="32,3345,0,0" model-entity="JSFProcessGroup">
+  <PROCESS-ITEM ID="rules:#pages#admin_user#*:0" NAME="item"
+   PATH="/pages/admin_user/*" model-entity="JSFProcessItem">
+   <PROCESS-ITEM-OUTPUT
+    ID="linkAdminIndex::#pages#admin_user#profile_index.xhtml"
+    NAME="output" PATH="/pages/admin_user/profile_index.xhtml"
+    TARGET="rules:#pages#admin_user#profile_index.xhtml"
+    TITLE="linkAdminIndex" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="linkIndex::#pages#admin_user#profile_index.xhtml" NAME="output1"
+    PATH="/pages/admin_user/profile_index.xhtml"
+    TARGET="rules:#pages#admin_user#profile_index.xhtml"
+    TITLE="linkIndex" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="linkAdminForum::#pages#admin_user#forum.xhtml" NAME="output2"
+    PATH="/pages/admin_user/forum.xhtml"
+    TARGET="rules:#pages#admin_user#forum.xhtml" TITLE="linkAdminForum" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="successLogout::#pages#anonymousUser#forum.xhtml" NAME="output3"
+    PATH="/pages/anonymousUser/forum.xhtml"
+    TARGET="rules:#pages#anonymousUser#forum.xhtml"
+    TITLE="successLogout" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="linkProfileMe::#pages#admin_user#profile_me.xhtml"
+    NAME="output4" PATH="/pages/admin_user/profile_me.xhtml"
+    TARGET="rules:#pages#admin_user#profile_me.xhtml"
+    TITLE="linkProfileMe" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="successEditUserProfile::#pages#admin_user#profile_edit.xhtml"
+    NAME="output5" PATH="/pages/admin_user/profile_edit.xhtml"
+    TARGET="rules:#pages#admin_user#profile_edit.xhtml"
+    TITLE="successEditUserProfile" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="linkProfileUser::#pages#admin_user#profile_user.xhtml"
+    NAME="output6" PATH="/pages/admin_user/profile_user.xhtml"
+    TARGET="rules:#pages#admin_user#profile_user.xhtml"
+    TITLE="linkProfileUser" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="linkPaginationBar::#pages#admin_user#forum.xhtml" NAME="output7"
+    PATH="/pages/admin_user/forum.xhtml"
+    TARGET="rules:#pages#admin_user#forum.xhtml"
+    TITLE="linkPaginationBar" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="linkForumThread::#pages#admin_user#forum_thread.xhtml"
+    NAME="output8" PATH="/pages/admin_user/forum_thread.xhtml"
+    TARGET="rules:#pages#admin_user#forum_thread.xhtml"
+    TITLE="linkForumThread" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="errorUnexpected::#pages#admin_user#errorUnexpectedAdmin.xhtml"
+    NAME="output9" PATH="/pages/admin_user/errorUnexpectedAdmin.xhtml"
+    TARGET="rules:#pages#admin_user#errorUnexpectedAdmin.xhtml"
+    TITLE="errorUnexpected" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="errorUnexpectedAdmin::#pages#admin_user#errorUnexpectedAdmin.xhtml"
+    NAME="output10" PATH="/pages/admin_user/errorUnexpectedAdmin.xhtml"
+    TARGET="rules:#pages#admin_user#errorUnexpectedAdmin.xhtml"
+    TITLE="errorUnexpectedAdmin" model-entity="JSFProcessItemOutput"/>
+  </PROCESS-ITEM>
+ </PROCESS-ITEM>
+ <PROCESS-ITEM NAME="rules:#pages#admin_user#profile_index.xhtml"
+  PATH="/pages/admin_user/profile_index.xhtml" SHAPE="240,3361,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#admin_user#errorUnexpectedAdmin.xhtml"
+  PATH="/pages/admin_user/errorUnexpectedAdmin.xhtml"
+  SHAPE="304,3921,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#admin_user#profile_user.xhtml"
+  PATH="/pages/admin_user/profile_user.xhtml" SHAPE="304,3697,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#admin_user#profile_edit.xhtml"
+  PATH="/pages/admin_user/profile_edit.xhtml" SHAPE="304,4433,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#admin_user#profile_me.xhtml"
+  PATH="/pages/admin_user/profile_me.xhtml" SHAPE="304,3809,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#anonymousUser#forum.xhtml"
+  PATH="/pages/anonymousUser/forum.xhtml" SHAPE="304,2609,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#anonymousUser#forum_thread.xhtml"
+  PATH="/pages/anonymousUser/forum_thread.xhtml" SHAPE="304,913,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#registeredUser#forum.xhtml"
+  PATH="/pages/registeredUser/forum.xhtml" SHAPE="304,257,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#registeredUser#forum_thread.xhtml"
+  PATH="/pages/registeredUser/forum_thread.xhtml" SHAPE="304,689,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#admin_user#forum.xhtml"
+  PATH="/pages/admin_user/forum.xhtml" SHAPE="304,3953,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#admin_user#forum_thread.xhtml"
+  PATH="/pages/admin_user/forum_thread.xhtml" SHAPE="304,3953,0,0" model-entity="JSFProcessGroup"/>
+</PROCESS>

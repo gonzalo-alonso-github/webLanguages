@@ -1,0 +1,30 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions"
+	template="/templates/template_general.xhtml">
+
+<f:metadata>
+	<f:viewAction action="#{beanPublicationAsNotification.setNotificationsToRead()}" />
+</f:metadata>
+
+<!-- scripts y css propios de esta pagina -->
+<ui:define name="more_resources">
+	<!-- Para los controles multiselect -->
+	<script type="text/javascript" src="./files/bootstrap/js/bootstrap-multiselect.js"></script>
+	<link rel="stylesheet" href="./files/bootstrap/css/bootstrap-multiselect.css" type="text/css"/>
+</ui:define>
+
+<!-- Barra superior de navegacion -->
+<ui:param name="titleMenuMain" value="Notificaciones" />
+<ui:define name="menu_horizontal">
+	<ui:include src="/snippets/general/menu_horizontal/menu_main_admin.xhtml" />
+</ui:define>
+
+<ui:define name="page">
+	<ui:include src="/snippets/general/notifications-768screen.xhtml" />
+</ui:define>
+
+</ui:composition>

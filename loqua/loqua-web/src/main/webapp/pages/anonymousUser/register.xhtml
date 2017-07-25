@@ -1,0 +1,228 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/templates/template_general.xhtml">
+
+<!-- scripts y css propios de esta pagina -->
+<ui:define name="more_resources">
+
+	<!-- Para el datepicker de bootstrap (input de la fecha de nacimiento): -->
+	<h:outputStylesheet name="bootstrap/css/bootstrap-datepicker3.min.css"/>
+	<h:outputScript name="bootstrap/js/bootstrap-datepicker.min.js"/>
+	
+	<script>
+		$(document).ready(function(){
+			// para mostrar los tooltip:
+			$('[data-toggle="tooltip"]').tooltip();
+		});
+	</script>
+</ui:define>
+
+<!-- Barra superior de navegacion -->
+<ui:define name="menu_horizontal">
+	<ui:include src="/snippets/general/menu_horizontal/menu_main_anonymous.xhtml" />
+</ui:define>
+
+<!-- Contenido de la pagina -->
+<ui:define name="page">
+<div id="general_space_for_main_navbar"></div>
+<div class="container" id="general_container">
+	<div id="general_body">
+	
+		<div class="general_center general_center_in1column general_standarPage_maxwidth">
+			
+			<h:form id="form_register" class="form-horizontal" prependId="false">
+			
+			<div class="register_container">
+			
+				<div class="row general_textCenter">
+					<div class="col-sm-12 register_headerTittle">
+						#{msgs.titleGetStartedItsFree}
+					</div>
+					<div class="register_headerDescription">
+						<ul><li>#{msgs.titleMeetPeople}</li></ul>
+						<ul><li>#{msgs.titlePracticeALanguage}</li></ul>
+						<ul><li>#{msgs.titleDiscoverBestNews}</li></ul>
+					</div>
+				</div>
+				
+				<div class="register_form_margin">
+					
+					<div class="form-group">
+						<label for="inputNickRegister" class="control-label col-xs-12 col-sm-4 register_sectionForm_margin">#{msgs.titleNick}:</label>
+						<div class="col-xs-10 col-sm-5 register_sectionForm_margin" style="margin-top:6px;">
+							<h:inputText class="form-control input-sm general_input_height"
+									id="inputNickRegister" required="true" a:placeholder="#{msgs.titleNick}"
+									value="#{beanUserRegister.userToRegister.nick}"
+									requiredMessage="#{msgs.errorNickRequired}">
+								<f:validator validatorId="validatorLength" />
+								<f:validator validatorId="validatorNickAvailable" />
+								<f:attribute name="inputLabel" value="#{msgs.titleNick}" />
+								<f:attribute name="inputMaxLength" value="15" />
+								<f:converter converterId="converterCleanSpaces" />
+							</h:inputText>
+							<h:message for="inputNickRegister" />
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<div class="control-label col-xs-12 col-sm-4 register_sectionForm_margin general_textBold">#{msgs.titleGender}:</div>
+						<div class="col-xs-10 col-sm-5 register_sectionForm_margin general_radioButtonSpace"
+								style="text-align:left !important; margin-top:6px;">
+							<fieldset class="general_disableFieldset">
+							<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+								<h:selectOneRadio id="inputGenderRegister" required="true"
+										requiredMessage="#{msgs.errorGenderRequired}"
+										value="#{beanUserRegister.radioBtnGender}">
+									<f:selectItem itemValue="false" itemLabel="#{msgs.titleMan}"/>
+									<f:selectItem itemValue="true" itemLabel="#{msgs.titleWoman}"/>
+									<!--
+									<f:validator validatorId="validatorEmptyValue" />
+									<f:attribute name="inputName" value="#{msgs.titleGender}" />
+									-->					
+								</h:selectOneRadio>
+							</fieldset>
+							<div style="text-align:left !important;"><h:message for="inputGenderRegister"/></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="inputEmailRegister" class="control-label col-xs-12 col-sm-4 register_sectionForm_margin">#{msgs.titleEmail}:</label>
+						<div class="col-xs-10 col-sm-5 register_sectionForm_margin" style="margin-top:6px;">
+							<h:inputText class="form-control input-sm general_input_height"
+									id="inputEmailRegister" required="true" a:placeholder="#{msgs.titleEmail}"
+									value="#{beanUserRegister.userToRegister.email}"
+									requiredMessage="#{msgs.errorEmailRequired}"
+									binding="#{emailToConfirm}" >
+								<f:validator validatorId="validatorEmailAvailable" />
+								<f:attribute name="inputLabel" value="#{msgs.titleEmail}" />
+								<f:converter converterId="converterCleanSpaces" />
+							</h:inputText>
+							<h:message for="inputEmailRegister" />
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="inputConfirmEmailRegister" class="control-label col-xs-12 col-sm-4 register_sectionForm_margin">#{msgs.titleConfirmEmail}:</label>
+						<div class="col-xs-10 col-sm-5 register_sectionForm_margin" style="margin-top:6px;">
+							<h:inputText class="form-control input-sm general_input_height"
+									id="inputConfirmEmailRegister" required="true" a:placeholder="#{msgs.titleConfirmEmail}"
+									requiredMessage="#{msgs.errorEmailConfirmRequired}">
+								<f:validator validatorId="validatorEmailConfirmation" />
+								<f:attribute name="inputLabel" value="#{msgs.titleConfirmEmail}" />
+								<f:attribute name="emailToConfirm" value="#{emailToConfirm}" />
+								<f:converter converterId="converterCleanSpaces" />
+							</h:inputText>
+							<h:message for="inputConfirmEmailRegister" />
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="inputPasswordRegister" class="control-label col-xs-12 col-sm-4 register_sectionForm_margin">#{msgs.titlePassword}:</label>
+						<div class="col-xs-10 col-sm-5 register_sectionForm_margin" style="margin-top:6px;">
+							<h:inputSecret class="form-control input-sm general_input_height"
+									id="inputPasswordRegister" required="true"
+									value="#{beanUserRegister.userToRegister.password}"
+									requiredMessage="#{msgs.errorPasswordRequired}">
+								<f:validator validatorId="validatorPassword" />
+								<f:attribute name="inputLabel" value="#{msgs.titlePassword}" />
+							</h:inputSecret>
+							<h:message for="inputPasswordRegister" />
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="inputConfirmPasswordRegister" class="control-label col-xs-12 col-sm-4 register_sectionForm_margin">#{msgs.titleConfirmPassword}:</label>
+						<div class="col-xs-10 col-sm-5 register_sectionForm_margin" style="margin-top:6px;">
+							<h:inputSecret class="form-control input-sm general_input_height"
+									id="inputConfirmPasswordRegister" required="true"
+									requiredMessage="#{msgs.errorPasswordConfirmRequired}">
+								<f:validator validatorId="validatorPasswordConfirmation" />
+								<f:attribute name="inputLabel" value="#{msgs.titleConfirmPassword}" />
+							</h:inputSecret>
+							<h:message for="inputConfirmPasswordRegister" />
+						</div>
+					</div>
+
+				</div>
+			</div>
+			
+			<div class="form-group general_textCenter">
+				<div class="col-xs-12 col-sm-12">
+					<label class="checkbox-inline">
+						<input type="checkbox" value="agree"/>  #{msgs.titleAccept} <a href="#">#{msgs.titleTermsConditions}</a>.
+					</label>
+				</div>
+			</div>
+			
+			<br/>
+			
+			<!-- Animacion 'spin' con mensage de espera, o mensaje de error -->
+			<div id="divWait" class="form-group general_textCenter general_noDisplay">
+				<div class="col-xs-12 col-sm-12">
+					<h:outputText id="msgRunningRegister" value="#{msgs.descriptionWait}"/>
+					<h:panelGroup id="spinnerWheelRegister" layout="block"
+						style="margin:25px auto auto auto;"/>
+				</div>
+			</div>
+			<div class="form-group general_textCenter">
+				<div class="col-xs-12 col-sm-12">			
+					<h:outputText id="msgResultAction" value="#{beanActionResult.msgActionResult}" />
+				</div>
+			</div>
+			<!-- Boton submit -->
+			<div class="form-group general_textCenter">
+				<div class="col-xs-12 col-sm-12">
+					<h:commandButton id="btnRegister" class="btn btn-default general_input_button" 
+						onclick="showElement('divWait');setSpinnerInLayout('spinnerWheelRegister');disableElement(this.id);"
+						value="#{msgs.titleJoinIn}"
+						action="#{beanUserRegister.generateEmailForRegister(beanActionResult)}">
+						<f:ajax execute="@form :form_register" render="@form :form_register"/>
+					</h:commandButton>
+					<h:outputScript rendered="#{not facesContext.validationFailed
+							and beanActionResult.finish and beanActionResult.success}">
+					    $('#registerSuccessModal').modal('show');
+					</h:outputScript>
+				</div>
+			</div>
+			</h:form>
+		</div>
+	</div>
+</div>
+
+<!-- Ventana para mostrar el resultado del registro -->
+<div id="registerSuccessModal" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleSignUp}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<h:form id="form_registerSuccessModal">
+				<div class="form-group general_textCenter">
+					<span class="control-label login_sectionForm_margin">#{msgs.descriptionRegisterSuccess}</span>
+					<div class="login_sectionForm_margin" style="margin-top:6px;">
+						<h:commandButton id="btnAcceptRegisterSuccess" value="#{msgs.titleAccept}"
+							class="btn btn-default general_input_button"
+							action="successRegister">
+						</h:commandButton>
+					</div>
+				</div>
+			</h:form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+</ui:define>
+
+</ui:composition>

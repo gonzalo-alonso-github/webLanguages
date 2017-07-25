@@ -1,0 +1,61 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<div class="general_aside_section general_section_paddingHigh">
+<div class="general_aside_section_tittle">#{msgs.titleState}</div>
+<div class="general_sideNav">
+	<ul>
+	<li>
+		<div class="general_textBold">
+			<span class="glyphicon glyphicon-tag general_glyphicon-spacing"></span>
+			<h:link outcome="linkIndex" class="general_inline-block">#{msgs.titleIndex}</h:link>
+		</div>
+	</li>
+	<li>
+		<div class="general_textBold">
+			<span class="glyphicon glyphicon-tag general_glyphicon-spacing"></span>
+			<h:outputLink value="#{beanUserView.getOutputLinkToContacts(beanUserView.user.id)}">
+				#{msgs.titleContacts}
+			</h:outputLink>
+		</div>
+	</li>
+	<li>
+		<div class="general_textBold">
+			<span class="glyphicon glyphicon-tag general_glyphicon-spacing"></span>
+			<a data-toggle="collapse" data-target="#collapseStatistics" class="collapsed">
+				#{msgs.titleStats}<span class="caret"></span>
+			</a>
+			<div class="collapse profile_aside_section_statistics" id="collapseStatistics">
+				<ul>
+				<li>
+					<div class="general_textBold">
+						<div>#{msgs.titleComments}:</div>
+						<div class="general_section_paddingHigh">#{beanUtils.limitNumericValue(9999,beanUserView.user.userInfo.countComments)}</div>
+					</div>
+				</li>
+				<li>
+					<div class="general_textBold">
+						<div>#{msgs.titleCorrections}:</div>
+						<div class="general_section_paddingHigh">#{beanUtils.limitNumericValue(9999,beanUserView.user.userInfo.countCorrections)}</div>
+					</div>
+				</li>
+				<li>
+					<div class="general_textBold">
+						<div>#{msgs.titleTotalPoints}:</div>
+						<div class="general_section_paddingHigh">#{beanUtils.limitNumericValue(9999,beanUserView.user.userInfo.points)}</div>
+					</div>
+				</li>
+				</ul>
+			</div>
+		</div>
+	</li>
+	<li>
+		<ui:include src="/snippets/profile/left/clasification_left.xhtml" />
+	</li>
+	</ul>
+</div>
+</div>
+
+</ui:composition>

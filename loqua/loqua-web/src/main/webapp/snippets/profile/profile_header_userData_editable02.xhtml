@@ -1,0 +1,88 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+<!-- Este snippet se importa en "profile_edit.xhtml" -->
+<!-- Imagen y datos del usuario -->
+
+<div class="row general_textCenter">
+	<div class="profile_edit_header_container">
+	<div class="profile_edit_header_content">
+	<h:form id="form_profileHeader" prependId="false">
+		<div class="profile_userAvatar general_darkenImg">
+			<a href="#edit_userAvatar" data-toggle="modal" data-backdrop="false">
+			<span class="profile_userAvatarHelper"></span><o:graphicImage dataURI="true" value="#{beanUserImages.getLoggedUserImage()}" alt="#{msgs.titleImgAltAvatar}"/>
+			<span class="glyphicon glyphicon-pencil" style="position: absolute; margin-left:-20px; background-color:white; z-index:1000; padding:4px"></span>
+			</a>
+		</div>
+		
+		<div class="profile_headerDescription">
+			<div class="profile_personalData">
+				<a href="#edit_gender" data-toggle="modal" data-backdrop="false">
+					<o:graphicImage dataURI="true" value="#{beanUserImages.loggedUserGenderImage}" alt="#{msgs.titleEditGender}"/>
+					<span class="glyphicon glyphicon-pencil"></span>
+				</a>
+			</div>
+			<div class="profile_personalData">
+				#{beanLogin.loggedUser.nick}
+			</div>
+		</div>
+		
+		<div class="profile_headerDescription">
+			<div class="profile_personalData">
+				<a href="#edit_origin_location" data-toggle="modal" data-backdrop="false">
+					#{msgs.titleOrigin}:
+					<ui:fragment rendered="#{beanUserView.isCountryOriginAvailable(beanLogin.loggedUser)}">
+						#{beanUserView.getCountryOriginName(beanLogin.loggedUser)}
+						<o:graphicImage dataURI="true" value="#{beanUserImages.loggedUserOriginImage}" alt="#{msgsCountries.title_flagOf} #{beanUserView.getCountryOriginName(beanLogin.loggedUser)}"/>
+					</ui:fragment>
+					<ui:fragment rendered="#{beanUserView.isCountryOriginAvailable(beanLogin.loggedUser)==false}">
+						#{msgs.titleNone}
+					</ui:fragment>
+					<span class="glyphicon glyphicon-pencil"></span>
+				</a>
+			</div>
+		</div>
+		<h:panelGroup layout="block" class="profile_headerDescription" rendered="#{beanUserView.showCountryLocation(beanLogin.loggedUser)}">
+			<div class="profile_personalData">
+				<a href="#edit_origin_location" data-toggle="modal" data-backdrop="false">
+					#{msgs.titleLocation}:
+					<h:panelGroup rendered="#{beanUserView.isCountryLocationAvailable(beanLogin.loggedUser)}">
+						#{beanUserView.getCountryLocationName(beanLogin.loggedUser)}
+						<o:graphicImage dataURI="true" value="#{beanUserImages.loggedUserLocationImage}" alt="#{msgsCountries.title_flagOf} #{beanUserView.getCountryLocationName(beanLogin.loggedUser)}"/>
+					</h:panelGroup>
+					<h:panelGroup rendered="#{beanUserView.isCountryLocationAvailable(beanLogin.loggedUser)==false}">
+						#{msgs.titleNone}
+					</h:panelGroup>
+					<span class="glyphicon glyphicon-pencil"></span>
+				</a>
+			</div>
+		</h:panelGroup>
+		
+		<!--
+		<div class="profile_headerDescription">
+			<div class="profile_personalData">
+				<a href="#edit_name" data-toggle="modal" data-backdrop="false">
+					Nombre y Apellidos
+					<span class="glyphicon glyphicon-pencil"></span>
+				</a>
+			</div>
+		</div>
+		<div class="profile_headerDescription">
+			<div class="profile_personalData">
+				<a href="#edit_age" data-toggle="modal" data-backdrop="false">
+					XX años
+					<span class="glyphicon glyphicon-pencil"></span>
+				</a>
+			</div>
+		</div>
+		-->
+	</h:form>
+	</div>
+	</div>
+</div>
+
+</ui:composition>

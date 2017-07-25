@@ -1,0 +1,97 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+
+<div class="general_aside_section general_section_paddingHigh">
+<div class="general_aside_section_tittle">#{beanUtils.limitTextLength(16, beanUserView.user.nick)}</div>
+<div class="general_sideNav">
+	<ul>
+	<h:form id="form_addOrDeleteFromContacts" prependId="false">
+	<!-- Solo se muestra el enlace para enviar peticion de contacto
+	si este perfil de usuario aun no es contacto del usuario logueado (el que esta visitando la pagina)
+	y si este perfil de usuario aun no ha recibido una peticion de contacto por parte del usuario logueado: -->
+	<ui:fragment rendered="#{beanUserContacts.isContactOfLoggedUser(beanUserView.user)==false}">
+	<ui:fragment rendered="#{beanUserContacts.contactRequestAlreadySent(beanUserView.user)==false}">
+	<li>
+		<div class="general_textBold">
+			<span class="glyphicon glyphicon-tag general_glyphicon-spacing"></span>
+			<a href="#sendContactRequest" data-toggle="modal" data-backdrop="false">#{msgs.titleSendContactRequest}</a>
+		</div>
+	</li>
+	</ui:fragment>
+	</ui:fragment>
+	<!-- Solo se muestra el enlace para eliminar el contacto
+	si este perfil de usuario es contacto del usuario logueado (el que esta visitando la pagina): -->
+	<ui:fragment rendered="#{beanUserContacts.isContactOfLoggedUser(beanUserView.user)==true}">
+	<li>
+		<div class="general_textBold">
+			<span class="glyphicon glyphicon-tag general_glyphicon-spacing"></span>
+			<h:commandLink id="#{'deleteContactFromLeftMenu'.concat(beanUserView.user.id)}"
+					a:data-target="#deleteContact" a:data-toggle="modal" a:data-backdrop="false"
+					actionListener="#{beanUserContacts.setBothUsers(beanLogin.loggedUser, beanUserView.user)}"
+					class="general_left_menu_link">
+				#{msgs.titleDeleteFromContacts}
+				<f:ajax render="@none"/>
+			</h:commandLink>
+		</div>
+	</li>
+	</ui:fragment>
+	</h:form>
+	<li>
+		<div class="general_textBold">
+			<span class="glyphicon glyphicon-tag general_glyphicon-spacing"></span>
+			<h:outputLink value="#{beanUserView.getOutputLinkToContacts(beanUserView.user.id)}">
+				#{msgs.titleViewUserContacts}
+			</h:outputLink>
+		</div>
+	</li>
+	<!--
+	<ui:fragment rendered="#{beanUserContacts.isContactOfLoggedUser(beanUserView.user)==true}">
+	<li>
+		<div class="general_textBold">
+			<span class="glyphicon glyphicon-tag general_glyphicon-spacing"></span>
+			<a href="pages/registeredUser/message_write.xhtml">#{msgs.titleSendMessage}</a>
+		</div>
+	</li>
+	</ui:fragment>
+	-->
+	<li>
+		<div class="general_textBold">
+			<span class="glyphicon glyphicon-tag general_glyphicon-spacing"></span>
+			<a data-toggle="collapse" data-target="#collapseStatistics" class="collapsed">
+				#{msgs.titleViewUserStats}<span class="caret"></span>
+			</a>
+			<div class="collapse profile_aside_section_statistics" id="collapseStatistics">
+				<ul>
+				<li>
+					<div class="general_textBold">
+						<div>#{msgs.titleComments}:</div>
+						<div class="general_section_paddingHigh">#{beanUtils.limitNumericValue(9999,beanUserView.user.userInfo.countComments)}</div>
+					</div>
+				</li>
+				<li>
+					<div class="general_textBold">
+						<div>#{msgs.titleCorrections}:</div>
+						<div class="general_section_paddingHigh">#{beanUtils.limitNumericValue(9999,beanUserView.user.userInfo.countCorrections)}</div>
+					</div>
+				</li>
+				<li>
+					<div class="general_textBold">
+						<div>#{msgs.titleTotalPoints}:</div>
+						<div class="general_section_paddingHigh">#{beanUtils.limitNumericValue(9999,beanUserView.user.userInfo.points)}</div>
+					</div>
+				</li>
+				</ul>
+			</div>
+		</div>
+	</li>
+	<li>
+		<ui:include src="/snippets/profile/left/clasification_left.xhtml" />
+	</li>
+	</ul>
+</div>
+</div>
+
+</ui:composition>

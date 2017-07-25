@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	template="/templates/template_general.xhtml">
+
+<!-- scripts y css propios de esta pagina -->
+<ui:define name="more_resources">
+	<!-- Ademas de bootstrap.min.css, jquery.min.js y bootstrap.min.js
+	(importados en el codigo del template)
+	para el editor de Summernote necesitamos estos dos ficheros... -->
+	<link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.0/summernote.css" rel="stylesheet"/>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.0/summernote.js"></script>
+	
+	<!-- para mostrar la toolbar de Summernote de editor de texto: -->
+	<h:outputScript name="js/summernoteInitialize.js"/>
+	<!--
+	<script>
+		$(document).ready(function(){
+			// para mostrar los tooltip:
+			$('[data-toggle="tooltip"]').tooltip();
+			
+			// para mostrar la toolbar de Summernote de editor de texto:
+			$('#summernote').summernote({
+				toolbar: [
+					// [groupName, [list of button]]
+					['style', ['bold', 'italic', 'underline', 'clear']],
+					['font', ['strikethrough', 'superscript', 'subscript']],
+					['fontsize', ['fontsize']],
+					['color', ['color']],
+					['para', ['ul', 'ol']],
+					['table', ['table']],
+					['insert', ['link', 'picture']],
+					['action', ['undo', 'redo']],
+					['misc', ['help']]
+				]
+			});
+			//document.getElementById('summernote').innerHTML 
+		});
+	</script>
+	-->
+</ui:define>
+
+<!-- Barra superior de navegacion -->
+<ui:param name="titleMenuMain" value="Mensajes" />
+<ui:define name="menu_horizontal">
+	<ui:include src="/snippets/general/menu_horizontal/menu_main_registered.xhtml" />
+</ui:define>
+
+<!-- Contenido de la pagina -->
+<ui:define name="page">
+<div id="general_space_for_main_navbar"></div>
+<div id="general_container">
+
+	<!-- Barra de cabecera para pantallas < 1300px -->
+	<div id="general_header" class="noDisplayOver1300screen">
+		<ui:param name="titleHeader" value="Messages" />
+		<ui:include src="/snippets/general/menu_horizontal/menu_with_translator.xhtml" />
+	</div>
+	
+	<!-- Cuerpo bajo la barra de cabecera. Esta estructurado en 2 columnas, que son: -->
+	<!-- general_center y general_aside_right -->
+	<div id="general_body">
+	
+		<!-- Columna principal -->
+		<div class="general_center general_center_in2columns">
+			
+			<article>
+			
+			<a href="pages/registeredUser/messages.xhtml">Ver mensajes recibidos</a>
+			<div class="general_border message_height">
+				<div class="message_header general_section_padding">
+					<div class="row">
+						<div class="col-sm-12">Nuevo mensaje</div>
+					</div>
+				</div>
+				<div class="message_body">
+					<div class="message_textBlock" style="padding-top:10px;">
+						<div class="general_textBold">
+							Para: <a href="pages/registeredUser/profile_user.xhtml">usuarioX</a>
+						</div>
+						<!-- Editor de texto de SummerNote -->
+						<div id="summernote"><p style="height: 110px;"></p></div>
+					</div>
+				</div>
+			</div>
+			<div class="message_footerForm">
+				<div class="general_textRight">
+					<input class="btn btn-default general_input_button" type="button" id="buttonSendMessage" name="sendMessage" value="Enviar"/>
+				</div>
+			</div>
+			
+			</article>
+		</div>
+		
+		<!-- Columna derecha -->
+		<div class="general_aside_right noDisplayUnder1300screen">
+			<ui:include src="/snippets/general/right/translator_right.xhtml" />
+			<!-- aqui se podria incluir publicidad o mas contenido -->
+		</div>
+		
+	</div>
+</div>
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	template="/templates/template_general.xhtml">
+
+<f:metadata>
+	<f:viewParam name="action" value="#{beanCorrection.actionType}" />
+	<f:viewParam name="thread" value="#{beanForumThread.currentThreadId}" />
+	<f:viewParam name="correction" value="#{beanCorrection.corrViewParam}" />
+	<f:viewParam name="comment" value="#{beanCorrection.commViewParam}" />
+	<f:viewAction action="#{beanCorrection.onLoad()}" />
+</f:metadata>
+
+<!-- scripts y css propios de esta pagina -->
+<ui:define name="more_resources">
+	<!-- Ademas de bootstrap.min.css, jquery.min.js y bootstrap.min.js
+	(importados en el codigo del template)
+	para el editor de Summernote necesitamos estos tres ficheros... -->
+	<h:outputStylesheet name="font-awesome/4.7.0/font-awesome-edited-for-jsf.min.css"/>
+	<h:outputScript name="summernote/0.7.3/js/summernote.min.js"/>
+	<h:outputStylesheet name="summernote/0.7.3/css/summernote.css"/>
+	
+	<!-- para mostrar la toolbar de Summernote de editor de texto: -->
+	<h:outputScript name="summernote/js/summernoteInitialize.js"/>
+	
+	<h:outputScript name="js/tooltip.js"/>
+</ui:define>
+
+<!-- Barra superior de navegacion -->
+<ui:param name="titleMenuMain" value="#{msgs.titleForumIndex}"/>
+<ui:define name="menu_horizontal">
+	<ui:include src="/snippets/general/menu_horizontal/menu_main_registered.xhtml" />
+</ui:define>
+
+<!-- Contenido de la pagina -->
+<ui:define name="page">
+	<ui:include src="/snippets/forum/forum_thread_correction.xhtml" />
+</ui:define>
+
+</ui:composition>

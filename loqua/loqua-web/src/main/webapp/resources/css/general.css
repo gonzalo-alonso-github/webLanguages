@@ -1,0 +1,1418 @@
+
+.purple{
+	background-color: purple !important;
+	color: white !important;
+}
+
+@media (min-width: 1300px){ /* Por encima de 1300px: */
+	.noDisplayOver1300screen {
+		display:none !important;
+		visibility:hidden !important;
+	}
+}
+@media (min-width: 992px) and (max-width: 1299px){ /* Entre 992px y 1300px*/
+	.profile_index_header_container{
+		left: 63% !important;
+	}
+	.profile_index_header_content{
+		left: -63% !important;
+	}
+}
+@media (max-width: 1299px){ /* Por debajo de 1300px: */
+	.noDisplayUnder1300screen {
+		display:none !important;
+		visibility:hidden !important;
+	}
+	#general_header{
+		max-width:905px !important;
+	}
+	.general_center_in1column{
+		width:905px !important;
+	}
+	
+	.profile_container{
+		/* queremos que este borde pase por detras del avatar, asi que ponemos un margin-top */
+		margin-top: 100px !important;
+	}
+	.profile_content_header_marginTop{
+		margin-top: 60px !important;
+		/*
+		podriamos editar también el margin-top de profile_index_form_margin y profile_edit_form_margin
+		*/
+	}
+}
+
+
+@media (min-width: 992px){ /* Por encima de 992px: */
+	.noDisplayOver992screen {
+		display:none !important;
+		visibility:hidden !important;
+	}
+	.forum_thread_post_text{
+		display: inline-block;
+		max-width:75% !important;
+	}
+}
+@media (min-width: 768px) and (max-width: 991px){ /* Entre 768px y 992px*/
+	.forum_thread_post_text{
+		display: inline-block;
+		max-width:60% !important;
+	}
+}
+@media (max-width: 991px){ /* Por debajo de 992px: */
+	.noDisplayUnder992screen {
+		display:none !important;
+		visibility:hidden !important;
+	}
+	#general_header_tittle{
+		width:100%;  left:0px; right:0px;
+	}
+	.general_center, .general_center_in1column, .general_center_in2columns, .general_center_in3columns{
+		width: 100% !important;
+	}
+	.forum_topic_header{
+		max-width: 100% !important;
+	}
+	.profile_index_header_container, .profile_edit_header_container{
+		width: 100% !important;
+		left: 0% !important;
+	}
+	.profile_index_header_content, .profile_edit_header_content{
+		left: 0% !important;
+	}
+}
+
+@media (min-width: 768px){ /* Por encima de 768px: */
+	.noDisplayOver768screen {
+		display:none !important;
+		visibility:hidden !important;
+	}
+}
+@media (max-width: 767px){ /* Por debajo de 768px: */
+	.noDisplayUnder768screen {
+		display:none !important;
+		visibility:hidden !important;
+	}
+	
+	.general_subHeader_margin{
+		padding-top: 10px;
+		padding-bottom: 6px;
+	}
+	
+	.general_subHeader_containerElements{
+		float:none !important;
+		text-align: center !important;
+	}
+	
+	.forum_thread_post_header_font, .forum_thread_post_header_number{
+		text-align: left !important;
+	}
+	
+	.clasification_button, .messages_button{
+		font-size: 16px !important;
+	}
+	
+	.friends_listElementUser{
+		/*min-width: initial !important;*/
+		width: 220px !important;
+	}
+}
+
+@media (min-width: 480px){ /* Por encima de 480px: */
+	.noDisplayOver480screen {
+		display:none !important;
+		visibility:hidden !important;
+	}
+}
+@media (max-width: 479px){ /* Por debajo de 480px: */
+	.noDisplayUnder480screen {
+		display:none !important;
+		visibility:hidden !important;
+	}
+	
+	.general_subHeader_element{
+		float:none !important;
+		display: inline-block;
+		text-align: center !important;
+		margin: auto !important;
+		max-width: none  !important;
+	}
+	
+	.general_section_content_date, .message_read_section_content_date{
+		text-align: left !important;
+	}
+	.profile_face_publications_table, .profile_face_publications_tableRow,
+	.profile_face_publications_tableCell, .profile_face_publications_tableLastCell{
+		display: block !important;
+	}
+}
+
+.general_textCenter{
+	text-align: center;
+}
+
+.general_textRight{
+	text-align: right;
+}
+
+.general_textBold{
+	font-weight: bold;
+}
+
+.general_textNormal{
+	font-weight: normal;
+}
+
+.general_noDisplay{
+	display:none;
+	visibility:hidden;
+}
+
+.general_darkenImg {
+	background: white;
+	cursor:pointer;
+}
+.general_darkenImg img {
+	/* De 1 a 0. Cuanto mas bajo, mas transparente */
+	opacity: 1;
+	/* De 100 a 0. Cuanto mas bajo, mas transparente */
+	filter: alpha(opacity=100); /* For IE8 and earlier */
+	/* Velocidad de la transicion */
+	-webkit-transition: all 0.1s linear;
+	-moz-transition: all 0.1s linear;
+	-ms-transition: all 0.1s linear;
+	-o-transition: all 0.1s linear;
+	transition: all 0.1s linear;
+}
+.general_darkenImg:hover img {
+	/* De 1 a 0. Cuanto mas bajo, mas transparente */
+	opacity: 0.5;
+	/* De 100 a 0. Cuanto mas bajo, mas transparente */
+	filter: alpha(opacity=50); /* For IE8 and earlier */
+}
+
+.general_disableFieldset{
+	all: unset;
+	font-weight: bold;
+	display:inline-block;
+}
+
+.general_scrollableMenu{
+	height: auto;
+    max-height: 370px;
+    overflow-x: hidden;
+}
+
+.general_glyphicon-spacing{
+	padding-right: 8px;
+}
+
+.general_inline-block{
+	display: inline-block;
+	vertical-align:middle;
+}
+
+.general_clearBoth{
+	clear:both;
+}
+
+#general_space_for_main_navbar{
+	height: 60px;
+}
+
+#general_container{
+	width:100%;
+	text-align: center;
+}
+
+#general_container >div{
+	text-align: center;
+}
+
+#general_header {
+	text-align: center;
+	display:inline-block;
+	width:100%;
+	max-width:1160px;
+}
+
+.general_header_submenu{
+	position: absolute;
+	z-index: 1000;
+	padding-top: 6px;
+	min-width: 100%; left:0; right: 0;
+	background-color: Gainsboro;
+	border: 1px solid grey;
+}
+
+.general_header_submenu ul li{
+	font-weight: bold;
+	margin-bottom: 6px;
+}
+
+.general_left_menu_link{
+	/* identico a "general_header_submenu ul li" */
+	font-weight: bold;
+	margin-bottom: 6px;
+}
+
+#general_header_tittle{
+	text-align: left;
+}
+
+#general_body{
+	margin-bottom: 50px
+}
+
+.general_redirecting_to_anchor{
+	/* Esto evita que, cuando el browser posiciona el scroll a la altura del ancla,
+	este quede tapado por el menu superior de bootstrap */
+	position: absolute;
+	margin-top:-70px;
+}
+
+.general_mainHeader_tittleText{
+	color: grey !important;
+}
+
+.general_mainHeader_tittleText a{
+	color: grey;
+}
+
+.general_mainHeader_tittleText a:hover{
+	color: white;
+	text-decoration: none;
+}
+
+.general_mainHeader_tittleText .general_mainHeader_tittlePage{
+	max-width: 130px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.general_header_tittleText{
+	display:inline-block;
+	font-size: 14px;
+	font-weight: bold;
+	vertical-align: middle;
+	padding:8px 8px 0px 8px;
+}
+
+.general_headerSearch{
+	display:inline-block;
+	padding:4px 8px 4px 8px;
+}
+
+.general_subHeader_tittle{
+	float:left;
+	font-size: 14px;
+	font-weight: bold;
+	vertical-align: middle;
+	padding:4px 8px 8px 8px;
+}
+
+.general_subHeader_containerElements{
+	text-align:right;
+}
+
+.general_subHeader_element{
+	display: inline-block;
+	vertical-align: middle;
+	padding-left: 4px;
+	padding-right: 4px;
+	max-width: 50%;
+}
+
+.general_center_in1column{
+	width:1160px;
+}
+.general_center_in2columns{
+	width:905px;
+}
+.general_center_in3columns{
+	width:650px;
+}
+.general_center{
+	margin-top:20px;
+	padding-left:10px;
+	padding-right:10px;
+	display:inline-block;
+	vertical-align: top;
+	text-align:left;
+}
+
+.general_aside_left, .general_aside_right{
+	margin-top:20px;
+	padding-left:10px;
+	padding-right:10px;
+	width:255px;
+	display:inline-block;
+	vertical-align: top;
+}
+.general_aside_section, .general_center_section, .general_section{
+	margin-bottom:20px;
+	border: solid 1px grey;
+}
+.general_section_padding{
+	padding-left:6px;
+	padding-right:6px;
+}
+.general_section_paddingHigh{
+	padding-left:10px;
+	padding-right:6px;
+}
+
+.general_aside_section_tittle{
+	padding:4px 8px 4px 8px;
+	font-size: 18px;
+	font-weight: bold;
+	text-align:center;
+}
+
+.general_sideNav ul{
+	list-style-type: none;
+	margin-left:0px;
+	padding-left:0px;
+	text-align:left;
+}
+.general_sideNav ul li{
+	padding-top:4px;
+	padding-bottom:4px;
+}
+.general_sideNav a{
+	cursor:pointer;
+}
+.general_aside_section_left{
+	margin:2px 0px 2px 0px;
+	padding:4px 8px 4px 8px;
+	text-align:center;
+}
+.general_aside_section_menuButton{
+	margin:2px 0px 6px 0px;
+	padding:0;
+	height:28px;
+}
+
+.general_input_height{
+	height:24px; margin:auto;
+}
+.general_input_button{
+	min-width: 78px;
+	min-height: 34px;
+	background-color: purple;
+	font-weight: bold;
+	color: white;
+}
+.general_input_button_disabled{
+	min-width: 78px;
+	min-height: 34px;
+	line-height: 34px;vertical-align: middle;
+	text-align:center;
+	font-weight: bold;
+	background-color: Gainsboro;
+	border-radius:4px;
+}
+.general_input_selectButton{
+	padding:0;
+	height:24px;
+	margin:auto;
+	text-align: left;
+}
+
+.general_sideNav_PostTittle{
+	padding-left:6px;
+	padding-right:6px;
+}
+
+.general_aside_section_right{
+	margin:2px 0px 2px 0px;
+	padding:4px 8px 4px 8px;
+	text-align:left;
+}
+
+.general_modal{
+	margin-top: 100px !important;
+}
+
+.general_modal_tittle{
+    display: block;
+    font-size: 1.25em;
+	text-align: left;
+}
+
+.general_form_margin{
+	margin: 4px 2px 4px 2px;
+}
+
+.general_border{
+	border:1px solid grey;
+}
+
+.general_radioButtonSpace table tbody td {
+	padding-right: 6px;
+}
+.general_label_radioButtonSpace {
+	padding-right: 6px;
+}
+
+textarea[name=general_textareaTranslator]{
+	resize: none;
+}
+
+.general_aside_section_label{
+	padding:0px 8px 0px 0px;
+	font-size: 12px;
+}
+
+.general_pagination{
+	vertical-align: middle;
+	padding:2px 6px 0px 0px;
+	text-align:right;
+}
+
+.general_pagination ul{
+	padding:0px; 
+	margin:0px; 
+}
+
+.general_pagination_activeBtn{
+	background-color: purple !important;
+	color: white !important;
+}
+
+.general_notification{
+	min-width:400px;
+	border-top:1px solid grey;
+	border-bottom:1px solid grey;
+	background-color: white;
+}
+
+.general_notification_section_content{
+	padding: 2px 8px 2px 8px;
+	margin-bottom:10px;
+	/* que sea algo mayor que la imagen de 'general_section_userAvatar' */
+	min-height: 90px;
+}
+
+.general_notification_counter{
+	font-size:18px;
+	color: red;
+	font-weight: bold;
+}
+
+.general_section_content{
+	padding: 0px 8px 4px 8px;
+	margin-bottom:10px;
+	/* que sea algo mayor que la imagen de 'general_section_userAvatar' */
+	min-height: 90px;
+}
+
+.general_section_content_date{
+	text-align: right;
+}
+
+.general_userAvatarBig {
+	background-color: #E4E4E2;
+	/* equals max image size */
+	width: 165px; height:200px;
+	white-space: nowrap;
+	margin-bottom:10px;
+}
+.general_userAvatarBigHelper {
+	/*Para poder alinear la imagen verticalmente en el centro del div*/
+	display: inline-block;
+	height: 100%;
+	vertical-align: middle;
+}
+.general_userAvatarBig img{
+	max-width: 165px; max-height: 200px;
+	vertical-align: middle;
+}
+
+.general_section_userAvatar {
+	background-color: #E4E4E2;
+	/* equals max image size */
+	max-width: 66px; max-height: 80px;
+	white-space: nowrap;
+}
+.general_section_userAvatarHelper {
+	/*Para poder alinear la imagen verticalmente en el centro del div*/
+	height: 100%;
+	vertical-align: middle;
+}
+.general_section_userAvatar img{
+	max-width: 66px; max-height: 80px;
+	vertical-align: middle;
+	margin-right: 8px;
+}
+
+.general_section_body{
+	padding: 6px 8px 0px 8px;
+	vertical-align:top;
+	width:inherit;
+}
+
+.general_translator_modal{
+	margin-top: 100px !important;
+}
+
+.forum_aside_translator_fixed_container{
+	overflow: hidden;
+	margin-bottom:340px;
+}
+.forum_aside_translator_fixed{
+	position: fixed;
+	top: 70px;
+	width:235px;
+	z-index: 1000;
+	background-color: white;	
+}
+
+.forum_themeDescription {
+	display:inline-block;
+	padding:10px 4px 4px 4px;
+	vertical-align: middle;
+	text-align: left;
+}
+
+.forum_themeDescription ul{
+	display:inline-block;
+	margin:0px 6px 0px 6px;
+	padding:0px 0px 0px 10px;
+	color:grey;
+	font-size: 12px;
+}
+
+.general_header_tittleText_aside{
+	display:inline-block;
+	padding:0px 8px 0px 0px;
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.forum_topic_points{
+	display:inline-block;
+	padding:4px 4px 4px 4px;
+	text-align:center;
+	vertical-align: top;
+}
+
+.forum_topic_points .forum_topic_points_block{
+	width:80px;
+}
+
+.forum_topic_points_value{
+	font-size: 22px;
+	font-weight: bold;
+	color: purple;
+}
+
+.forum_topic_header{
+	display:inline-block;
+	padding:4px 4px 2px 4px;
+	max-width:510px;
+	vertical-align: top;
+}
+
+.forum_topic_header .forum_topic_header_tittle{
+	vertical-align: top;
+	font-size: 22px;
+	font-weight: bold;
+}
+
+.forum_topic_header .forum_topic_header_basicInfo{
+	display:inline-block;
+	padding:0px 4px 2px 2px;
+	color:grey;
+	border-right: 1px solid grey;
+	font-size: 12px;
+}
+
+.forum_topic_header .last{
+	border-right: none;
+}
+
+.forum_pagination{
+	display:inline-block;
+	vertical-align: middle;
+}
+
+.forum_pagination ul{
+	padding:0px;
+	margin:0px 0px 0px 4px;
+}
+
+.forum_themes_header{
+	margin:6px 0px 0px 0px;
+	font-size: 18px;
+}
+
+.forum_thread{
+	margin-bottom:10px;
+}
+
+.forum_thread_border{
+	border: solid 1px grey;
+}
+
+.forum_thread_post_header, .message_header{
+	background-color: purple;
+	color: white;
+	font-size: 16px;
+}
+
+.forum_thread_post_header_font{
+	text-align:center;
+}
+
+.forum_thread_post_header_number{
+	text-align:right;
+}
+
+.forum_thread_post_body, .message_body{
+	padding-left:8px;
+	padding-right:8px;
+	margin-bottom: 10px;
+}
+
+.forum_thread_post_height{
+	min-height: 175px;
+}
+
+.forum_thread_firstPost_height{
+	min-height: 270px;
+}
+
+.forum_thread_firstPost_body_titular, .message_subject{
+	padding-top:8px;
+	padding-bottom:8px;
+	font-size: 22px;
+	font-weight: bold;
+}
+
+.forum_thread_post_text{
+	display: auto;
+	margin-top: 8px;
+	vertical-align:top; padding-top:10px; padding-left:0px; padding-right:0px; width: 100%;
+}
+
+.forum_thread_post_textBlock, .message_textBlock{
+	margin-bottom:16px;
+	font-size: 14px;
+}
+
+.forum_thread_post_textQuote_header{
+	font-weight: bold;
+	font-style: italic;
+	background-color: Gainsboro !important;
+}
+
+.forum_thread_post_textQuote_body{
+	background-color: WhiteSmoke !important;
+}
+
+.forum_thread_post_textCorrection{
+	font-style: italic;
+	font-weight: bold;
+}
+
+.forum_thread_post_textCorrection_rate{
+	display: inline-block;
+	padding:4px 4px 4px 4px;
+}
+
+.forum_thread_buttonRate{
+	padding-top:0; padding-bottom:0;
+	height:28px;
+	font-size:14px;
+}
+
+.forum_thread_post_footerForm, .message_footerForm{
+	padding:4px 4px 4px 4px;
+}
+
+.forum_thread_post_userInfo{
+	display: inline-block;
+	padding-top:10px;
+	padding-right:16px;
+}
+
+.forum_thread_post_userName{
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.forum_thread_post_spoilerButton{
+	padding-top:0; padding-bottom:0;
+	max-width:200px !important;
+	text-align:left;
+}
+
+.forum_thread_lastComments_header{
+	font-size: 14px;
+	font-weight: bold;
+	vertical-align: middle;
+	padding:10px 6px 12px 16px;
+}
+.forum_thread_lastComments_header a{
+	cursor:pointer;
+}
+
+.register_container{
+	border: solid 1px grey;
+}
+
+.register_headerTittle{
+	padding-top:8px;
+	padding-bottom:8px;
+	font-size: 22px;
+	font-weight: bold;
+}
+
+.register_headerDescription {
+	text-align: center;
+	margin:0px 20px 0px 20px;
+}
+
+.register_headerDescription ul{
+	display:inline-block;
+	margin:0px 6px 0px 6px;
+	padding:0px 0px 0px 0px;
+	color:grey;
+	font-size: 12px;
+}
+
+.register_form_margin{
+	margin:10px 10px 20px 10px;
+}
+
+.register_sectionForm_margin{
+	margin:0px 10px 0px 10px;
+}
+
+.login_sectionForm_margin{
+	margin:0px 10px 0px 10px;
+}
+	
+.profile_index_header_container, .profile_edit_header_container{
+	position: absolute;
+	left: 50%;
+	top:60px;
+	width:400px;
+}
+.profile_index_header_content, .profile_edit_header_content{
+	position: relative;
+	left: -50%;
+}
+
+.profile_container{
+	border: solid 1px grey;
+	/* queremos que este borde pase por detras del avatar, asi que ponemos un margin-top */
+	margin-top: 80px;
+}
+.profile_content_header_marginTop{
+	margin-top: 20px;
+}
+.profile_index_form_margin{
+	margin:200px 10px 20px 10px;
+}
+.profile_edit_form_margin{
+	margin:200px 10px 20px 10px;
+}
+
+.profile_userAvatar {
+	background-color: #E4E4E2;
+	text-align:center; margin-left:auto; margin-right:auto;
+	/* especificamos por separado margin-left y margin-right...
+	para evitar cambiar el margin-top, puesto que en tal caso
+	sobreescribiria el margin-top establecido en profile_content_header_marginTop
+	*/
+	/* equals max image size */
+	width: 165px; height:200px;
+	white-space: nowrap;
+	margin-bottom:10px;
+}
+.profile_userAvatarHelper {
+	/*Para poder alinear la imagen verticalmente en el centro del div*/
+	display: inline-block;
+	height: 100%;
+	vertical-align: middle;
+}
+.profile_userAvatar img{
+	max-width: 165px; max-height: 200px;
+	vertical-align: middle;
+}
+
+.profile_headerDescription {
+	text-align:center;
+	margin: 0px 20px 0px 20px;
+}
+
+.profile_personalData{
+	display:inline-block;
+	margin-right:8px;
+	margin-left:8px;
+	font-size: 12px;
+}
+.profile_personalData a:hover{
+	cursor:pointer;
+	background-color: #E4E4E2;
+}
+.profile_personalData a{
+	text-decoration: none;
+	color:black;
+}
+
+.profile_modalForm_margin{
+	margin:10px 10px 20px 10px;
+}
+
+.profile_sectionForm_margin{
+	margin: 0px 20px 0px 10px;
+	padding:0px 20px 0px 10px;
+}
+
+.profile_buttonInputFile {
+	position: relative;
+	overflow: hidden;
+	height:28px;
+	padding:4px 6px 4px 6px;
+}
+.profile_buttonInputFile input[type=file] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	min-width: 100%;
+	min-height: 100%;
+	font-size: 100px;
+	text-align: right;
+	filter: alpha(opacity=0);
+	opacity: 0;
+	outline: none;
+	background: white;
+	cursor: inherit;
+	display: block;
+}
+
+.multiselect {
+	height:28px;
+	width:200px;
+	padding-left:4px;  padding-right:4px; 
+	padding-top:2px;
+	padding-bottom:2px;
+	text-align: left;
+}
+.multiselect b.caret {
+	position:absolute;
+	top:50%;
+	right: 4px;
+	height:100%; width:0px;
+}
+
+.profile_edit_section_tittle{
+	padding:4px 8px 4px 8px;
+	font-size: 18px;
+	font-weight: bold;
+	text-align:left;
+}
+
+.profile_edit_section_subtittle{
+	padding:2px 6px 2px 6px;
+	font-size: 14px;
+	text-align:left;
+}
+
+.profile_edit_section_body{
+	margin-left:18px;
+}
+
+.profile_edit_noDecoration a{
+	text-decoration: none;
+	cursor:pointer !important;
+}
+
+.profile_face_section_commentContent{
+	padding: 0px 8px 4px 8px;
+	margin-bottom:30px;
+	/* que sea algo mayor que la imagen de 'general_section_userAvatar' */
+	min-height: 110px;
+}
+
+.profile_face_comment{
+	position: relative;
+	padding: 0px 8px 0px 8px;
+	font-style: italic;
+}
+
+.profile_face_publications_table{
+	display: table;
+	width: 100%;
+}
+.profile_face_publications_tableRow{
+	display: table-row;
+	width: 100%;	
+}
+.profile_face_publications_tableCell{
+	display: table-cell;
+}
+.profile_face_publications_tableLastCell{
+	display: table-cell;
+	width: inherit;	
+}
+.profile_face_publications_table_always{
+	/* A diferencia de "profile_face_publications_table"
+	no cambia el estilo en pantallas inferiores a 480px */
+	display: table;
+	width: 100%;
+}
+.profile_face_publications_tableRow_always{
+	/* A diferencia de "profile_face_publications_tableRow"
+	no cambia el estilo en pantallas inferiores a 480px */
+	display: table-row;
+	width: 100%;	
+}
+
+.profile_face_section_dateTime, .profile_face_section_editPrivacity, .profile_face_section_deletePublication{
+	display: inline-block;
+}
+.profile_face_section_editPrivacity a:hover, .profile_face_section_deletePublication a:hover{
+	cursor:pointer;
+	background-color: #E4E4E2;
+}
+.profile_face_section_editPrivacity a, .profile_face_section_deletePublication a{
+	text-decoration: none;
+	font-weight: bold;
+	color:grey;
+}
+.profile_face_section_dateTime{
+	padding: 0px 8px 0px 0px;
+}
+.profile_face_section_deletePublication_space{
+	padding: 0px 8px 0px 8px;
+}
+
+.profile_face_formComment{
+	margin-bottom:0px;
+	margin-left:70px;
+	position: relative;
+}
+
+textarea[name=textareaComment] {
+    resize: none;
+}
+
+.profile_face_textareaComment{
+	vertical-align:top;
+	width:inherit
+}
+
+.profile_face_textareaComment textarea{
+	height:80px; /*equals to max-height in general_section_userAvatar*/
+}
+
+.profile_aside_section_clasification ul{
+	margin-top:6px;
+	margin-bottom:0px;
+	margin-left:12px;
+	margin-right:12px;
+	border: solid 1px grey;
+}
+
+.profile_aside_section_clasification ul li{
+	text-align:center;
+	padding-left: 6px; padding-right: 6px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.profile_aside_section_clasification ul li div{
+	text-align:center;
+	padding-left: 6px; padding-right: 6px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.profile_aside_section_clasification .even{
+	background-color: #E4E4E2;
+}
+
+.profile_aside_section_clasification .currentUser{
+	font-size: 18px;
+	color: purple;
+}
+
+.profile_aside_section_clasification .removeMargin{
+	padding-top:0px !important;
+	padding-bottom:0px !important;
+}
+
+.profile_aside_section_clasification_margin{
+	margin-left: 12px;
+}
+
+.profile_aside_section_statistics ul {
+	margin-left: 12px;
+}
+
+.profile_aside_section_statistics ul li{
+	list-style-type: disc;
+}
+
+.clasification_table table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 1px solid #bbb;
+	width: 100%;
+	margin-bottom: 20px;
+}
+
+.clasification_table tbody tr:nth-child(even)  td {
+	/* tr:nth-child(even) es un selector que selecciona solo las filas pares*/
+	background-color: #eee;
+}
+
+.clasification_table thead tr th {
+	background-color: #eee;
+	text-align:center;
+}
+
+.clasification_table table tr td,
+.clasification_table table tr th{
+	border-top: 1px solid #ddd;
+    padding: 4px 8px;
+}
+
+.clasification_bigTable table tbody tr td:nth-child(-n+2) {
+	/* td:nth-child(-n+1) es un selector que selecciona solo las columnas 1 y 2*/
+	font-weight: bold;
+}
+.clasification_bigTable table tbody tr td:nth-child(5) {
+	/* td:nth-child(6) es un selector que selecciona solo la columna 5*/
+	font-weight: bold;
+}
+.clasification_bigTable table tr td,
+.clasification_bigTable table tr th{
+	text-align: center;
+	max-width: 200px;
+}
+
+.clasification_smallTable table tr td,
+.clasification_smallTable table tr th{
+	max-width: 150px;
+}
+.clasification_smallTable table tbody tr:nth-child(even)  td {
+	/* tr:nth-child(even) es un selector que selecciona solo las filas pares*/
+	text-align: right;
+}
+
+.clasification_smallTable table tbody tr:nth-child(6)  td {
+	/* tr:nth-child(6) es un selector que selecciona solo la sexta fila */
+	font-weight: bold;
+}
+
+/* Estas clases son para saltos de linea en las celdas */
+.clasification_bigTable table tr th{
+	max-width: 160px;
+	-ms-word-break: normal;
+	word-break: normal;
+	/*La tabla grande, en la fila th, no permite salto de linea a mitad de una palabra*/
+}
+.clasification_bigTable table tr td,
+.clasification_smallTable table tr th,
+.clasification_smallTable table tr td{
+	max-width: 160px;
+	-ms-word-break: break-all;
+	word-break: break-all;
+	/* Para webkit */
+	-webkit-hyphens: auto;
+	-moz-hyphens: auto;
+	-ms-hyphens: auto;
+	hyphens: auto;
+	/*En este tipo de filas, se permite salto de linea a mitad de una palabra*/
+}
+
+.clasification_button{
+	padding-top:8px;
+	padding-bottom:8px;
+	font-size: 20px;
+	font-weight: bold;
+	
+	/* Para que pueda haber salto de linea en el texto del boton*/
+	white-space: normal;
+}
+
+.clasification_headerButtons{
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+.clasification_headerBar{
+	margin-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.clasification_table_subheaderBar{
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.clasification_table_headerInfo{
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.clasification_table_headerInfo ul{
+	list-style-type: disc;
+	margin-left: 10px !important;
+	padding-left: 10px !important;
+}
+
+.messages_table table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 1px solid #bbb;
+	width: 100%;
+	margin-bottom: 20px;
+}
+
+.messages_table thead tr th {
+	background-color: #eee;
+}
+
+.messages_table table tr td,
+.messages_table table tr th{
+	border-top: 1px solid #ddd;
+    padding: 4px 8px;
+}
+
+.messages_table table tr td{
+	vertical-align: top;
+}
+.messages_table table tr th{
+	vertical-align: middle;
+}
+
+.messages_table table tbody tr td:nth-child(1n+2) {
+	/* td:nth-child(1n+2) es un selector que selecciona todas las columnas a partir de la segunda */
+	min-width: 40px;
+}
+
+.messages_bigTable table tr td,
+.messages_bigTable table tr th{
+	max-width: 200px;
+}
+
+.messages_bigTable table tbody tr td:nth-child(-n+2) {
+	/* td:nth-child(-n+1) es un selector que selecciona solo las columnas 1 y 2*/
+	font-weight: bold;
+}
+.messages_bigTable table tbody tr td:nth-child(5) {
+	/* td:nth-child(6) es un selector que selecciona solo la columna 5*/
+	font-weight: bold;
+}
+
+.messages_bigTable tbody tr:nth-child(even)  td {
+	/* tr:nth-child(even) es un selector que selecciona solo las filas pares*/
+	background-color: #eee;
+}
+
+.messages_bigTable tr:nth-child(1n+2) {
+	/* tr:nth-child(1n+2) es un selector que selecciona todas las filas a partir de la segunda */
+	cursor: pointer;
+}
+
+.messages_smallTable table{
+	cursor: pointer;
+}
+
+.messages_smallTable table tr td,
+.messages_smallTable table tr th{
+	max-width: 150px;
+}
+
+.messages_smallTable tbody tr:nth-child(odd)  td {
+	/* tr:nth-child(odd) es un selector que selecciona solo las filas impares*/
+	background-color: #eee;
+}
+
+.messages_smallTable table tbody tr:nth-child(3)  td {
+	/* tr:nth-child(6) es un selector que selecciona solo la tercera fila */
+	font-weight: bold;
+}
+
+/* Estas clases son para saltos de linea en las celdas */
+.messages_bigTable table tr th{
+	max-width: 160px;
+	-ms-word-break: normal;
+	word-break: normal;
+	/*La tabla grande, en la fila th, no permite salto de linea a mitad de una palabra*/
+}
+.messages_bigTable table tr th{
+	max-width: 160px;
+	-ms-word-break: normal;
+	word-break: normal;
+	/*La tabla grande, en la fila th, no permite salto de linea a mitad de una palabra*/
+}
+.messages_bigTable table tr td,
+.messages_smallTable table tr th,
+.messages_smallTable table tr td{
+	max-width: 160px;
+	-ms-word-break: break-all;
+	word-break: break-all;
+	/* Para webkit */
+	-webkit-hyphens: auto;
+	-moz-hyphens: auto;
+	-ms-hyphens: auto;
+	hyphens: auto;
+	/*En este tipo de filas, se permite salto de linea a mitad de una palabra*/
+}
+
+.messages_button{
+	padding-top:8px;
+	padding-bottom:8px;
+	font-size: 20px;
+	font-weight: bold;
+	
+	/* Para que pueda haber salto de linea en el texto del boton*/
+	white-space: normal;
+}
+
+.messages_buttonSmall{
+	padding-top:0px;
+	padding-bottom:0px;
+	margin-bottom:10px;
+	height:28px;
+	font-size:14px;
+	
+	/* Para que pueda haber salto de linea en el texto del boton*/
+	white-space: normal;
+}
+
+.messages_headerButtons{
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+.messages_headerBar{
+	margin-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.messages_listElementUser{
+	padding: 0px;
+	vertical-align: top;
+	margin-bottom:10px;
+	width: 210px;
+}
+
+.messages_listElementUser_userAvatar {
+	background-color: #E4E4E2;
+	/* equals max image size */
+	max-width: 66px; max-height: 80px;
+	white-space: nowrap;
+}
+.messages_listElementUser_userAvatarHelper {
+	/*Para poder alinear la imagen verticalmente en el centro del div*/
+	height: 100%;
+	vertical-align: middle;
+}
+.messages_listElementUser_userAvatar img{
+	max-width: 66px; max-height: 80px;
+	vertical-align: middle;
+	margin-right: 8px;
+}
+
+.messages_listElementUser_body{
+	padding: 0px 8px 0px 8px;
+}
+
+.messages_trashIcon{
+	color: black;
+}
+
+.message_read_userWrapAvatar{
+	padding: 0px;
+	vertical-align: top;
+	margin-bottom:10px;
+	min-height: 110px;
+}
+
+.message_height{
+	min-height: 265px;
+}
+
+.message_text{
+	position: relative;
+	padding: 0px 8px 0px 8px;
+}
+
+.friends_section_tittle{
+	padding:4px 8px 4px 8px;
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.friends_top_margin{
+	margin-top: 6px;
+}
+
+.friends_section_margin{
+	margin-bottom: 30px;
+}
+
+.friends_listUsers{
+	/* alinear al centro el contenido de la etiqueta*/
+	text-align:center;
+}
+
+.friends_listUsers_content{
+	/* solo para que la etiqueta se ajuste al tamano su contenido */
+	display: inline-block;
+}
+
+.friends_listUsers ul{
+	padding-left: 0px;
+	margin-bottom: 0px;
+	text-align:left;
+}
+.friends_listUsers ul li{
+	display: inline-block;
+	list-style-type: none;
+}
+
+.friends_listElementUser{
+	padding: 0px 8px 0px 8px;
+	vertical-align: top;
+	min-height: 80px;
+	/*max-width: 300px;
+	min-width: 300px;*/
+	width: 300px;
+}
+
+.friends_buttonRequestUser{
+	padding-top:0; padding-bottom:0;
+	height:28px;
+	width: 110px;
+	font-size:14px;
+}
+
+.friends_clasification{
+	padding: 10px 10px 10px 10px;
+	border: 1px solid grey;
+	
+	/* alinear al centro el contenido de la etiqueta*/
+	text-align:center;
+}
+
+/*la siguiente clase desactiva el "Drag-Drop" del componente Summernote*/
+/*porque sobrescribe la clase del "summernote.css" original que se encarga del "Drag-Drop"*/
+.note-editor .note-dropzone {
+	opacity: 0 !important;
+	display: none !important;
+	visibility: hidden !important;
+}

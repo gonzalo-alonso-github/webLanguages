@@ -1,0 +1,76 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+<!-- Ventana 'modal' para confirmar eliminar correccion -->
+<div id="deleteSuggestedCorrection" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleRejectCorrection}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<o:form includeViewParams="true" id="form_deleteSuggestedCorrection" prependId="false">
+				<div class="form-group general_textCenter">
+					<!-- Posible mensaje de error -->
+					<!--
+					<div class="login_sectionForm_margin">
+						<div class="form-group general_textCenter">
+							<div class="col-xs-12 col-sm-12">
+							<h:outputText id="msgError" value="#{beanActionResult.msgActionResult}" />
+							</div>
+						</div>
+					</div>
+					-->
+					<span class="control-label login_sectionForm_margin">#{msgs.descriptionDeleteSuggestedCorrection}</span>
+					<div class="login_sectionForm_margin" style="margin-top:6px;">
+						<!-- Animacion 'spin' con mensage de espera -->
+						<div id="divWaitCorrectionDelete" class="form-group general_textCenter general_noDisplay">
+							<div class="col-xs-12 col-sm-12">
+								<h:outputText id="msgRunningCorrectionDelete" value="#{msgs.descriptionWait}"/>
+								<h:panelGroup id="spinnerWheelCorrectionDelete" layout="block"
+									style="margin:25px auto auto auto;"/>
+							</div>
+						</div>
+						<!-- No usa ajax porque es el action quien recarga la pagina -->
+						<!-- f:ajax render="@form :form_deleteSuggestedCorrection :form_threadListComments" -->
+						<!-- onclick="showElement('divWaitCorrectionDelete');setSpinnerInLayout('spinnerWheelCorrectionDelete');disableElement(this.id);disableElement('btnCancelCorrectionDelete');" -->
+						<h:commandButton id="btnAcceptCorrectionDelete" class="btn btn-default general_input_button"
+								value="#{msgs.titleAccept}"
+								action="#{beanCorrection.getCommandLinkToDeleteSuggestedCorr(beanActionResult)}">
+						</h:commandButton>
+						<button id="btnCancelCorrectionDelete"
+							class="btn btn-default general_input_button"
+							data-dismiss="modal">#{msgs.titleCancel}</button>
+						<h:outputScript rendered="#{beanActionResult.finish and beanActionResult.success}">
+							$('#deleteSuggestedCorrection').modal('hide');
+						</h:outputScript>
+					</div>
+				</div>
+			</o:form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+ 
+
+<f:verbatim>
+<!-- Hacer que las ventanas 'modal' se puedan arrastrar -->
+<script>
+	$( "#deleteSuggestedCorrection" ).draggable();
+</script>
+</f:verbatim>
+
+</ui:composition>

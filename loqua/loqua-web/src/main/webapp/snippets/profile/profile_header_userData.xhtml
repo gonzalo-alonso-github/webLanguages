@@ -1,0 +1,65 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+<!-- Este snippet se importa en "profile_user.xhtml" -->
+<!-- Imagen y datos del usuario -->
+
+<div class="row general_textCenter">
+	<div class="profile_index_header_container">
+	<div class="profile_index_header_content">
+	
+		<div class="profile_userAvatar profile_content_header_marginTop">
+			<span class="profile_userAvatarHelper"></span><o:graphicImage dataURI="true" value="#{beanUserImages.getUserImage(beanUserView.user)}" alt="#{msgs.titleImgAltAvatar}"/>
+		</div>
+		
+		<div class="profile_headerDescription">
+			<h:panelGroup layout="block" class="profile_personalData" rendered="#{beanUserView.shouldBeShownByPrivacity(beanUserView.user, beanUserView.user.privacityData.gender)}">
+				<o:graphicImage dataURI="true" value="#{beanUserImages.getUserGenderImage(beanUserView.user)}" alt="#{msgs.titleEditGender}"/>
+			</h:panelGroup>
+			<h:panelGroup layout="block" class="profile_personalData">
+				#{beanUtils.limitTextLength(20, beanUserView.user.nick)}
+			</h:panelGroup>
+		</div>
+		
+		<ui:fragment rendered="#{beanUserView.shouldBeShownByPrivacity(beanUserView.user, beanUserView.user.privacityData.countryOrigin)}">
+		<div class="profile_headerDescription">
+			<div class="profile_personalData">
+				#{msgs.titleOrigin}:
+				<ui:fragment rendered="#{beanUserView.isCountryOriginAvailable(beanUserView.user)}">
+					#{beanUserView.getCountryOriginName(beanUserView.user)}
+					<o:graphicImage dataURI="true" value="#{beanUserImages.getUserOriginImage(beanUserView.user)}" alt="#{msgsCountries.title_flagOf} #{beanUserView.getCountryOriginName(beanUserView.user)}"/>
+				</ui:fragment>
+				<ui:fragment rendered="#{beanUserView.isCountryOriginAvailable(beanUserView.user)==false}">
+					#{msgs.titleNone}
+				</ui:fragment>
+			</div>
+		</div>
+		<h:panelGroup layout="block" class="profile_headerDescription" rendered="#{beanUserView.showCountryLocation(beanUserView.user)}">
+			<div class="profile_personalData">
+				#{msgs.titleLocation}:
+				<h:panelGroup rendered="#{beanUserView.isCountryLocationAvailable(beanUserView.user)}">
+					#{beanUserView.getCountryLocationName(beanUserView.user)}
+					<o:graphicImage dataURI="true" value="#{beanUserImages.getUserLocationImage(beanUserView.user)}" alt="#{msgsCountries.title_flagOf} #{beanUserView.getCountryLocationName(beanUserView.user)}"/>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{beanUserView.isCountryLocationAvailable(beanUserView.user)==false}">
+					#{msgs.titleNone}
+				</h:panelGroup>
+			</div>
+		</h:panelGroup>
+		</ui:fragment>
+		<!--
+		<div class="profile_headerDescription">
+			<div class="profile_personalData">
+				XX años
+			</div>
+		</div>
+		-->
+	</div>
+	</div>
+</div>
+
+</ui:composition>

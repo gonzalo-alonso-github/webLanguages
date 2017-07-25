@@ -1,0 +1,294 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+<div id="general_space_for_main_navbar"></div>
+<div class="container" id="general_container">
+
+	<!-- Barra de cabecera. Contiene un titulo, un buscador y, en determinadas pantallas, un boton de traductor y submenu de enlaces -->
+	<div id="general_header">
+		<ui:param name="titleHeader" value="#{msgs.titleForumIndex}" />
+		<ui:include src="/snippets/general/menu_horizontal/menu_with_searcherTranslatorThemes.xhtml" />
+	</div>
+	
+	<!-- Cuerpo bajo la barra de cabecera. Esta estructurado en 3 columnas, que son: -->
+	<!-- general_aside_left, general_center y general_aside_right -->
+	<div id="general_body">
+		<!-- Columna izquierda -->
+		<div class="general_aside_left noDisplayUnder992screen">
+			
+			<!-- Seccion de navegacion (en columna izquierda) -->
+			<div class="general_aside_section general_section_padding">
+			<div class="general_aside_section_tittle">#{msgs.titleCategories}</div>
+			<h:form id="form_forumCategoriesSection" prependId="false">
+			<div class="general_sideNav">
+				<ul id="sidenav01">
+				<ui:repeat id="repeat_categories" value="#{beanForum.allFeedCategories}" var="categoryOfList">
+					<div class="general_header_tittleText_aside">
+						<span class="glyphicon glyphicon-comment general_glyphicon-spacing"></span>
+						<h:outputLink value="#{beanForum.getOutputLinkToForum(categoryOfList.id,0)}">#{beanSettingsSession.getTranslation(categoryOfList.name)}</h:outputLink>
+					</div>
+					<a data-toggle="collapse" data-target="##{categoryOfList.name}" data-parent="#sidenav01" class="collapsed">
+						#{msgs.titleShowMore}<span class="caret"></span>
+					</a>
+					<div id="#{categoryOfList.name}" class="collapse">
+					<ul>
+						<ui:repeat var="thread" value="#{beanForum.getLastNewsByCategory(categoryOfList.id)}">
+							<li class="general_sideNav_PostTittle">
+								<!-- aqui un commandLink no funcionaria bien si hicieramos click derecho - 'abrir en nueva pestana' -->
+								<!-- porque beanForumThread es de scope view, conque los parametros pasados a getCommandLinkToThread ya son null al ejecutar el metodo -->
+								<!-- sin embargo si funciona con h:outputLink -->
+								<h:outputLink value="#{beanForumThread.getOutputLinkToThread(thread.id,0)}">#{thread.title}</h:outputLink>
+								<div>#{beanSettingsSession.getFormattedDate(thread.date)}</div>
+								<div>#{msgs.titleSource}: #{thread.feed.name}</div>
+							</li>
+						</ui:repeat>
+					</ul>
+					</div>
+				</ui:repeat>
+				</ul>
+			</div>
+			</h:form>
+			</div>
+						
+			<!-- Seccion de valoracion de noticias (en columna izquierda) -->
+			<div class="general_aside_section general_section_padding">
+			<div class="general_aside_section_tittle">#{msgs.titleBestNewsOfTheMonth}</div>
+			<div id="aside_section_bestNews">
+				<div class="general_aside_section_left">
+					<input class="btn btn-default btn-block general_aside_section_menuButton" type="button" id="buttonMostValued" name="mostValued" value="#{msgs.titleNewsMostValued}" data-toggle="collapse" data-target="#asideMostValued" data-parent="#aside_section_bestNews" onclick="changeButtonStatus(this.id);"/>
+					<div class="collapse" id="asideMostValued">
+						<h:form id="form_forumMostValuedNewsOfTheMonth" prependId="false">
+						<div class="general_sideNav">
+							<ul>
+							<ui:repeat value="#{beanForum.mostValuedNewsOfTheMonth}" var="thread">
+								<li class="general_sideNav_PostTittle">
+								<!-- aqui un commandLink no funcionaria bien si hicieramos click derecho - 'abrir en nueva pestana' -->
+								<!-- porque beanForumThread es de scope view, conque los parametros pasados a getCommandLinkToThread ya son null al ejecutar el metodo -->
+								<!-- sin embargo si funciona con h:outputLink -->
+								<h:outputLink  value="#{beanForumThread.getOutputLinkToThread(thread.id,0)}">#{thread.title}</h:outputLink>
+								<div>#{beanSettingsSession.getFormattedDate(thread.date)}</div>
+								<div>#{msgs.titleVotes}: #{beanUtils.limitNumericValue(999, thread.forumThreadInfo.countVotes)}</div>
+								</li>
+							</ui:repeat>
+							</ul>
+						</div>
+						</h:form>
+					</div>
+				</div>
+				<div class="general_aside_section_left">
+					<input class="btn btn-default btn-block general_aside_section_menuButton" type="button" id="buttonMostCommented" name="mostCommented" value="#{msgs.titleNewsMostDiscussed}" data-toggle="collapse" data-target="#asideMostCommented" data-parent="#aside_section_bestNews" onclick="changeButtonStatus(this.id);"/>
+					<div class="collapse" id="asideMostCommented">
+						<h:form id="form_forumMostCommentedNewsOfTheMonth" prependId="false">
+						<div class="general_sideNav">
+							<ul>
+							<ui:repeat value="#{beanForum.getMostCommentedNewsOfTheMonth()}" var="thread">
+								<li class="general_sideNav_PostTittle">
+								<!-- aqui un commandLink no funcionaria bien si hicieramos click derecho - 'abrir en nueva pestana' -->
+								<!-- porque beanForumThread es de scope view, conque los parametros pasados a getCommandLinkToThread ya son null al ejecutar el metodo -->
+								<!-- sin embargo si funciona con h:outputLink -->
+								<h:outputLink  value="#{beanForumThread.getOutputLinkToThread(thread.id,0)}">#{thread.title}</h:outputLink>
+								<div>#{beanSettingsSession.getFormattedDate(thread.date)}</div>
+								<div>#{msgs.titleComments}: #{beanUtils.limitNumericValue(999, thread.forumThreadInfo.countComments)}</div>
+								</li>
+							</ui:repeat>
+							</ul>
+						</div>
+						</h:form>
+					</div>
+				</div>
+			</div>
+			</div>
+			
+			<!-- Seccion de valoracion de usuarios (en columna izquierda) -->
+			<div class="general_aside_section general_section_padding">
+			<div class="general_aside_section_tittle">#{msgs.titleBestUsersOfTheMonth}</div>
+			<div id="aside_section_bestUsers">
+				<div class="general_aside_section_left panel">
+					<input class="btn btn-default btn-block general_aside_section_menuButton active" type="button" id="buttonMostValuedUser" name="mostValuedUser" value="#{msgs.titleUsersMostValued}" data-toggle="collapse" data-target="#asideMostValuedUser" data-parent="#aside_section_bestUsers" onclick="changeButtonStatus(this.id);"/>
+					<div class="collapse in" id="asideMostValuedUser">
+						<h:form id="form_forumMostValuedUsersOfTheMonth" prependId="false">
+						<div class="general_sideNav">
+							<ul>
+								<ui:repeat value="#{beanForum.getMostValuedUsersOfTheMonth()}" var="user">
+									<li class="general_sideNav_PostTittle">
+									<ui:fragment rendered="#{beanLogin.loggedUser!=null}">
+										<h:outputLink value="#{beanUserView.getOutputLinkToProfile(user.id)}">
+											#{beanUtils.limitTextLength(16, user.nick)}
+										</h:outputLink>
+									</ui:fragment>
+									<ui:fragment rendered="#{beanLogin.loggedUser==null}">#{beanUtils.limitTextLength(16, user.nick)}</ui:fragment>
+									<div>#{msgs.titlePoints}: #{beanUtils.limitNumericValue(9999, user.userInfo.points)}</div>
+									</li>
+								</ui:repeat>
+							</ul>
+						</div>
+						</h:form>
+					</div>
+				</div>
+				<div class="general_aside_section_left panel">
+					<input class="btn btn-default btn-block general_aside_section_menuButton" type="button" id="buttonMostActiveUser" name="mostActiveUser" value="#{msgs.titleUsersMostActive}" data-toggle="collapse" data-target="#asideMostActiveUser" data-parent="#aside_section_bestUsers" onclick="changeButtonStatus(this.id);"/>
+					<div class="collapse" id="asideMostActiveUser">
+						<h:form id="form_forumMostActiveUsersOfTheMonth" prependId="false">
+						<div class="general_sideNav">
+							<ul>
+								<ui:repeat value="#{beanForum.getMostActiveUsersOfTheMonth()}" var="user">
+									<li class="general_sideNav_PostTittle">
+									<ui:fragment rendered="#{beanLogin.loggedUser!=null}">
+										<h:outputLink value="#{beanUserView.getOutputLinkToProfile(user.id)}">
+											#{beanUtils.limitTextLength(16, user.nick)}
+										</h:outputLink>
+									</ui:fragment>
+									<ui:fragment rendered="#{beanLogin.loggedUser==null}">#{beanUtils.limitTextLength(16, user.nick)}</ui:fragment>
+									<div>#{msgs.titleParticipations}: #{beanUtils.limitNumericValue(9999, user.userInfo.countCommentsMonth+user.userInfo.countCorrectionsMonth)}</div>
+									</li>
+								</ui:repeat>
+							</ul>
+						</div>
+						</h:form>
+					</div>
+				</div>
+			</div>
+			</div>
+		</div>
+		
+		<!-- Columna central -->
+		<div class="general_center general_center_in3columns">
+			<o:form includeViewParams="true" id="form_forumListNews" prependId="false">
+			<c:set var="beanForumListNews" value="#{beanForum.listNews}" scope="request" />
+			<!-- Barra de cabecera y paginacion (en columna central) -->
+			<ui:param name="sizePaginationBar" 
+				value="#{beanPaginationBar.loadSizeMainPaginationBar(beanForum.numNewsTotal)}"/>
+			<ui:param name="typePaginationBar" 
+				value="#{beanPaginationBar.loadTypeMainPaginationBar(sizePaginationBar, beanForum.offsetPage)}"/>
+			<h:panelGroup layout="block" class="container-fluid" rendered="#{typePaginationBar != 0}">
+			<div class="row">
+				<div class="left-side col-sm-3 forum_themes_header noDisplayUnder992screen">
+					#{msgs.titleNews}
+				</div>
+				<div class="right-side col-sm-9 general_pagination noDisplayUnder992screen">
+					<ui:include src="/snippets/forum/paginationBar_main.xhtml" />
+				</div>
+				<div class="right-side col-sm-12 general_pagination noDisplayOver992screen">
+					<ui:include src="/snippets/forum/paginationBar_main.xhtml" />
+				</div>
+			</div>
+			</h:panelGroup>
+			
+			<!-- Listado de noticias -->
+			<ui:repeat value="#{beanForumListNews}" var="thread">
+			
+				<!-- Esta etiqueta tiene un id que sirve de ancla, se usa para redirigir el scroll aqui por ejemplo al puntuar una noticia -->
+				<!-- El estilo evita que, cuando el browser posiciona el scroll a la altura del ancla, este quede tapado por el menu superior -->
+				<div id="#{'referenceTo_thread'.concat(thread.id)}" class="general_redirecting_to_anchor"></div>
+			
+				<article class="general_center_section general_section_padding">
+				<!-- Pantallas grandes: la puntuacion de la noticia aparece al lado del titular -->
+				<div class="forum_topic_points forum_topic_points_block noDisplayUnder992screen">
+					<div class="forum_topic_points_value">#{thread.forumThreadInfo.countVotes}</div>
+					<div class="general_inline-block">#{msgs.title_points}</div>
+					<ui:fragment rendered="#{beanLogin.loggedUser!=null}">
+					<ui:fragment rendered="#{beanForumThread.threadAlreadyVotedByUser(thread)==false}">
+						<!-- No usa ajax porque es el action quien recarga la pagina -->
+						<!-- f:ajax render="@form :form_forumListNews" -->
+						<h:commandButton id="#{'buttonSpreadThread_Over992_'.concat(thread.id)}"
+								class="btn btn-default btn-block general_input_button" value="#{msgs.titleSpread}"
+								action="#{beanForumThread.getCommandLinkToVoteThread( thread, 'referenceTo_thread'.concat(thread.id) )}">
+						</h:commandButton>
+					</ui:fragment>
+					<ui:fragment rendered="#{beanForumThread.threadAlreadyVotedByUser(thread)}">
+						<div class="general_input_button_disabled">#{msgs.titleAlreadyVoted}</div>
+					</ui:fragment>
+					</ui:fragment>
+				</div>
+				<div class="forum_topic_header">
+					<!-- Titular de noticia -->
+					<div class="forum_topic_header_tittle">
+						<!-- aqui un commandLink no funcionaria bien si hicieramos click derecho - 'abrir en nueva pestana' -->
+						<!-- porque beanForumThread es de scope view, conque los parametros pasados a getCommandLinkToThread ya son null al ejecutar el metodo -->
+						<!-- sin embargo si funciona con h:outputLink -->
+						<h:outputLink  value="#{beanForumThread.getOutputLinkToThread(thread.id,0)}">#{thread.title}</h:outputLink>
+					</div>
+					<div></div>
+					<div class="forum_topic_header_basicInfo">#{beanSettingsSession.getFormattedDate(thread.date)} #{msgs.prepositionIn} #{thread.feed.name}</div>
+					<div class="forum_topic_header_basicInfo">#{thread.forumThreadInfo.countVisits} #{msgs.title_visits}</div>
+					<div class="forum_topic_header_basicInfo">#{thread.forumThreadInfo.countComments} #{msgs.title_comments}</div>
+					<div class="forum_topic_header_basicInfo last">
+						#{msgs.titleLastComment}: #{beanSettingsSession.getFormattedDate(thread.dateLastComment)}
+					</div>
+					<div></div>
+					<!-- Barra de paginacion de la propia noticia -->
+					<ui:param name="sizePaginationBar" 
+						value="#{beanSettingsForumPage.getNumPagesOfThread(thread.forumThreadInfo.countComments)}"/>
+					<ui:param name="typePaginationBar" 
+						value="#{beanPaginationBar.loadTypeSingleNewThreadPaginationBar(sizePaginationBar,null)}"/>
+					<ui:param name="selectedThread" value="#{thread}"/>
+					<!-- class="container-fluid"  -->
+					<h:panelGroup layout="block" rendered="#{typePaginationBar != 0}">	
+						<ui:include src="/snippets/forum/paginationBar_simple.xhtml" />
+					</h:panelGroup>
+				</div>
+				<div></div>
+				<!-- Pantallas pequenas: la puntuacion de la noticia aparece debajo del titular -->
+				<div class="forum_topic_points noDisplayOver992screen">
+					<div class="forum_topic_points_value general_inline-block">#{thread.forumThreadInfo.countVotes}</div>
+					<div class="general_inline-block">#{msgs.title_points}</div>
+					<ui:fragment rendered="#{beanLogin.loggedUser!=null}">
+					<ui:fragment rendered="#{beanForumThread.threadAlreadyVotedByUser(thread)==false}">
+						<!-- No usa ajax porque es el action quien recarga la pagina -->
+						<!-- f:ajax render="@form :form_forumListNews" -->
+						<h:commandButton id="#{'buttonSpreadThread_Under992_'.concat(thread.id)}"
+								class="btn btn-default btn-block general_input_button" value="#{msgs.titleSpread}"
+								action="#{beanForumThread.getCommandLinkToVoteThread( thread, 'referenceTo_thread'.concat(thread.id) )}">
+						</h:commandButton>
+					</ui:fragment>
+					<ui:fragment rendered="#{beanForumThread.threadAlreadyVotedByUser(thread)}">
+						<div class="general_input_button_disabled">#{msgs.titleAlreadyVoted}</div>
+					</ui:fragment>
+					</ui:fragment>
+				</div>
+				</article>
+			</ui:repeat>
+			
+			<!-- Barra inferior de paginacion (en columna central) -->
+			<ui:param name="sizePaginationBar" 
+				value="#{beanPaginationBar.loadSizeMainPaginationBar(beanForum.numNewsTotal)}"/>
+			<ui:param name="typePaginationBar" 
+				value="#{beanPaginationBar.loadTypeMainPaginationBar(sizePaginationBar, beanForum.offsetPage)}"/>
+			<h:panelGroup layout="block" class="container-fluid" rendered="#{typePaginationBar != 0}">
+			<div class="row">
+				<div class="right-side col-sm-12 general_pagination">
+					<ui:include src="/snippets/forum/paginationBar_main.xhtml" />
+				</div>
+			</div>
+			</h:panelGroup>
+			</o:form>
+		</div>
+		
+		<!-- Columna derecha -->
+		<div id="general_right_column" class="general_aside_right noDisplayUnder1300screen">
+			<div id="general_becameFixedOnScroll">
+				<ui:include src="/snippets/general/right/translator_right.xhtml" />
+			</div>
+		<!-- aqui se podria incluir publicidad o mas contenido -->
+		</div>
+		
+		<script>
+			var elementPosition = $('#general_becameFixedOnScroll').offset();
+			$(window).scroll(function(){
+				if($(window).scrollTop() > elementPosition.top - 75){
+					$('#general_becameFixedOnScroll').addClass("forum_aside_translator_fixed");
+				} else {
+					$('#general_becameFixedOnScroll').removeClass("forum_aside_translator_fixed");
+				}    
+			});
+		</script>
+		
+	</div>
+	
+</div>
+</ui:composition>

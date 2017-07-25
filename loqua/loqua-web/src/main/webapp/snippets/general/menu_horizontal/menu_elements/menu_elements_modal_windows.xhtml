@@ -1,0 +1,94 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+
+<!-- Ventana para mostrar el resultado en la busqueda de usuarios -->
+<div id="searchUserNotFoundModal" class="modal fade general_modal" tabindex="-1"
+	data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleUsersSearch}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<h:form id="form_searchUser_Modal">
+				<div class="form-group general_textCenter">
+					<span class="control-label login_sectionForm_margin">#{beanActionResult.msgActionResult}</span>
+					<div class="login_sectionForm_margin" style="margin-top:6px;">
+						<button id="btnAcceptUserNotFound"
+							class="btn btn-default general_input_button"
+							data-dismiss="modal">#{msgs.titleAccept}</button>
+					</div>
+				</div>
+			</h:form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Ventana 'modal' para mostrar el traductor -->
+<div id="translator" class="modal fade general_translator_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleTranslator}</div>
+</div>
+<div class="modal-body">
+	<h:form id="form_translator">
+	<div class="general_aside_section_right">
+		<label for="selectLanguageInput" class="general_aside_section_label">#{msgs.titleInputLanguage}:</label>
+		<h:selectOneMenu id="selectLanguageInput" required="true"
+				value="#{beanTranslator.inputLanguageName}"
+				class="form-control general_input_selectButton" style="height:24px; padding:0;">
+			<f:selectItems value="#{beanTranslator.listLanguages}"/>				
+		</h:selectOneMenu>
+		<h:inputTextarea id="textareaInput" title="textareaInput"
+			value="#{beanTranslator.inputText}"
+			cols="10" class="form-control" style="overflow-y:scroll;resize:none"/>
+		<label for="selectLanguageOutput" class="general_aside_section_label">#{msgs.titleOutputLanguage}:</label>
+		<h:selectOneMenu id="selectLanguageOutput" required="true"
+				value="#{beanTranslator.outputLanguageName}"
+				class="form-control general_input_selectButton" style="height:24px; padding:0;">
+			<f:selectItems value="#{beanTranslator.listLanguages}"/>				
+		</h:selectOneMenu>
+		<h:inputTextarea id="textareaOutput" title="textareaOutput"
+			value="#{beanTranslator.outputText}" readonly="true"
+			cols="10" class="form-control" style="overflow-y:scroll;resize:none"/>
+		<div class="form-group general_textCenter">
+			<div class="col-xs-12 col-sm-12">
+			<h:outputText id="msgError" value="#{beanTranslator.error}" />
+			</div>
+		</div>
+		<h:commandButton id="buttonTranslate" value="#{msgs.titleTranslate}"
+			class="btn btn-default btn-block general_aside_section_menuButton"
+			action="#{beanTranslator.translate()}">
+			<f:ajax execute="@form :form_translator" render="@form :form_translator"/>
+		</h:commandButton>
+	</div>
+	</h:form>
+</div>
+</div>
+</div>
+</div>
+
+<f:verbatim>
+<!-- Hacer que las ventanas 'modal' se puedan arrastrar -->
+<script>
+	$( "#searchUserNotFoundModal" ).draggable();
+</script>
+<script>
+	$( "#translator" ).draggable();
+</script>
+</f:verbatim>
+
+</ui:composition>

@@ -1,0 +1,58 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:form id="form_smallClasification" prependId="false">
+<div class="general_textBold">
+	<span class="glyphicon glyphicon-tag general_glyphicon-spacing"></span>
+	<a data-toggle="collapse" data-target="#collapseClasification" class="collapsed">
+		#{msgs.titleClasification}<span class="caret"></span>
+	</a>
+	<div class="collapse in profile_aside_section_clasification" id="collapseClasification">
+	<ul>
+		<ui:param value="#{beanUserClasification.getSmallClasificationByUser(beanUserView.user)}" name="smallClasification"/>
+		<ui:fragment rendered="#{smallClasification.keySet().toArray()[0] != 1}">
+		<li class="removeMargin">
+			<div style="vertical-align: middle;">...</div>
+		</li>
+		</ui:fragment>
+		<ui:repeat value="#{smallClasification.entrySet().toArray()}" var="userInClasification" varStatus="element">
+		<!-- la variable del ui:repeat no debe llamarse "user", porque ese nombre ya se usa en "profile_user.xhtml", en el f:metadata -->
+		<li class="#{element.even ? 'even' : ''}">
+			<div>
+				<h:panelGroup layout="block" styleClass="#{beanUserView.user.id.equals(userInClasification.value.id) ? 'currentUser' : ''}">##{userInClasification.key}</h:panelGroup>
+			</div><div>
+				<h:panelGroup layout="block">
+				<h:outputLink value="#{beanUserView.getOutputLinkToProfile(userInClasification.value.id)}">
+					#{beanUtils.limitTextLength(16, userInClasification.value.nick)}
+				</h:outputLink>
+				</h:panelGroup>
+			</div><div>
+				<h:panelGroup layout="block" styleClass="#{beanUserView.user.id.equals(userInClasification.value.id) ? 'currentUser' : ''}">#{beanUtils.limitNumericValue(9999, userInClasification.value.userInfo.points)} #{msgs.title_points}</h:panelGroup>
+			</div>
+		</li>
+		</ui:repeat>
+		<ui:fragment rendered="#{beanUserClasification.isTheVeryLastUser( smallClasification.keySet().toArray()[smallClasification.size()-1] ) == false}">
+		<li class="removeMargin">
+			<div style="vertical-align: middle;">...</div>
+		</li>
+		</ui:fragment>
+	</ul>
+	<ui:fragment rendered="#{beanUserView.user.id.equals(beanLogin.loggedUser.id)}">
+		<div class="profile_aside_section_clasification_margin">
+			<h:commandLink value=" #{msgs.titleReloadClasification}" actionListener="#{beanUserClasification.reloadSmallLoggedUserClasification()}">
+				<f:ajax render="@form :form_smallClasification"/>
+			</h:commandLink>
+		</div>
+	</ui:fragment>
+	<!--
+	<div class="profile_aside_section_clasification_margin">
+		<a href="clasification.xhtml"> #{msgs.titleFullClasification}</a>
+	</div>
+	-->
+	</div>
+</div>
+</h:form>
+
+</ui:composition>

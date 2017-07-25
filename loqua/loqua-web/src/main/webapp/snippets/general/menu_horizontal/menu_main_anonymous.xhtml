@@ -1,0 +1,140 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+<!-- Barra superior de navegacion -->
+<div class="navbar navbar-inverse navbar-fixed-top"
+		style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 4px 8px 0 rgba(0, 0, 0, 0.2);">
+	<div class="container-fluid">
+	<div class="navbar-header">
+		<div class="btn navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>                        
+		</div>
+		<div class="navbar-brand general_mainHeader_tittleText">
+			<h:link outcome="linkAnonymousIndex" class="general_inline-block">Loqua</h:link>
+			<!-- class="noDisplayOver768screen -->
+			<div class="general_mainHeader_tittlePage general_inline-block">
+				<span class="glyphicon glyphicon-chevron-right" style="vertical-align:middle;"></span>
+				<h:link outcome="linkAnonymousForum"> #{msgs.titleForumIndex}</h:link>
+			</div>
+		</div>
+	</div>
+	<div class="collapse navbar-collapse" id="myNavbar">
+	
+		<ul class="nav navbar-nav navbar-right">
+			<li>
+				<!-- o:form puede tener includeViewParams="true" o bien includeRequestParams="true" o bien useRequestURI="true" -->
+				<!-- Es util para reenviar los parametros al recargar la pagina,
+				puesto que de lo contrario los Filter no permitirian el acceso -->
+				<o:form includeViewParams="true" id="form-localeLanguage" prependId="false">
+				<div style="padding-top:15px; padding-bottom:15px; padding-left:15px;" >
+					<div class="general_mainHeader_tittleText noDisplayUnder992screen"
+							style="display:inline-block; font-weight:normal; padding-right:6px;">
+						<label for="localeLanguage" style="font-weight:normal;">#{msgs.titleLanguage}:</label>
+					</div>
+					<div style="display:inline-block; vertical-align: middle;">
+						<h:selectOneMenu class="form-control general_input_selectButton"
+								id="localeLanguage" value="#{beanSettingsSession.localeLanguage}"
+								onchange="document.getElementById('hidenBtnChangeLang').click();">             
+					    	<f:selectItems value="#{beanSettingsSession.allLanguagesFromProperties}"/>
+					    	<!-- Aqui habia un f:ajax render="@all". Se sustituye por el 'onchange' y el siguiente commandButton -->
+						</h:selectOneMenu>
+						<h:commandButton id="hidenBtnChangeLang" style="display:none;"
+								action="#{beanUtilsView.renderViewAgainFromCommandLink(null)}"
+								value="This value just performs the 'H91' technique of WCAG 2.0 evaluation">
+						</h:commandButton>
+					</div>
+				</div>
+				</o:form>
+			</li>
+			<li><h:link outcome="linkRegister"><span class="glyphicon glyphicon-user"></span> #{msgs.titleSignUp}</h:link></li>
+			<li><a href="#login" data-toggle="modal" data-backdrop="false"><span class="glyphicon glyphicon-log-in"></span> #{msgs.titleLogIn}</a></li>
+		</ul>
+		
+		<!-- Ventana 'modal' para mostrar el login -->
+		<div id="login" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+		<div class="modal-dialog modal-xs">
+		<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal">×</button>
+			<div class="general_modal_tittle">#{msgs.titleLogIn}</div>
+		</div>
+		<div class="modal-body">
+			<o:form includeViewParams="true" id="form_login" class="form-horizontal container-fluid" prependId="false">
+				<div>
+					<div class="form-group">
+						<div class="form-group">
+							<label for="inputEmail" class="control-label col-xs-12 col-sm-4 login_sectionForm_margin">#{msgs.titleEmail}:</label>
+							<div class="col-xs-10 col-sm-5 login_sectionForm_margin" style="margin-top:6px;">
+								<!-- <input type="email" class="form-control input-sm general_input_height" id="inputEmail" placeholder="Email"/> -->
+								<h:inputText class="form-control input-sm general_input_height"
+										id="inputEmail" required="true"
+										a:placeholder="#{msgs.titleEmail}" value="#{beanLogin.email}"
+										requiredMessage="#{msgs.errorEmailRequired}">
+									<f:converter converterId="converterCleanSpaces" />
+								</h:inputText>
+								<h:message for="inputEmail" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputPassword" class="control-label col-xs-12 col-sm-4 login_sectionForm_margin">#{msgs.titlePassword}:</label>
+							<div class="col-xs-10 col-sm-5 login_sectionForm_margin" style="margin-top:6px;">
+								<!-- <input type="password" class="form-control input-sm general_input_height" id="inputPassword" placeholder="Contraseña"/> -->
+								<h:inputSecret class="form-control input-sm general_input_height"
+										id="inputPassword" required="true"
+										a:placeholder="#{msgs.titlePassword}" value="#{beanLogin.password}"
+										requiredMessage="#{msgs.errorPasswordRequired}" />
+								<h:message for="inputPassword" />
+							</div>
+						</div>
+						
+						<div class="form-group general_textCenter">
+							<div class="col-xs-12 col-sm-12">
+							<h:link outcome="linkPasswordRestore">#{msgs.titleForgotPassword}</h:link>
+							</div>
+						</div>
+						<div id="divWaitLogin" class="form-group general_textCenter general_noDisplay">
+							<div class="col-xs-12 col-sm-12">
+								<h:outputText id="msgRunningLogin" value="#{msgs.descriptionWait}"/>
+								<h:panelGroup id="spinnerWheelLogin" layout="block"
+									style="margin:25px auto auto auto;"/>
+							</div>
+						</div>
+						<div class="form-group general_textCenter">
+							<div class="col-xs-12 col-sm-12">
+							<h:outputText id="msgError" value="#{beanActionResult.msgActionResult}" />
+							</div>
+						</div>
+						<div class="form-group general_textCenter">
+							<div class="col-xs-12 col-sm-12">
+							<h:commandButton id="btnLogin" class="btn btn-default general_input_button"
+									value="#{msgs.titleEnter}" action="#{beanLogin.verify(beanActionResult)}"
+									onclick="showElement('divWaitLogin');setSpinnerInLayout('spinnerWheelLogin');removeText('msgError');disableElement(this.id);"
+									onComplete="return false;">
+								<f:ajax execute="@form :form_login" render="@form :form_login" />
+							</h:commandButton>
+							</div>
+						</div>
+					</div>
+				</div>
+			</o:form>
+		</div>
+		</div>
+		</div>
+		</div>
+		
+		<!-- Hacer que la ventana 'modal' del login se pueda arrastrar -->
+		<script>
+			$( "#login" ).draggable();
+		</script>
+	</div>
+	</div>
+</div>
+
+</ui:composition>

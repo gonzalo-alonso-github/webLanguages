@@ -1,0 +1,44 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<!-- Barra de cabecera -->
+<div id="general_header_tittle">
+	<div class="container-fluid">
+		<div class="row" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 4px 8px 0 rgba(0, 0, 0, 0.2);">
+		
+			<!-- La barra de cabecera contiene un titulo y un boton para mostrar el traductor -->
+			<div class="general_subHeader_margin">
+			<!-- Este es el titulo -->
+			<div class="general_subHeader_tittle noDisplayUnder768screen">
+				<div class="general_inline-block">
+					Loqua
+					<span class="glyphicon glyphicon-chevron-right" style="vertical-align:middle; margin-bottom:4px;"></span>
+					<h:outputText value="#{tittleHeader}"/>
+				</div>
+			</div>
+			<!-- Estos son los elementos a la derecha del titulo -->
+			<div class="general_subHeader_containerElements">
+				<!-- Este es el boton para mostrar el traductor en una ventana 'modal' -->
+				<div class="general_subHeader_element">
+					<div class="input-group input-group-sm">
+						<span class="input-group-btn">
+							<a href="#translator" class="btn btn-default" id="buttonTranslator"
+								data-toggle="modal" data-backdrop="false">
+								#{msgs.titleTranslator}
+							</a>
+							<!-- data-backdrop: "true" / "false" / "static" -->
+						</span>
+					</div>
+				</div>
+			</div>
+			<div class="general_clearBoth"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<ui:include src="/snippets/general/menu_horizontal/menu_elements/menu_elements_modal_windows.xhtml" />
+
+</ui:composition>

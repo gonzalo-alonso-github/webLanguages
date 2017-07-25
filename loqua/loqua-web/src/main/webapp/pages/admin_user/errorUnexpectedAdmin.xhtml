@@ -1,0 +1,65 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	template="/templates/template_general.xhtml">
+
+<f:metadata>
+	<f:viewParam name="confirm" value="#{beanUserRegister.urlConfirm}" />
+</f:metadata>
+
+<!-- scripts y css propios de esta pagina -->
+<ui:define name="more_resources">
+	<!-- funciones javascript necesarias para esta pagina: -->
+	<h:outputScript name="js/confirmation_page.js"/>
+</ui:define>
+
+<!-- Barra superior de navegacion -->
+<ui:define name="menu_horizontal">
+	<ui:include src="/snippets/general/menu_horizontal/menu_main_admin.xhtml" />
+</ui:define>
+
+<!-- Contenido de la pagina -->
+<ui:define name="page">
+<div id="general_space_for_main_navbar"></div>
+<div class="container" id="general_container">
+	<div id="general_body">
+		<div class="general_center general_center_in1column general_standarPage_maxwidth">
+			<h:form id="form_confirmation" class="form-horizontal" prependId="false">
+			
+			<div class="register_container">
+				<div class="row general_textCenter">
+					<div class="col-sm-12 register_headerTittle">
+						#{msgs.titleError}
+					</div>
+					<div class="register_headerDescription" style="margin-bottom:50px;">
+						<h:outputText id="msgResultAction"
+							value="#{msgs.errorUnexpectedSorry}" />
+					</div>
+				</div>
+			</div>
+			<br/>
+			<div class="form-group general_textCenter">
+				<div class="col-xs-12 col-sm-12">
+					<!--
+					Este boton redirige a las paginas de usuario administrador.
+					Pero si el usuario no tiene sesion iniciada, ya el filtro se encargara
+					de redirigirlo a las paginas de anonimos
+					-->
+					<!--
+					<h:commandButton id="btnAccept" class="btn btn-default general_input_button" 
+						value="#{msgs.titleAccept}" action="linkRegisteredIndex"/>
+					-->
+					<h:commandButton id="btnAccept" class="btn btn-default general_input_button" 
+						value="#{msgs.titleAccept}" action="#{beanUserView.getActionLinkToIndex()}"/>
+				</div>
+			</div>
+			</h:form>
+		</div>
+	</div>
+</div>
+</ui:define>
+
+</ui:composition>

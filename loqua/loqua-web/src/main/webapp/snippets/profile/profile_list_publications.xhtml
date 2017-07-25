@@ -1,0 +1,140 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+<!-- Listado de publicaciones de un usuario y, opcionalmente, de sus contactos -->
+<!-- Incluye al final un boton para cargar las publicaciones mas antiguas -->
+
+<h:form id="form_listPublications" prependId="false">
+<ui:repeat var="publication"
+	value="#{beanPublication.getPublicationsByUser(beanUserView.user.id, beanPublication.includePubsByContacts, beanActionResult)}">
+<ui:fragment rendered="#{beanUserView.shouldBeShownByPrivacity(publication.user, publication.privacity)}">
+<div class="general_section">
+	<div class="general_section_content">
+		<div class="profile_face_publications_table">
+		<div class="profile_face_publications_tableRow">
+			<div class="profile_face_publications_tableCell">
+				<h:outputLink value="#{beanUserView.getOutputLinkToProfile(publication.user.id)}">
+					#{beanUtils.limitTextLength(16, publication.user.nick)}
+				</h:outputLink>
+			</div>
+			<div class="general_section_content_date profile_face_publications_tableLastCell">
+				<div class="profile_face_section_dateTime">#{beanSettingsSession.getFormattedDateTime(publication.datePub)}</div>
+				<ui:fragment rendered="#{beanUserView.loggedUserIsAdminOrAuthorOfData(publication.user)}">
+				<div class="profile_face_section_editPrivacity">
+				<ui:fragment rendered="#{beanUserView.showEditablePrivacity(publication)}">
+					<h:commandLink
+							a:href="#edit_privacity" a:data-toggle="modal" a:data-backdrop="false"
+							a:title="#{beanSettingsSession.getTranslation(publication.privacity.toString().concat('_description'))}"
+							actionListener="#{beanPublication.setPublicationToCRUD(publication)}">
+						<f:ajax render="@form :form_listPublications"/>
+							#{beanSettingsSession.getTranslation(publication.privacity.toString())}
+							<span class="glyphicon glyphicon-pencil"></span>
+					</h:commandLink>
+				</ui:fragment>
+				</div>
+				<div class="profile_face_section_deletePublication">
+					<h:commandLink
+							a:href="#deletePublication" a:data-toggle="modal" a:data-backdrop="false"
+							a:title="#{msgs.titleDeletePublication}"
+							actionListener="#{beanPublication.setPublicationToCRUD(publication)}">
+						<f:ajax render="@form :form_listPublications"/>
+						<span class="profile_face_section_deletePublication_space">X</span>
+					</h:commandLink>
+				</div>
+				</ui:fragment>
+			</div>
+		</div>
+		</div>
+		<div class="profile_face_publications_table_always">
+		<div class="profile_face_publications_tableRow_always">
+		<div class="general_section_userAvatar">
+			<span class="general_section_userAvatarHelper"></span><o:graphicImage dataURI="true" style="float:left" value="#{beanUserImages.getUserImage(publication.user)}" alt="#{msgs.titleImgAltAvatar}"/>
+		</div>
+		<div class="general_section_body">
+			<h:panelGroup rendered="#{publication.selfGenerated==false}">
+				<h:panelGroup class="general_textBold">
+				#{beanPublication.getUserPublication(publication)}
+				</h:panelGroup>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{publication.selfGenerated==true}">
+				<h:panelGroup class="general_textBold">
+				#{beanPublication.getUserPublicationPart1(publication)}
+				<ui:param name="pubValueType" value="#{beanPublication.getPublicationValueType(publication)}" />
+				<h:panelGroup rendered="#{pubValueType==1}">
+					#{publication.eventValue}
+				</h:panelGroup>
+				<h:panelGroup rendered="#{pubValueType==2 or pubValueType==3}">
+					<h:panelGroup class="profile_face_threadTittle">
+						<h:outputLink value="#{beanComment.getOutputLinkToPost(publication.eventValue)}">
+							"#{beanUtils.limitTextLength(30, beanPublication.getThreadTitleByPost(publication))}"
+						</h:outputLink>
+					</h:panelGroup>
+					<!-- <h:panelGroup style="white-space: nowrap">:</h:panelGroup> -->
+				</h:panelGroup>
+				<h:panelGroup rendered="#{pubValueType==5}">
+					<h:panelGroup class="profile_face_threadTittle">
+						<h:outputLink value="#{beanForumThread.getOutputLinkToThread(publication.eventValue,0)}">
+							"#{beanUtils.limitTextLength(30, beanForumThread.getThreadById(publication.eventValue).title)}"
+						</h:outputLink>
+					</h:panelGroup>
+					<!-- <h:panelGroup style="white-space: nowrap">:</h:panelGroup> -->
+				</h:panelGroup>
+				<h:panelGroup class="profile_face_threadTittle" rendered="#{pubValueType==4}">
+					<h:outputLink value="#{beanUserView.getOutputLinkToProfile(publication.eventValue)}">
+						#{beanUtils.limitTextLength(16, beanPublication.getUserNick(publication))}
+					</h:outputLink>
+				</h:panelGroup>
+					#{beanPublication.getUserPublicationPart2(publication)}
+				</h:panelGroup>
+				<h:panelGroup layout="block" rendered="#{pubValueType==2 or pubValueType==3}">
+					<div class="profile_face_comment">
+						"#{beanUtils.limitTextLength(80, beanComment.getCommnentTextByPost(publication.eventValue))}"
+					</div>
+					<div>
+						<h:outputLink value="#{beanComment.getOutputLinkToPost(publication.eventValue)}">#{msgs.titleGoToComment}</h:outputLink>
+					</div>
+				</h:panelGroup>
+				<h:panelGroup layout="block" rendered="#{pubValueType==5}">
+					<div class="profile_face_comment">(#{msgs.titleDeletedContent})</div>
+				</h:panelGroup>
+			</h:panelGroup>
+		</div>
+		</div>
+		</div>
+	</div>
+</div>
+</ui:fragment>
+</ui:repeat>
+<!-- Fin de la lista de publicaciones -->
+
+<!-- Animacion 'spin' con mensage de espera, o mensaje de error -->
+<div id="divWaitLoadPubs" class="form-group general_textCenter general_noDisplay">
+	<div class="col-xs-12 col-sm-12">
+		<h:outputText id="msgRunningLoadPubs" value="#{msgs.descriptionWait}"/>
+		<h:panelGroup id="spinnerWheelLoadPubs" layout="block"
+			style="margin:25px auto auto auto;"/>
+	</div>
+</div>
+<div class="form-group general_textCenter" style="margin:auto auto auto auto;">
+	<div class="col-xs-12 col-sm-12">			
+		<h:outputText id="msgResultLoadPubs" value="#{beanActionResult.msgActionResult}" />
+	</div>
+</div>
+<!-- Boton submit -->
+<h:panelGroup layout="block" class="general_textCenter" rendered="#{beanPublication.exsistOlderPublicationsByUser()==true}">
+	<h:commandButton value="#{msgs.titleViewMore}"
+			actionListener="#{beanPublication.getNextPublicationsByUser(beanUserView.user.id, includePubsByContacts, beanActionResult)}"
+			class="btn btn-default general_input_button general_textCenter"
+			onclick="showElement('divWaitLoadPubs');setSpinnerInLayout('spinnerWheelLoadPubs');disableElement(this.id);">
+		<f:ajax render="@form :form_listPublications"/>
+	</h:commandButton>
+</h:panelGroup>
+</h:form>
+
+</ui:composition>

@@ -1,0 +1,1004 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+<!-- Ventana 'modal' para la edición de imagen de usuario -->
+<div id="edit_userAvatar" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleEditAvatar}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<h:form id="form_editAvatar" prependId="false" enctype="multipart/form-data">
+				<!-- Ningun componente de JSF puede acceder directamente al getter/setter de un tipo byte[] -->
+				<!-- Por tanto no se puede hacer value="beanX.getImage()" -->
+				<!-- Por tanto para este proposito se debe usar Primefaces u OmniFaces. OmniFaces es menos problematico -->
+				<div class="profile_userAvatar">
+					<!-- Ningun componente de Omnifaces puede acceder directamente a un bean que no tenga expresamente la anotacion @ApplicationScoped
+					Por tanto he creado el beanUserImages de ambito aplicacion
+					
+					Nota: si en el componente o:graphicImage no indicamos dataURI="true"
+					la imagen se guardara en la cache del browser,
+					en cuyo caso no se actualizaria al subir una nueva imagen, pinchando en el submit
+					 -->
+					<span class="profile_userAvatarHelper"></span><o:graphicImage id="image_upload_preview" dataURI="true" value="#{beanUserImages.getLoggedUserImage()}" alt="#{msgs.titleImgAltAvatar}"/>
+				</div>
+				<div class="general_textCenter">
+				<span class="btn btn-default profile_buttonInputFile">
+					<label for="inputFile">#{msgs.titleUpdateAvatar}</label>
+					<h:inputFile id="inputFile" value="#{beanUserData.imageProfile}" onchange="updateInputFile( document.getElementById('inputFile') );">
+						<f:validator validatorId="validatorImageProfile" />
+					</h:inputFile>
+				</span>
+				</div>
+				<div class="form-group profile_modalForm_margin general_textCenter">
+					<div class="col-xs-12 col-sm-12">
+						<div style="display:inline-block;">
+							<label for="selectPrivacityAvatar">#{msgs.titlePrivacity}</label>
+						</div>
+						<div style="display:inline-block;">
+						<!-- Mientras no se pinche el boton submit no se llamara al setter -->
+						<h:selectOneMenu id="selectPrivacityAvatar"
+								class="form-control general_input_selectButton"
+								value="#{beanUserView.user.privacityData.image}">
+							<c:forEach items="#{beanSettingsUser.listPrivacityLevels}" var="item">	
+								<f:selectItem
+									itemLabel="#{beanSettingsSession.getTranslation(item)}"
+									itemValue="#{item}"
+									a:title="#{beanSettingsSession.getTranslation(item.concat('_description'))}"/>
+							</c:forEach>
+						</h:selectOneMenu>
+						</div>
+					</div>
+				</div>
+				<!-- Animacion 'spin' con mensage de espera, o mensaje de error -->
+				<div id="divWaitEditAvatar" class="form-group general_textCenter general_noDisplay">
+					<div class="col-xs-12 col-sm-12">
+						<h:outputText id="msgRunningEditAvatar" value="#{msgs.descriptionWait}"/>
+						<h:panelGroup id="spinnerWheelEditAvatar" layout="block"
+							style="margin:25px auto auto auto;"/>
+					</div>
+				</div>
+				<div class="form-group general_textCenter">
+					<div class="col-xs-12 col-sm-12">			
+						<h:outputText id="msgResultEditAvatar" value="#{beanActionResult.msgActionResult}" />
+						<h:message id="msgValidatorAvatar" for="inputFile" />
+					</div>
+				</div>
+				<!-- Boton submit -->
+				<div class="form-group general_textCenter">
+					<div class="col-xs-12 col-sm-12">
+						<!-- En el "f:ajax" de este boton, en el render podriamos poner "@all"
+						en lugar de enumerar todos esos formularios,
+						pero tendria un problema: la ventana se cerraria siempre al pincharlo, aun cuando el resultado de la accion no sea exitoso -->
+						<h:commandButton id="btnSaveAvatar" class="btn btn-default general_input_button"
+							value="#{msgs.titleSave}"
+							action="#{beanUserEditProfile.editLoggedUserAvatar(beanUserView, beanActionResult)}"
+							onclick="showElement('divWaitEditAvatar');setSpinnerInLayout('spinnerWheelEditAvatar');disableElement(this.id);">
+							<f:ajax execute="@form :form_editAvatar" render="@form :form_editAvatar :form_profileHeader :form_listPublications :form_publicationCreateOver480screen :form_publicationCreateUnder480screen"/>
+						</h:commandButton>
+						<h:outputScript rendered="#{not facesContext.validationFailed and
+								beanActionResult.finish and beanActionResult.success}">
+							$('#edit_userAvatar').modal('hide');
+							$('#editProfileSuccessModal').modal('show');
+						</h:outputScript>
+					</div>
+				</div>
+			</h:form>
+			</div>	
+		</div>
+		
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Para el control inputFile -->
+<h:outputScript name="js/inputFile.js"/>
+
+<!-- Ventana 'modal' para la edición de sexo de usuario -->
+<div id="edit_gender" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleEditGender}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<h:form id="form_editGender" prependId="false">
+				<div class="form-group profile_modalForm_margin general_textCenter">
+					<div class="col-xs-12 col-sm-12">
+						<div style="display:inline-block; vertical-align:middle;" class="general_textBold general_label_radioButtonSpace">
+							#{msgs.titleGender}:
+						</div>
+						<div style="display:inline-block; vertical-align:middle;" class="general_radioButtonSpace">	
+							<fieldset class="general_disableFieldset">
+							<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+							<h:selectOneRadio id="inputGenderRegister" required="true"
+									requiredMessage="#{msgs.errorGenderRequired}"
+									value="#{beanUserView.user.userInfoPrivacity.gender}"
+									style="margin-top:6px;">
+								<f:selectItem itemValue="false" itemLabel="#{msgs.titleMan}"/>
+								<f:selectItem itemValue="true" itemLabel="#{msgs.titleWoman}"/>
+								<!--
+								<f:validator validatorId="validatorEmptyValue" />
+								<f:attribute name="inputName" value="#{msgs.titleGender}" />
+								-->					
+							</h:selectOneRadio>
+							</fieldset>
+						</div>
+					</div>
+				</div>
+				<div class="form-group profile_modalForm_margin general_textCenter">
+					<div class="col-xs-12 col-sm-12">
+						<div style="display:inline-block;">
+							<label for="selectPrivacityGender">#{msgs.titlePrivacity}</label>
+						</div>
+						<div style="display:inline-block;">
+						<!-- Mientras no se pinche el boton submit no se llamara al setter -->
+						<h:selectOneMenu id="selectPrivacityGender"
+								class="form-control general_input_selectButton"
+								value="#{beanUserView.user.privacityData.gender}">
+							<c:forEach items="#{beanSettingsUser.listPrivacityLevels}" var="item">	
+								<f:selectItem
+									itemLabel="#{beanSettingsSession.getTranslation(item)}"
+									itemValue="#{item}"
+									a:title="#{beanSettingsSession.getTranslation(item.concat('_description'))}"/>
+							</c:forEach>
+						</h:selectOneMenu>
+						</div>
+					</div>
+				</div>
+				<!-- Animacion 'spin' con mensage de espera, o mensaje de error -->
+				<div id="divWaitEditGender" class="form-group general_textCenter general_noDisplay">
+					<div class="col-xs-12 col-sm-12">
+						<h:outputText id="msgRunningEditGender" value="#{msgs.descriptionWait}"/>
+						<h:panelGroup id="spinnerWheelEditGender" layout="block"
+							style="margin:25px auto auto auto;"/>
+					</div>
+				</div>
+				<div class="form-group general_textCenter">
+					<div class="col-xs-12 col-sm-12">			
+						<h:outputText id="msgResultEditGender" value="#{beanActionResult.msgActionResult}" />
+						<h:message id="msgValidatorGender" for="inputGenderRegister" />
+					</div>
+				</div>
+				<!-- Boton submit -->
+				<div class="form-group general_textCenter">
+					<div class="col-xs-12 col-sm-12">
+						<h:commandButton id="btnSaveGender" class="btn btn-default general_input_button"
+							value="#{msgs.titleSave}"
+							action="#{beanUserEditProfile.editProfileGender(beanUserView.user, beanActionResult)}"
+							onclick="showElement('divWaitEditGender');setSpinnerInLayout('spinnerWheelEditGender');disableElement(this.id);">
+							<f:ajax execute="@form :form_editGender" render="@form :form_editGender :form_profileHeader"/>
+						</h:commandButton>
+						<h:outputScript rendered="#{not facesContext.validationFailed and
+								beanActionResult.finish and beanActionResult.success}">
+							$('#edit_gender').modal('hide');
+							$('#editProfileSuccessModal').modal('show');
+						</h:outputScript>
+					</div>
+				</div>
+			</h:form>
+			</div>	
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Ventana 'modal' para la edición de paises del usuario -->
+<div id="edit_origin_location" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleEditCountryOriginLocation}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<h:form id="form_editOriginlocation" prependId="false">
+				<div class="form-group profile_modalForm_margin general_textCenter">
+					<div class="col-xs-12 col-sm-12">
+						<div style="display:inline-block;">
+							<label for="selectOriginCountry">#{msgs.titleEditCountryOrigin}</label>
+						</div>
+						<div style="display:inline-block;">
+						<!-- Mientras no se pinche el boton submit no se llamara al setter -->
+						<h:selectOneMenu id="selectOriginCountry"
+								class="form-control general_input_selectButton"
+								value="#{beanUserView.countryOriginId}">
+							<f:selectItems value="#{beanCache.allCountriesForSelect}"/>
+							<f:converter converterId="converterSelectItemToLong" />
+						</h:selectOneMenu>
+						</div>
+					</div>
+				</div>
+				<div class="form-group profile_modalForm_margin general_textCenter">
+					<div class="col-xs-12 col-sm-12">
+						<div style="display:inline-block;">
+							<label for="selectLocationCountry">#{msgs.titleEditCountryLocation}</label>
+						</div>
+						<div style="display:inline-block;">
+						<!-- Mientras no se pinche el boton submit no se llamara al setter -->
+						<h:selectOneMenu id="selectLocationCountry" required="true"
+								class="form-control general_input_selectButton"
+								value="#{beanUserView.countryLocationId}">
+							<f:selectItems value="#{beanCache.allCountriesForSelect}"/>
+						</h:selectOneMenu>
+						</div>
+					</div>
+				</div>
+				<div class="form-group profile_modalForm_margin general_textCenter">
+					<div class="col-xs-12 col-sm-12">
+						<div style="display:inline-block;">
+							<label for="selectPrivacityCountries">#{msgs.titlePrivacity}</label>
+						</div>
+						<div style="display:inline-block;">
+						<!-- Mientras no se pinche el boton submit no se llamara al setter -->
+						<h:selectOneMenu id="selectPrivacityCountries"
+								class="form-control general_input_selectButton"
+								value="#{beanUserView.privacityForUserCountries}">
+							<c:forEach items="#{beanSettingsUser.listPrivacityLevels}" var="item">	
+								<f:selectItem
+									itemLabel="#{beanSettingsSession.getTranslation(item)}"
+									itemValue="#{item}"
+									a:title="#{beanSettingsSession.getTranslation(item.concat('_description'))}"/>
+							</c:forEach>
+						</h:selectOneMenu>
+						</div>
+					</div>
+				</div>
+				<!-- Animacion 'spin' con mensage de espera -->
+				<div id="divWaitEditCountries" class="form-group general_textCenter general_noDisplay">
+					<div class="col-xs-12 col-sm-12">
+						<h:outputText id="msgRunningEditCountries" value="#{msgs.descriptionWait}"/>
+						<h:panelGroup id="spinnerWheelEditCountries" layout="block"
+							style="margin:25px auto auto auto;"/>
+					</div>
+				</div>
+				<div class="form-group general_textCenter">
+					<div class="col-xs-12 col-sm-12">			
+						<h:outputText id="msgResultEditCountries" value="#{beanActionResult.msgActionResult}" />
+						<h:message for="selectOriginCountry" />
+						<h:message for="selectLocationCountry" />
+					</div>
+				</div>
+				<!-- Boton submit -->
+				<div class="form-group general_textCenter">
+					<div class="col-xs-12 col-sm-12">
+						<h:commandButton id="btnSaveCountries" class="btn btn-default general_input_button"
+							value="#{msgs.titleSave}"
+							action="#{beanUserEditProfile.editProfileCountries(beanUserView.user, beanActionResult)}"
+							onclick="showElement('divWaitEditCountries');setSpinnerInLayout('spinnerWheelEditCountries');disableElement(this.id);">
+							<f:ajax execute="@form :form_editCountries" render="@form :form_editCountries :form_profileHeader"/>
+						</h:commandButton>
+						<h:outputScript rendered="#{not facesContext.validationFailed and
+								beanActionResult.finish and beanActionResult.success}">
+							$('#edit_origin_location').modal('hide');
+							$('#editProfileSuccessModal').modal('show');
+						</h:outputScript>
+					</div>
+				</div>
+			</h:form>
+			</div>	
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Ventana 'modal' para la edición de privacidad de un comentario -->
+<div id="edit_privacity" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleEditPrivacity}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<h:form id="form_editPubPrivacity" prependId="false">
+				<div class="form-group profile_modalForm_margin general_textCenter">
+					<div class="col-xs-12 col-sm-12">
+						<div style="display:inline-block;">
+							<label for="selectPrivacityComment">#{msgs.titlePrivacity}:</label>
+						</div>
+						<div style="display:inline-block;">
+						<!-- Mientras no se pinche el boton submit no se llamara al setter -->
+						<h:selectOneMenu id="selectPrivacityComment"
+								class="form-control general_input_selectButton"
+								value="#{beanPublication.publicationToCRUD.privacity}">
+							<c:forEach items="#{beanSettingsUser.listPrivacityLevels}" var="item">	
+								<f:selectItem
+									itemLabel="#{beanSettingsSession.getTranslation(item)}"
+									itemValue="#{item}"
+									a:title="#{beanSettingsSession.getTranslation(item.concat('_description'))}"/>
+							</c:forEach>
+						</h:selectOneMenu>
+						</div>
+					</div>
+				</div>
+				<!-- Animacion 'spin' con mensage de espera -->
+				<div id="divWaitPubPriv" class="form-group general_textCenter general_noDisplay">
+					<div class="col-xs-12 col-sm-12">
+						<h:outputText id="msgRunningPubPriv" value="#{msgs.descriptionWait}"/>
+						<h:panelGroup id="spinnerWheelPubPriv" layout="block"
+							style="margin:25px auto auto auto;"/>
+					</div>
+				</div>
+				<!-- Boton submit -->
+				<div class="form-group general_textCenter">
+					<div class="col-xs-12 col-sm-12">
+						<h:commandButton id="btnSavePubPriv" class="btn btn-default general_input_button"
+							value="#{msgs.titleSave}"
+							action="#{beanPublication.updatePublication(beanUserView.user, beanActionResult)}"
+							onclick="showElement('divWaitPubPriv');setSpinnerInLayout('spinnerWheelPubPriv');disableElement(this.id);">
+							<f:ajax execute="@form :form_editPubPrivacity" render="@form :form_editPubPrivacity :form_listPublications"/>
+						</h:commandButton>
+						<h:outputScript rendered="#{not facesContext.validationFailed and
+								beanActionResult.finish and beanActionResult.success}">
+							$('#edit_privacity').modal('hide');
+							<!--  $('#editProfileSuccessModal').modal('show'); -->
+						</h:outputScript>
+					</div>
+				</div>
+			</h:form>
+			</div>	
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Ventana 'modal' para confirmar eliminar publicacion -->
+<div id="deletePublication" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleDeletePublication}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<h:form id="form_deletePublication" prependId="false">
+				<div class="form-group general_textCenter">
+					<span class="control-label login_sectionForm_margin">#{msgs.descriptionDeletePublication}</span>
+					<div class="login_sectionForm_margin" style="margin-top:6px;">
+						<!-- Animacion 'spin' con mensage de espera -->
+						<div id="divWaitPubDelete" class="form-group general_textCenter general_noDisplay">
+							<div class="col-xs-12 col-sm-12">
+								<h:outputText id="msgRunningPubDelete" value="#{msgs.descriptionWait}"/>
+								<h:panelGroup id="spinnerWheelPubDelete" layout="block"
+									style="margin:25px auto auto auto;"/>
+							</div>
+						</div>
+						<h:commandButton id="btnAcceptDeletePub" class="btn btn-default general_input_button"
+							value="#{msgs.titleAccept}"
+							action="#{beanPublication.deletePublication(beanUserView.user, beanActionResult)}"
+							onclick="showElement('divWaitPubDelete');setSpinnerInLayout('spinnerWheelPubDelete');disableElement(this.id);disableElement('btnCancelDeletePub');">
+							<f:ajax render="@form :form_deletePublication :form_listPublications"/>
+						</h:commandButton>
+						<button id="btnCancelDeletePub"
+							class="btn btn-default general_input_button"
+							data-dismiss="modal">#{msgs.titleCancel}</button>
+						<h:outputScript rendered="#{beanActionResult.finish and beanActionResult.success}">
+							$('#deletePublication').modal('hide');
+							<!--  $('#editProfileSuccessModal').modal('show'); -->
+						</h:outputScript>
+					</div>
+				</div>
+			</h:form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Ventana 'modal' para la edición de email de usuario -->
+<div id="edit_email" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleChangeEmail}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+				<!-- Este snippet solo se muestra si todavia no han confirmado la contrasena -->
+				<ui:param name="formDistinctive" value="_editEmail" />
+				<ui:param name="formToRender" value="form_editEmail" />
+				<ui:include src="/snippets/profile/form_currentPassword.xhtml" />
+				
+				<h:form id="form_editEmail" prependId="false">
+				<!-- Este form solo se muestra si ya han confirmado la contrasena -->
+				<h:panelGroup layout="block" rendered="#{beanUserConfirmCurrentPassword.currentPasswordConfirmed}">
+					<div class="form-group">
+						<label for="inputEditEmail" class="control-label col-xs-12 col-sm-4 register_sectionForm_margin">#{msgs.titleNewEmail}:</label>
+						<div class="col-xs-10 col-sm-5 register_sectionForm_margin" style="margin-top:6px;">
+							<h:inputText class="form-control input-sm general_input_height"
+									id="inputEditEmail" required="true" a:placeholder="#{msgs.titleEmail}"
+									value="#{beanUserView.user.email}"
+									requiredMessage="#{msgs.errorEmailRequired}"
+									binding="#{emailToConfirm}" >
+								<f:validator validatorId="validatorEmailAvailable" />
+								<f:attribute name="inputLabel" value="#{msgs.titleEmail}" />
+								<f:converter converterId="converterCleanSpaces" />
+							</h:inputText>
+							<h:message for="inputEditEmail" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputConfirmEmail" class="control-label col-xs-12 col-sm-4 register_sectionForm_margin">#{msgs.titleConfirmEmail}:</label>
+						<div class="col-xs-10 col-sm-5 register_sectionForm_margin" style="margin-top:6px;">
+							<h:inputText class="form-control input-sm general_input_height"
+									id="inputConfirmEmail" required="true" a:placeholder="#{msgs.titleConfirmEmail}"
+									requiredMessage="#{msgs.errorEmailConfirmRequired}" >
+								<f:validator validatorId="validatorEmailConfirmation" />
+								<f:attribute name="inputLabel" value="#{msgs.titleConfirmEmail}" />
+								<f:attribute name="emailToConfirm" value="#{emailToConfirm}" />
+								<f:converter converterId="converterCleanSpaces" />
+							</h:inputText>
+							<h:message for="inputConfirmEmail" />
+						</div>
+					</div>
+					<!-- Animacion 'spin' con mensage de espera -->
+					<div id="divWaitEditEmail" class="form-group general_textCenter general_noDisplay">
+						<div class="col-xs-12 col-sm-12">
+							<h:outputText id="msgRunningEditEmail" value="#{msgs.descriptionWait}"/>
+							<h:panelGroup id="spinnerWheelEditEmail" layout="block"
+								style="margin:25px auto auto auto;"/>
+						</div>
+					</div>
+					<div class="form-group general_textCenter">
+						<div class="col-xs-12 col-sm-12">			
+							<h:outputText id="msgResultEditEmail" value="#{beanActionResult.msgActionResult}" />
+						</div>
+					</div>
+					<!-- Boton submit -->
+					<div class="form-group general_textCenter">
+						<div class="col-xs-12 col-sm-12">
+							<h:commandButton id="btnProfileEditEmail" class="btn btn-default general_input_button"
+								value="#{msgs.titleAccept}"
+								action="#{beanUserEditEmailPassword.generateEmailForEditEmail(beanUserView, beanActionResult)}"
+								onclick="showElement('divWaitEditEmail');setSpinnerInLayout('spinnerWheelEditEmail');disableElement(this.id);">
+								<f:ajax execute="@form :form_editEmail" render="@form :form_editEmail"/>
+							</h:commandButton>
+							<h:outputScript rendered="#{not facesContext.validationFailed
+									and beanActionResult.finish and beanActionResult.success}">
+								$('#edit_email').modal('hide');
+								$('#editEmailSuccessModal').modal('show');
+							</h:outputScript>
+						</div>
+					</div>
+				</h:panelGroup>
+				</h:form>
+			</div>	
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Ventana 'modal' para la edición de contrasena de usuario -->
+<div id="edit_password" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleChangePassword}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+				<!-- Este snippet solo se muestra si todavia no han confirmado la contrasena -->
+				<ui:param name="formDistinctive" value="_editPassword" />
+				<ui:param name="formToRender" value="form_editPassword" />
+				<ui:include src="/snippets/profile/form_currentPassword.xhtml" />
+				
+				<h:form id="form_editPassword" prependId="false">
+				<!-- Este form solo se muestra si ya han confirmado la contrasena -->
+				<h:panelGroup layout="block" rendered="#{beanUserConfirmCurrentPassword.currentPasswordConfirmed}">
+					<div class="form-group">
+						<label for="inputEditPassword" class="control-label col-xs-12 col-sm-4 register_sectionForm_margin">#{msgs.titleNewPassword}:</label>
+						<div class="col-xs-10 col-sm-5 register_sectionForm_margin" style="margin-top:6px;">
+							<h:inputSecret class="form-control input-sm general_input_height"
+									id="inputEditPassword" required="true"
+									value="#{beanUserView.user.password}"
+									requiredMessage="#{msgs.errorPasswordRequired}">
+								<f:validator validatorId="validatorPassword" />
+								<f:attribute name="inputLabel" value="#{msgs.titlePassword}" />
+							</h:inputSecret>
+							<h:message for="inputEditPassword" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputConfirmPassword" class="control-label col-xs-12 col-sm-4 register_sectionForm_margin">#{msgs.titleConfirmPassword}:</label>
+						<div class="col-xs-10 col-sm-5 register_sectionForm_margin" style="margin-top:6px;">
+							<h:inputSecret class="form-control input-sm general_input_height"
+									id="inputConfirmPassword" required="true"
+									requiredMessage="#{msgs.errorPasswordConfirmRequired}">
+								<f:validator validatorId="validatorPasswordConfirmation" />
+								<f:attribute name="inputLabel" value="#{msgs.titleConfirmPassword}" />
+							</h:inputSecret>
+							<h:message for="inputConfirmPassword" />
+						</div>
+					</div>
+					<!-- Animacion 'spin' con mensage de espera -->
+					<div id="divWaitEditPassword" class="form-group general_textCenter general_noDisplay">
+						<div class="col-xs-12 col-sm-12">
+							<h:outputText id="msgRunningEditPassword" value="#{msgs.descriptionWait}"/>
+							<h:panelGroup id="spinnerWheelEditPassword" layout="block"
+								style="margin:25px auto auto auto;"/>
+						</div>
+					</div>
+					<!-- Boton submit -->
+					<div class="form-group general_textCenter">
+						<div class="col-xs-12 col-sm-12">
+							<h:commandButton id="btnProfileEditPassword" class="btn btn-default general_input_button"
+								value="#{msgs.titleAccept}"
+								action="#{beanUserEditEmailPassword.generateEmailForEditPassword(beanUserView, beanActionResult)}"
+								onclick="showElement('divWaitEditPassword');setSpinnerInLayout('spinnerWheelEditPassword');disableElement(this.id);">
+								<f:ajax execute="@form :form_editPassword" render="@form :form_editPassword"/>
+							</h:commandButton>
+							<h:outputScript rendered="#{not facesContext.validationFailed
+									and beanActionResult.finish and beanActionResult.success}">
+								$('#edit_password').modal('hide');
+								$('#editPasswordSuccessModal').modal('show');
+							</h:outputScript>
+						</div>
+					</div>
+				</h:panelGroup>
+				</h:form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Ventana 'modal' para la eliminacion de cuenta de usuario -->
+<div id="remove_account" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleRemoveMyAccount}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+				<!-- Este snippet solo se muestra si todavia no han confirmado la contrasena -->
+				<ui:param name="formDistinctive" value="_removeAccount" />
+				<ui:param name="formToRender" value="form_removeAccount" />
+				<ui:include src="/snippets/profile/form_currentPassword.xhtml" />
+				
+				<h:form id="form_removeAccount" prependId="false">
+				<!-- Este form solo se muestra si ya han confirmado la contrasena -->
+				<h:panelGroup layout="block" rendered="#{beanUserConfirmCurrentPassword.currentPasswordConfirmed}">
+					<div class="form-group">
+						<div class="form-group general_textCenter">
+						<span class="control-label login_sectionForm_margin">#{msgs.descriptionRemoveAccountAsk}</span>
+						</div>
+					</div>
+					<!-- Animacion 'spin' con mensage de espera -->
+					<div id="divWaitRemoveAccount" class="form-group general_textCenter general_noDisplay">
+						<div class="col-xs-12 col-sm-12">
+							<h:outputText id="msgRunningRemoveAccount" value="#{msgs.descriptionWait}"/>
+							<h:panelGroup id="spinnerWheelRemoveAccount" layout="block"
+								style="margin:25px auto auto auto;"/>
+						</div>
+					</div>
+					<!-- Boton submit -->
+					<div class="form-group general_textCenter">
+						<div class="col-xs-12 col-sm-12">
+							<h:commandButton id="btnProfileRemoveAccount" class="btn btn-default general_input_button"
+								value="#{msgs.titleAccept}"
+								action="#{beanUserRemove.generateEmailForRemoveUser(beanUserView, beanActionResult)}"
+								onclick="showElement('divWaitRemoveAccount');setSpinnerInLayout('spinnerWheelRemoveAccount');disableElement(this.id);">
+								<f:ajax execute="@form :form_removeAccount" render="@form :form_removeAccount"/>
+							</h:commandButton>
+							<h:outputScript rendered="#{beanActionResult.finish and beanActionResult.success}">
+								$('#remove_account').modal('hide');
+								$('#removeAccountSuccessModal').modal('show');
+							</h:outputScript>
+							<button id="btnCancelRemoveAccount"
+								class="btn btn-default general_input_button"
+								data-dismiss="modal">#{msgs.titleCancel}</button>
+						</div>
+					</div>
+				</h:panelGroup>
+				</h:form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Ventana 'modal' para confirmar envio de peticion de contacto -->
+<div id="sendContactRequest" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleSendContactRequest}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<h:form id="form_sendContactRequest" prependId="false">
+				<div class="form-group general_textCenter">
+					<span class="control-label login_sectionForm_margin">#{msgs.descriptionSendContactRequest}</span>
+					<div class="login_sectionForm_margin" style="margin-top:6px;">						
+						<!-- Animacion 'spin' con mensage de espera -->						
+						<div id="divWaitSendContactRequest" class="form-group general_textCenter general_noDisplay">
+							<div class="col-xs-12 col-sm-12">
+								<h:outputText id="msgRunningSendContactRequest" value="#{msgs.descriptionWait}"/>
+								<h:panelGroup id="spinnerWheelSendContactRequest" layout="block"
+									style="margin:25px auto auto auto;"/>
+							</div>
+						</div>
+						<h:commandButton id="btnAcceptSendContactRequest" class="btn btn-default general_input_button"
+							value="#{msgs.titleAccept}"
+							action="#{beanUserContacts.sendContactRequest(beanLogin.loggedUser, beanUserView.user, beanActionResult)}"
+							onclick="showElement('divWaitSendContactRequest');setSpinnerInLayout('spinnerWheelSendContactRequest');disableElement(this.id);disableElement('btnCancelSendContactRequest');">
+							<f:ajax render="@form :form_sendContactRequest :form_addOrDeleteFromContacts :form_addOrDeleteFromContactsUnder768screen"/>
+						</h:commandButton>
+						<button id="btnCancelSendContactRequest"
+							class="btn btn-default general_input_button"
+							data-dismiss="modal">#{msgs.titleCancel}</button>
+						<h:outputScript rendered="#{beanActionResult.finish and beanActionResult.success}">
+							$('#sendContactRequest').modal('hide');
+							$('#editProfileSuccessModal').modal('show');
+						</h:outputScript>
+					</div>
+				</div>
+			</h:form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Ventana 'modal' para confirmar eliminar contacto -->
+<div id="deleteContact" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleDeleteContact}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<h:form id="form_deleteContact" prependId="false">
+				<div class="form-group general_textCenter">
+					<span class="control-label login_sectionForm_margin">#{msgs.descriptionDeleteContact}</span>
+					<div class="login_sectionForm_margin" style="margin-top:6px;">						
+						<!-- Animacion 'spin' con mensage de espera -->						
+						<div id="divWaitContactDelete" class="form-group general_textCenter general_noDisplay">
+							<div class="col-xs-12 col-sm-12">
+								<h:outputText id="msgRunningContactDelete" value="#{msgs.descriptionWait}"/>
+								<h:panelGroup id="spinnerWheelContactDelete" layout="block"
+									style="margin:25px auto auto auto;"/>
+							</div>
+						</div>
+						<!-- la variable "userContactToDelete" ha sido definida fuera de este snippet -->
+						<h:commandButton id="btnAcceptDeleteContact" class="btn btn-default general_input_button"
+							value="#{msgs.titleAccept}"
+							action="#{beanUserContacts.deleteContact(beanActionResult)}"
+							onclick="showElement('divWaitContactDelete');setSpinnerInLayout('spinnerWheelContactDelete');disableElement(this.id);disableElement('btnCancelDeleteContact');">
+							<f:ajax render="@form :form_deleteContact :form_listContacts :form_addOrDeleteFromContacts :form_addOrDeleteFromContactsUnder768screen"/>
+						</h:commandButton>
+						<button id="btnCancelDeleteContact"
+							class="btn btn-default general_input_button"
+							data-dismiss="modal">#{msgs.titleCancel}</button>
+						<h:outputScript rendered="#{beanActionResult.finish and beanActionResult.success}">
+							$('#deleteContact').modal('hide');
+							$('#editProfileSuccessModal').modal('show');
+						</h:outputScript>
+					</div>
+				</div>
+			</h:form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Ventana 'modal' para confirmar aceptacion de solicitud de contacto recibida -->
+<div id="acceptRequest" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleAcceptContactRequest}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<h:form id="form_acceptRequest" prependId="false">
+				<div class="form-group general_textCenter">
+					<span class="control-label login_sectionForm_margin">#{msgs.descriptionAcceptContactRequest}</span>
+					<div class="login_sectionForm_margin" style="margin-top:6px;">						
+						<!-- Animacion 'spin' con mensage de espera -->						
+						<div id="divWaitAcceptRequest" class="form-group general_textCenter general_noDisplay">
+							<div class="col-xs-12 col-sm-12">
+								<h:outputText id="msgRunningAcceptRequest" value="#{msgs.descriptionWait}"/>
+								<h:panelGroup id="spinnerWheelAcceptRequest" layout="block"
+									style="margin:25px auto auto auto;"/>
+							</div>
+						</div>
+						<h:commandButton id="btnAcceptRequest" class="btn btn-default general_input_button"
+							value="#{msgs.titleAccept}"
+							action="#{beanUserContacts.acceptRequest(beanActionResult)}"
+							onclick="showElement('divWaitAcceptRequest');setSpinnerInLayout('spinnerWheelAcceptRequest');disableElement(this.id);disableElement('btnCancelAcceptRequest');">
+							<f:ajax render="@form :form_acceptRequest :form_listPendingContactRequests :form_listContacts"/>
+						</h:commandButton>
+						<button id="btnCancelAcceptRequest"
+							class="btn btn-default general_input_button"
+							data-dismiss="modal">#{msgs.titleCancel}</button>
+						<h:outputScript rendered="#{beanActionResult.finish and beanActionResult.success}">
+							$('#acceptRequest').modal('hide');
+							$('#editProfileSuccessModal').modal('show');
+						</h:outputScript>
+					</div>
+				</div>
+			</h:form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Ventana 'modal' para confirmar rechazo a solicitud de contacto recibida -->
+<div id="rejectRequest" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleRejectContactRequest}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<h:form id="form_rejectRequest" prependId="false">
+				<div class="form-group general_textCenter">
+					<span class="control-label login_sectionForm_margin">#{msgs.descriptionRejectContactRequest}</span>
+					<div class="login_sectionForm_margin" style="margin-top:6px;">						
+						<!-- Animacion 'spin' con mensage de espera -->						
+						<div id="divWaitRejectRequest" class="form-group general_textCenter general_noDisplay">
+							<div class="col-xs-12 col-sm-12">
+								<h:outputText id="msgRunningRejectRequest" value="#{msgs.descriptionWait}"/>
+								<h:panelGroup id="spinnerWheelRejectRequest" layout="block"
+									style="margin:25px auto auto auto;"/>
+							</div>
+						</div>
+						<h:commandButton id="btnRejectRequest" class="btn btn-default general_input_button"
+							value="#{msgs.titleAccept}"
+							action="#{beanUserContacts.rejectRequest(beanActionResult)}"
+							onclick="showElement('divWaitRejectRequest');setSpinnerInLayout('spinnerWheelRejectRequest');disableElement(this.id);disableElement('btnCancelRejectRequest');">
+							<f:ajax render="@form :form_rejectRequest :form_listPendingContactRequests"/>
+						</h:commandButton>
+						<button id="btnCancelRejectRequest"
+							class="btn btn-default general_input_button"
+							data-dismiss="modal">#{msgs.titleCancel}</button>
+						<h:outputScript rendered="#{beanActionResult.finish and beanActionResult.success}">
+							$('#rejectRequest').modal('hide');
+							$('#editProfileSuccessModal').modal('show');
+						</h:outputScript>
+					</div>
+				</div>
+			</h:form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Ventana para mostrar el resultado de la edicion del perfil -->
+<div id="editProfileSuccessModal" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleEditProfile}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<h:form id="form_registerResultModal">
+				<div class="form-group general_textCenter">
+					<span class="control-label login_sectionForm_margin">#{msgs.descriptionEditProfileSuccess}</span>
+					<div class="login_sectionForm_margin" style="margin-top:6px;">
+						<!--
+						<h:commandButton id="btnAcceptSuccessEditProfile" value="#{msgs.titleAccept}"
+							class="btn btn-default general_input_button"
+							action="successEditUserProfile">
+						</h:commandButton>
+						-->
+						<button id="btnAcceptSuccessEditProfile"
+							class="btn btn-default general_input_button"
+							data-dismiss="modal">#{msgs.titleAccept}</button>
+					</div>
+				</div>
+			</h:form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Ventana para mostrar el resultado de la edicion de email -->
+<div id="editEmailSuccessModal" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleChangeEmail}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<h:form id="form_editEmailSuccessModal">
+				<div class="form-group general_textCenter">
+					<span class="control-label login_sectionForm_margin">#{msgs.descriptionEditEmailSuccess}</span>
+					<div class="login_sectionForm_margin" style="margin-top:6px;">
+						<!--
+						<h:commandButton id="btnAcceptEditEmailSuccess" value="#{msgs.titleAccept}"
+							class="btn btn-default general_input_button"
+							action="successEditUserProfile">
+						</h:commandButton>
+						-->
+						<button id="btnAcceptEditEmailSuccess"
+							class="btn btn-default general_input_button"
+							data-dismiss="modal">#{msgs.titleAccept}</button>
+					</div>
+				</div>
+			</h:form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Ventana para mostrar el resultado de la edicion de contrasena -->
+<div id="editPasswordSuccessModal" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleChangePassword}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<h:form id="form_editPasswordSuccessModal">
+				<div class="form-group general_textCenter">
+					<span class="control-label login_sectionForm_margin">#{msgs.descriptionEditPasswordSuccess}</span>
+					<div class="login_sectionForm_margin" style="margin-top:6px;">
+						<!--
+						<h:commandButton id="btnAcceptEditPasswordSuccess" value="#{msgs.titleAccept}"
+							class="btn btn-default general_input_button"
+							action="successEditUserProfile">
+						</h:commandButton>
+						-->
+						<button id="btnAcceptEditPasswordSuccess"
+							class="btn btn-default general_input_button"
+							data-dismiss="modal">#{msgs.titleAccept}</button>
+					</div>
+				</div>
+			</h:form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Ventana para mostrar el resultado de la eliminacion de cuenta de usuario -->
+<div id="removeAccountSuccessModal" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleRemoveMyAccount}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<h:form id="form_removeAccountResultModal">
+				<div class="form-group general_textCenter">
+					<span class="control-label login_sectionForm_margin">#{msgs.descriptionRemoveAccountSuccess}</span>
+					<div class="login_sectionForm_margin" style="margin-top:6px;">
+						<!--
+						<h:commandButton id="btnAcceptSuccessRemoveAccount" value="#{msgs.titleAccept}"
+							class="btn btn-default general_input_button"
+							action="successEditUserProfile">
+						</h:commandButton>
+						-->
+						<button id="btnAcceptSuccessRemoveAccount"
+							class="btn btn-default general_input_button"
+							data-dismiss="modal">#{msgs.titleAccept}</button>
+					</div>
+				</div>
+			</h:form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<f:verbatim>
+<!-- Hacer que las ventanas 'modal' se puedan arrastrar -->
+<script>
+	$( "#edit_userAvatar" ).draggable();
+	$( "#edit_gender" ).draggable();
+	$( "#edit_name" ).draggable();
+	$( "#edit_age" ).draggable();
+	$( "#edit_email" ).draggable();
+	$( "#edit_password" ).draggable();
+	$( "#edit_privacity" ).draggable();
+	$( "#deletePublication" ).draggable();
+	$( "#editProfileSuccessModal" ).draggable();
+	$( "#deleteContact" ).draggable();
+</script>
+</f:verbatim>
+
+</ui:composition>

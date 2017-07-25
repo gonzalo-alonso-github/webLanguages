@@ -1,0 +1,316 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+<div id="general_space_for_main_navbar"></div>
+<div class="container" id="general_container">
+	<div id="general_body">
+	
+		<div class="general_center general_center_in3columns">
+			
+			<!-- Imagen y datos del usuario -->
+			<ui:include src="/snippets/profile/profile_header_userData_editable02.xhtml" />
+			
+			<div class="profile_container">
+				<div class="profile_edit_form_margin">
+				
+				<o:form includeViewParams="true" id="form_editLanguages" class="form-horizontal" prependId="false">
+					<div class="general_section">
+						<div class="profile_edit_section_tittle">#{msgs.titleEditLanguages}</div>
+						
+						<div class="form-group">
+						<label for="selectNativeLanguage"
+							class="control-label col-xs-12 col-sm-4 profile_sectionForm_margin">
+							#{msgs.titleNativeLanguages}:
+						</label>
+						<div class="col-xs-10 col-sm-3 profile_sectionForm_margin" style="margin-top:6px;">
+							<!-- Mientras no se pinche el boton submit no se llamara al setter -->
+							<h:selectManyListbox class="btn-sm" id="selectNativeLanguage"
+									value="#{beanUserEditProfile.listNativeLanguagesIDs}">
+								<f:selectItems var="lang"
+									value = "#{beanCache.allLanguagesFromMemory}"
+									itemLabel="#{beanSettingsSession.getTranslationCountries(lang.getLocale())}"
+									itemValue="#{lang.getId()}"/>
+								<f:converter converterId="converterSelectItemToLong" />
+							</h:selectManyListbox>
+							<h:outputScript>
+								var anySelected = "#{msgs.titleNone}";
+								var selected = "#{msgs.title_selected}";
+								var allSelected = "#{msgs.titleAllSelected}";
+							    $('#selectNativeLanguage').multiselect({
+									nonSelectedText: anySelected,
+									nSelectedText: selected,
+									allSelectedText: allSelected,
+									delimiterText:' | ',
+									numberDisplayed: 1,
+									inheritClass: true
+								});
+							</h:outputScript>
+						</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="selectPracticeLanguage"
+								class="control-label col-xs-12 col-sm-4 profile_sectionForm_margin">
+								#{msgs.titlePracticedLanguages}:
+							</label>
+							<div class="col-xs-10 col-sm-3 profile_sectionForm_margin" style="margin-top:6px;">
+								<!-- Mientras no se pinche el boton submit no se llamara al setter -->
+								<h:selectManyListbox class="btn-sm" id="selectPracticeLanguage"
+										value="#{beanUserEditProfile.listPracticingLanguagesIDs}">	
+									<f:selectItems var="lang"
+										value="#{beanCache.allLanguagesFromMemory}"
+										itemLabel="#{beanSettingsSession.getTranslationCountries(lang.getLocale())}"
+										itemValue="#{lang.getId()}"/>
+									<f:converter converterId="converterSelectItemToLong" />
+								</h:selectManyListbox>
+								<h:outputScript>
+									var anySelected = "#{msgs.titleNone}";
+									var selected = "#{msgs.title_selected}";
+									var allSelected = "#{msgs.titleAllSelected}";
+								    $('#selectPracticeLanguage').multiselect({
+										nonSelectedText: anySelected,
+										nSelectedText: selected,
+										allSelectedText: allSelected,
+										delimiterText:' | ',
+										numberDisplayed: 1,
+										inheritClass: true
+									});
+								</h:outputScript>
+							</div>
+						</div>
+						<!-- Animacion 'spin' con mensage de espera, o mensaje de error -->
+						<div id="divWaitEditLanguages" class="form-group general_textCenter general_noDisplay">
+							<div class="col-xs-12 col-sm-12">
+								<h:outputText id="msgRunningEditLanguages" value="#{msgs.descriptionWait}"/>
+								<h:panelGroup id="spinnerWheelEditLanguages" layout="block"
+									style="margin:25px auto auto auto;"/>
+							</div>
+						</div>
+						<div class="form-group general_textCenter">
+							<div class="col-xs-12 col-sm-12">			
+								<h:outputText id="msgResultEditLanguages" value="#{beanActionResult.msgActionResult}" />
+							</div>
+						</div>
+						<!-- Boton submit -->
+						<div class="form-group general_textCenter">
+							<div class="col-xs-12 col-sm-12">
+								<h:commandButton id="btnSaveLanguages" class="btn btn-default general_input_button"
+									value="#{msgs.titleSave}"
+									action="#{beanUserEditProfile.editProfileLanguages(beanActionResult)}"
+									onclick="showElement('divWaitEditLanguages');setSpinnerInLayout('spinnerWheelEditLanguages');disableElement(this.id);">
+									<f:ajax execute="@form :form_editLanguages" render="@form :form_editLanguages"/>
+								</h:commandButton>
+								<h:outputScript rendered="#{beanActionResult.finish and beanActionResult.success}">
+								    $('#editProfileSuccessModal').modal('show');
+								</h:outputScript>
+							</div>
+						</div>
+						
+					</div>
+				</o:form>
+					
+				<h:form id="form_editPrivacity" class="form-horizontal" prependId="false">
+					<div class="general_section">
+					
+						<div class="profile_edit_section_tittle">#{msgs.titleEditPrivacity}</div>
+						
+						<div class="profile_edit_section_subtittle">#{msgs.titleActivityShown}</div>
+						
+						<div class="form-group">
+							<label for="selectPrivacityForumActivity"
+								class="control-label col-xs-12 col-sm-4 profile_sectionForm_margin">
+								#{msgs.titleParticipationsForum}:
+							</label>
+							<div class="col-xs-10 col-sm-3 profile_sectionForm_margin" style="margin-top:6px;">
+								<!-- Mientras no se pinche el boton submit no se llamara al set beanUserView.user.privacityData.publications -->
+								<h:selectOneMenu id="selectPrivacityForumActivity" 
+										class="form-control general_input_selectButton"
+										value="#{beanUserView.user.privacityData.publications}">
+									<c:forEach items="#{beanSettingsUser.listPrivacityLevels}" var="item">	
+										<f:selectItem
+											itemLabel="#{beanSettingsSession.getTranslation(item)}"
+											itemValue="#{item}"
+											a:title="#{beanSettingsSession.getTranslation(item.concat('_description'))}"/>
+									</c:forEach>
+								</h:selectOneMenu>
+								<!--
+								En lugar del c:forEach aparentemente podria funcionar lo siguiente:
+								<f:selectItems value="...beanSettingsUser.listPrivacityLevels}"
+									var="item" itemLabel="...beanSettingsSession.getValue(item)}"
+									itemValue="...item}"
+									itemDescription="...beanSettingsSession.getValue(item.concat('_description'))}" />
+								-->
+								<!-- Pero la documentacion de JSF dice: 'itemDescription' is currently unused -->
+								<!-- por ello hay que usar a:title en vez de itemDescription -->
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="selectPrivacityFriends"
+								class="control-label col-xs-12 col-sm-4 profile_sectionForm_margin">
+								#{msgs.titleContactsList}:
+							</label>
+							<div class="col-xs-10 col-sm-3 profile_sectionForm_margin" style="margin-top:6px;">
+								<!-- Mientras no se pinche el boton submit no se llamara al set beanUserView.user.privacityData.contactsList -->
+								<h:selectOneMenu id="selectPrivacityFriends"
+										class="form-control general_input_selectButton"
+										value="#{beanUserView.user.privacityData.contactsList}">
+									<c:forEach items="#{beanSettingsUser.listPrivacityLevels}" var="item">	
+										<f:selectItem
+											itemLabel="#{beanSettingsSession.getTranslation(item)}"
+											itemValue="#{item}"
+											a:title="#{beanSettingsSession.getTranslation(item.concat('_description'))}"/>
+									</c:forEach>
+								</h:selectOneMenu>
+							</div>
+						</div>
+						
+						<div class="profile_edit_section_subtittle">#{msgs.titlePermissions}</div>
+						
+						<div class="form-group"> <!-- class="form-group profile_sectionForm_margin" -->
+						<div class="col-xs-12 col-sm-12 profile_edit_section_body">
+							<div class="general_radioButtonSpace general_textNormal">
+								<fieldset class="general_disableFieldset">
+								<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+									<div class="control-label">#{msgs.titleAppearingInSearcher}:</div>
+									<h:selectOneRadio style="margin-left:4px;"
+											id="selectAppearingInSearcher" required="true"
+											requiredMessage="#{msgs.errorGenericRequired}"
+											value="#{beanUserView.user.privacityData.appearingInSearcher}">
+										<f:selectItem itemValue="true" itemLabel="#{msgs.titleYes}"/>
+										<f:selectItem itemValue="false" itemLabel="#{msgs.titleNo}"/>
+										<!--
+										<f:validator validatorId="validatorEmptyValue" />
+										<f:attribute name="inputName" value="#{msgs.titleAppearingInSearcher}" />
+										-->
+									</h:selectOneRadio>
+								</fieldset>
+								<div style="text-align:left !important;"><h:message for="selectAppearingInSearcher"/></div>
+							</div>
+						</div>
+						</div>
+						
+						<!--
+						<div class="form-group">
+						<div class="col-xs-12 col-sm-12 profile_edit_section_body">
+							<div class="general_radioButtonSpace general_textNormal">
+								<fieldset class="general_disableFieldset">
+								<legend class="general_noDisplay">This fieldset-legend just performs the 'H71' technique of WCAG 2.0 evaluation</legend>
+									<div class="control-label">#{msgs.titleReceivingCorrectionRequests}:</div>
+									<h:selectOneRadio style="margin-left:4px;"
+											id="selectReceivingCorrectionRequests" required="true"
+											requiredMessage="#{msgs.errorGenericRequired}"
+											value="#{beanUserView.user.privacityData.receivingCorrectionRequests}">
+										<f:selectItem itemValue="true" itemLabel="#{msgs.titleYes}"/>
+										<f:selectItem itemValue="false" itemLabel="#{msgs.titleNo}"/>
+									</h:selectOneRadio>
+								</fieldset>
+								<div style="text-align:left !important;"><h:message for="selectReceivingCorrectionRequests"/></div>
+							</div>
+						</div>
+						</div>
+						-->
+						
+						<!-- Podriamos comentar todo este div al igual que el de arriba
+						(el del selectReceivingCorrectionRequests)
+						porque este selectPrivacityReceiveMessages tampoco tiene utilidad,
+						ya que en esta version de la aplicacion no hay mensajes.
+						Sin embargo no lo comento para evitar errores en la linea de
+						"beanSettingsSession.getTranslation('to_'.concat(item))" -->
+						<div class="form-group">
+							<label for="selectPrivacityReceiveMessages" class="control-label col-xs-12 col-sm-4 profile_sectionForm_margin">#{msgs.titleReceivingMessages}:</label>
+							<div class="col-xs-10 col-sm-3 profile_sectionForm_margin" style="margin-top:6px;">
+								<!-- Mientras no se pinche el boton submit no se llamara al set beanUserView.user.privacityData.receivingMessages -->
+								<h:selectOneMenu id="selectPrivacityReceiveMessages"
+										class="form-control general_input_selectButton"
+										value="#{beanUserView.user.privacityData.receivingMessages}">
+									<c:forEach items="#{beanSettingsUser.listPrivacityLevels}" var="item">	
+										<f:selectItem
+											itemLabel="#{beanSettingsSession.getTranslation('to_'.concat(item))}"
+											itemValue="#{item}"
+											a:title="#{beanSettingsSession.getTranslation('to_'.concat(item).concat('_description'))}"/>
+									</c:forEach>
+								</h:selectOneMenu>
+							</div>
+						</div>
+						
+						<!-- Animacion 'spin' con mensage de espera -->
+						<div id="divWaitEditPrivacity" class="form-group general_textCenter general_noDisplay">
+							<div class="col-xs-12 col-sm-12">
+								<h:outputText id="msgRunningEditPrivacity" value="#{msgs.descriptionWait}"/>
+								<h:panelGroup id="spinnerWheelEditPrivacity" layout="block"
+									style="margin:25px auto auto auto;"/>
+							</div>
+						</div>
+						<!-- Boton submit -->
+						<div class="form-group general_textCenter">
+							<div class="col-xs-12 col-sm-12">
+								<h:commandButton id="btnSavePrivaity" class="btn btn-default general_input_button"
+									value="#{msgs.titleSave}"
+									action="#{beanUserEditProfile.editProfilePrivacity(beanUserView.user, beanActionResult)}"
+									onclick="showElement('divWaitEditPrivacity');setSpinnerInLayout('spinnerWheelEditPrivacity');disableElement(this.id);">
+									<f:ajax execute="@form :form_editPrivacity" render="@form :form_editPrivacity"/>
+								</h:commandButton>
+								<h:outputScript rendered="#{beanActionResult.finish and beanActionResult.success}">
+								    $('#editProfileSuccessModal').modal('show');
+								</h:outputScript>
+							</div>
+						</div>
+					</div>
+				</h:form>
+				
+				<h:form id="form_editAccessData" class="form-horizontal" prependId="false">
+					<div class="general_section">
+						<div class="profile_edit_section_tittle">#{msgs.titleEditAccessData}</div>
+						<div class="form-group">
+							<div class="col-xs-12 col-sm-12 profile_edit_section_body profile_edit_noDecoration">
+								<!--
+								<a href="#edit_email" data-toggle="modal" data-backdrop="false">#{msgs.titleChangeEmail}</a>
+								-->
+								<h:commandLink a:href="#edit_email" a:data-toggle="modal" a:data-backdrop="false">
+									#{msgs.titleChangeEmail}
+									<f:ajax listener="#{beanUserConfirmCurrentPassword.clearStatus()}"
+										execute="@this" render="@form :form_confirmCurrentPassword_editEmail :form_editEmail"/>
+								</h:commandLink>
+							</div>
+							<div class="col-xs-12 col-sm-12 profile_edit_section_body profile_edit_noDecoration">
+								<!--
+								<a href="#edit_password" data-toggle="modal" data-backdrop="false">#{msgs.titleChangePassword}</a>
+								-->
+								<h:commandLink a:href="#edit_password" a:data-toggle="modal" a:data-backdrop="false">
+									#{msgs.titleChangePassword}
+									<f:ajax listener="#{beanUserConfirmCurrentPassword.clearStatus()}"
+										execute="@this" render="@form :form_confirmCurrentPassword_editPassword :form_editPassword"/>
+								</h:commandLink>
+							</div>
+							<div class="col-xs-12 col-sm-12 profile_edit_section_body profile_edit_noDecoration" style="margin-top:6px;">
+								<!--
+								<a href="#remove_account" data-toggle="modal" data-backdrop="false">#{msgs.titleRemoveMyAccount}</a>
+								-->
+								<h:commandLink a:href="#remove_account" a:data-toggle="modal" a:data-backdrop="false">
+									#{msgs.titleRemoveMyAccount}
+									<f:ajax listener="#{beanUserConfirmCurrentPassword.clearStatus()}"
+										execute="@this" render="@form :form_confirmCurrentPassword_removeAccount :form_removeAccount"/>
+								</h:commandLink>
+							</div>
+						</div>
+					</div>
+				</h:form>
+				
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</div>
+
+<!-- Ventanas modal para las paginas de profile -->
+<ui:include src="/snippets/profile/modal_windows.xhtml" />
+
+</ui:composition>

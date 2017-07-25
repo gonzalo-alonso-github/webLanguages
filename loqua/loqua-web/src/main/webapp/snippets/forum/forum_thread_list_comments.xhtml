@@ -1,0 +1,349 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+<!--
+Este snippet se importa por ejemplo desde el snippet 'forum_thread.xhtml'
+y desde la pagina 'forum_thread_comment.xhtml'.
+Es en aquellas vistas donde se define la variable 'commentOfList'.
+
+Y en anonymousUser/forumThread.xhtml y en registeredUser/forumThread.xhtml
+es donde se reciben los parametros 'thread' y 'page'
+cuyos valores se guardan en el beanForumThread:
+<f:viewParam name="thread" value="#{beanForumThread.currentThreadId}" />
+<f:viewParam name="page" value="#{beanForumThread.offsetPage}" />
+-->
+
+<!-- Comentario de un usuario -->
+<!-- Esta etiqueta tiene un id que sirve de ancla, se usa por ejemplo desde las publicaciones de profile_me.xhtml,
+cuando indirectamente llaman al metodo BeanComment.getLinkParametersToForumPost -->
+<!-- El estilo evita que, cuando el browser posiciona el scroll a la altura del ancla, este quede tapado por el menu superior -->
+<!-- Tiene cierto acoplamiento con el javascript de "verifyAnchor.js", asi que en caso de editar algo conviene vigilarlo -->
+<div id="referenceTo_comment#{commentOfList.positionIndex}" class="general_redirecting_to_anchor"></div>
+<div id="comment#{commentOfList.positionIndex}"></div>
+<article class="forum_thread">
+<div class="forum_thread_border forum_thread_post_height">
+<div class="forum_thread_post_header general_section_padding">
+	<div class="row">
+		<div class="col-sm-8 col-xs-12">#{beanSettingsSession.getFormattedDateTime(commentOfList.date)}</div>
+		<div class="right-side col-sm-4 col-xs-12 forum_thread_post_header_number">##{commentOfList.positionIndex}</div>
+	</div>
+</div>
+<div class="forum_thread_post_body">
+<div class="forum_thread_post_userInfo">
+	<div class="forum_thread_post_userName">
+		<ui:fragment rendered="#{not empty beanLogin.loggedUser}">
+			<h:outputLink value="#{beanUserView.getOutputLinkToProfile(commentOfList.user.id)}">
+				#{beanUtils.limitTextLength(16, commentOfList.user.nick)}
+			</h:outputLink>
+		</ui:fragment>
+		<ui:fragment rendered="#{empty beanLogin.loggedUser}">#{beanUtils.limitTextLength(16, commentOfList.user.nick)}</ui:fragment>
+	</div>
+	<div class="general_userAvatarBig noDisplayUnder768screen">
+		<span class="general_userAvatarBigHelper"></span><o:graphicImage dataURI="true" value="#{beanUserImages.getUserImage(commentOfList.user)}" alt="#{msgs.titleImgAltUserAvatar}"/>
+	</div>
+	<div class="noDisplayUnder768screen">
+		<div>#{msgs.titleMemberSince}: #{beanSettingsSession.getFormattedDate(commentOfList.user.dateRegistered)}</div>
+		<div>#{msgs.titleComments}: #{beanUtils.limitNumericValue(99999,commentOfList.user.userInfo.countComments)}</div>
+		<div>#{msgs.titlePoints}: #{beanUtils.limitNumericValue(99999,commentOfList.user.userInfo.points)}</div>
+		<div>#{msgs.titleLevel}: #{beanUserView.getUserLevel(commentOfList.user)}</div>
+	</div>
+	<div class="general_section_userAvatar noDisplayOver768screen">
+		<span class="general_section_userAvatarHelper"></span><o:graphicImage style="float:left" dataURI="true" value="#{beanUserImages.getUserImage(commentOfList.user)}" alt="#{msgs.titleImgAltUserAvatar}"/>
+	</div>
+</div>
+
+<!-- Cuerpo del comentario. Puede contener cita a otro comentario, correccion aprobada, o lista de correcciones sugeridas -->
+<div class="container forum_thread_post_text">
+
+<!-- Texto de cita a otro comentario (solo se muestra si existe la cita) -->
+<!-- En esta version no se permite que un comentario cite a mas de un comentario -->
+<ui:param name="quote" value="#{beanComment.getCommentQuotedByComment(commentOfList)}"/>
+<h:panelGroup rendered="#{not empty quote}">
+<div class="container-fluid" style="padding-left:0px !important; margin-left:0px !important;">
+<div class="panel panel-default" >
+<div class="panel-heading forum_thread_post_textQuote_header">
+	#{msgs.titleQuoteBy} #{quote.quotedComment.user.nick}
+</div>
+<div class="panel-body forum_thread_post_textQuote_body">
+	<div>
+		<h:outputText value="#{quote.quotedTextHtml}" escape="false"/>
+	</div>
+</div>
+</div>
+</div>
+</h:panelGroup>
+
+<!-- Correccion aprobada, y spoiler con comentario original (solo se muestra si existe correccion aprobada)  -->
+<ui:param name="approvedCorrection" value="#{beanCorrection.getApprovedCorrectionByComment(commentOfList)}"/>
+<h:panelGroup rendered="#{approvedCorrection!=null}">
+<div class="forum_thread_post_textCorrection">
+	#{msgs.titleCorrectedBy}
+	<ui:fragment rendered="#{not empty beanLogin.loggedUser}">
+		<h:outputLink value="#{beanUserView.getOutputLinkToProfile(approvedCorrection.user.id)}">
+			#{beanUtils.limitTextLength(16, approvedCorrection.user.nick)}
+		</h:outputLink>
+	</ui:fragment>
+	<ui:fragment rendered="#{empty beanLogin.loggedUser}">#{beanUtils.limitTextLength(16, approvedCorrection.user.nick)}</ui:fragment>
+</div>
+<div class="forum_thread_post_textBlock">
+	<h:outputText value="#{approvedCorrection.textHtml}" escape="false"/>
+</div>
+<div class="container-fluid" style="padding-left:0px !important; margin-left:0px !important;">
+<div class="panel panel-default" >
+<div class="panel-heading">
+	<!--
+	<input class="btn btn-default btn-block forum_thread_post_spoilerButton" type="button" id="buttonOriginalComment2" name="originalComment" value="Ver comentario original" data-toggle="collapse" data-target="#originalComment"/>
+	-->
+	<button class="btn btn-default btn-block forum_thread_post_spoilerButton" type="button" id="#{'buttonOriginalComment'.concat(commentOfList.id)}" data-toggle="collapse" data-target="##{'originalComment'.concat(commentOfList.id)}">#{msgs.titleOriginalComment}</button>
+</div>
+<div class="panel-collapse collapse out" id="#{'originalComment'.concat(commentOfList.id)}">
+	<div class="panel-body">
+		<div>
+			<h:outputText value="#{commentOfList.textHtml}" escape="false"/>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</h:panelGroup>
+
+<!-- Comentario original (solo se muestra si no existe correccion aprobada) -->
+<ui:fragment rendered="#{approvedCorrection==null}">
+<div class="forum_thread_post_textBlock">
+	<h:outputText value="#{commentOfList.textHtml}" escape="false"/>
+</div>
+</ui:fragment>
+
+<!-- Correcciones sugeridas (solo se muestra si existen correcciones no aprobadas) -->
+<ui:param name="suggestedCorrections" value="#{beanCorrection.getNotApprovedCorrectionsByComment(commentOfList)}"/>
+<h:panelGroup rendered="#{not empty suggestedCorrections}">
+<div class="container-fluid" style="padding-left:0px !important; margin-left:0px !important;">
+<div class="panel panel-default">
+<div class="panel-heading">
+	<button class="btn btn-default btn-block forum_thread_post_spoilerButton" type="button" id="#{'buttonSuggestedCorrections'.concat(commentOfList.id)}" value="#{msgs.titleSuggestedCorrections}" data-toggle="collapse" data-target="##{'suggestedCorrectionsOfComment'.concat(commentOfList.id)}">#{msgs.titleSuggestedCorrections}</button >
+</div>
+
+<!-- Dentro de un bucle ui:repeat los ids suelen tener valores inesperados en los componentes jsf -->
+<!-- por eso aqui no ponemos un h:panelGroup, sino un div corriente -->
+<!-- Para que por defecto se muestre el spoiler, habria que anadir la clase in al siguiente div -->
+<div class="panel-collapse collapse in" id="#{'suggestedCorrectionsOfComment'.concat(commentOfList.id)}">
+	<div class="panel-body">
+		<ui:repeat id="suggestedCorrections" var="correction" value="#{beanCorrection.getNotApprovedCorrectionsByComment(commentOfList)}">
+		<div class="forum_thread_post_textCorrection">
+			#{msgs.titleSuggestedCorrectionBy}
+			<ui:fragment rendered="#{not empty beanLogin.loggedUser}">
+				<h:outputLink value="#{beanUserView.getOutputLinkToProfile(correction.user.id)}">
+					#{beanUtils.limitTextLength(16, correction.user.nick)}
+				</h:outputLink>
+			</ui:fragment>
+			<ui:fragment rendered="#{empty beanLogin.loggedUser}">
+				#{beanUtils.limitTextLength(16, correction.user.nick)}:
+			</ui:fragment>
+			
+			<div>
+			
+			<!-- Ya sea un comentario propio o ajeno, el usuario puede consultar las correcciones sugeridas -->
+			<!-- E incluso los usuarios anonimos pueden consultar las correcciones sugeridas -->
+			<div class="forum_thread_post_textCorrection_rate">
+			
+			<!--
+			Por cada correccion sugerida se muestra un 'div' (muchas lineas mas abajo)
+			que indicara el numero de votos a su favor/contra.
+			El id de ese div se guarda en la siguiente variable para usarlo 'comodamente'
+			por ejemplo en el siguiente div que sirve de ancla, o por ejemplo en los actionListener de los siguientes botones
+			-->
+			<c:set var="divIdForSuggestedCorrection" value="#{'querySuggestedCorrection'.concat(correction.id)}"/>
+			
+			<!-- Esta etiqueta tiene un id que sirve de ancla, se usa para redirigir el scroll aqui por ejemplo al recomendar una correccion -->
+			<!-- El estilo evita que, cuando el browser posiciona el scroll a la altura del ancla, este quede tapado por el menu superior -->
+			<!-- Tiene cierto acoplamiento con el javascript de "verifyAnchor.js", asi que en caso de editar algo conviene vigilarlo -->
+			<div id="#{'referenceTo_'.concat(divIdForSuggestedCorrection)}" class="general_redirecting_to_anchor"></div>
+			
+			<h:link id="#{'btnQuerySuggestedCorrection'.concat(correction.id)}" onclick="return false;"
+					class="btn btn-default btn-block btn-sm forum_thread_buttonRate"
+					a:data-toggle="collapse" a:data-target="##{'querySuggestedCorrection'.concat(correction.id)}">
+				<h:panelGroup class="glyphicon glyphicon glyphicon-search" style="vertical-align:middle;"> #{msgs.titleQuery}</h:panelGroup>
+			</h:link>
+			</div>
+			
+			<!-- Si el comentario es ajeno, el usuario puede recomendar/desaconsejar las correcciones sugeridas -->
+			<ui:fragment rendered="#{not beanUserView.loggedUserIsAuthorOfData(commentOfList.user)}">
+				<!-- Los usuarios anonimos no pueden ver los botones de recomendar/desaconsejar correcciones-->
+				<ui:fragment rendered="#{not empty beanLogin.loggedUser}">
+				<!-- Ni tampoco el mismo usuario que sugirio la correccion  -->
+				<ui:fragment rendered="#{beanLogin.loggedUser.id != correction.user.id}">
+				<!-- Ni tampoco el mismo usuario que ya haya recomendado/desaconsejado previamente la correccion  -->
+				<ui:fragment rendered="#{beanCorrection.getUserAgreeCorrection(beanLogin.loggedUser, correction)==false
+					and beanCorrection.getUserDisagreeCorrection(beanLogin.loggedUser, correction)==false}">
+				<div class="forum_thread_post_textCorrection_rate">
+					<h:commandLink id="#{'btnRecommendSuggestedCorrection'.concat(correction.id)}"
+							class="btn btn-default btn-block btn-sm forum_thread_buttonRate" type="button"
+							a:data-toggle="tooltip" a:data-placement="bottom" a:title="#{msgs.descriptionRecommendCorrection}"
+							action="#{beanCorrection.getCommandLinkToRecommendCorrection( correction, 'referenceTo_'.concat(divIdForSuggestedCorrection) )}">
+						<span class="glyphicon glyphicon-ok" style="vertical-align:middle;"> #{msgs.titleRecommend}</span>
+					</h:commandLink>
+				</div>
+				<div class="forum_thread_post_textCorrection_rate">
+					<h:commandLink id="#{'btnDissuadeSuggestedCorrection'.concat(correction.id)}"
+							class="btn btn-default btn-block btn-sm forum_thread_buttonRate" type="button"
+							a:data-toggle="tooltip" a:data-placement="bottom" a:title="#{msgs.descriptionDissuadeCorrection}"
+							action="#{beanCorrection.getCommandLinkToDissuadeCorrection( correction, 'referenceTo_'.concat(divIdForSuggestedCorrection) )}">
+						<span class="glyphicon glyphicon-remove" style="vertical-align:middle;"> #{msgs.titleDissuade}</span>
+					</h:commandLink>
+				</div>
+				</ui:fragment>
+				</ui:fragment>
+				<!-- Si el usuario logueado es el mismo que sugirio la correccion, entonces podra editarla:  -->
+				<ui:fragment rendered="#{beanUserView.loggedUserIsAdminOrAuthorOfData(correction.user)}">
+				<div class="forum_thread_post_textCorrection_rate">
+					<!-- aqui un commandLink no funcionaria bien si hicieramos click derecho - 'abrir en nueva pestana' -->
+					<!-- porque beanForumThread es de scope view, conque los parametros pasados a getCommandLinkToEditCorrection ya son null al ejecutar el metodo -->
+					<!-- sin embargo si funciona con h:outputLink -->
+					<h:outputLink id="#{'btnEditMySuggestedCorrection'.concat(correction.id)}"
+							class="btn btn-default btn-block btn-sm forum_thread_buttonRate"
+							a:data-toggle="tooltip" a:data-placement="bottom" a:title="#{msgs.titleEditCorrection}"
+							value="#{beanForumThread.getOutputLinkToEditCorrection(beanForumThread.currentThreadId,correction.id)}">
+						<span class="glyphicon glyphicon-pencil" style="vertical-align:middle;"> #{msgs.titleEdit}</span>
+					</h:outputLink>
+				</div>	
+				</ui:fragment>
+				</ui:fragment>
+			</ui:fragment>
+			
+			<!-- Si el comentario es propio, el usuario puede aceptar/rechazar las correcciones sugeridas -->
+			<ui:fragment rendered="#{beanUserView.loggedUserIsAdminOrAuthorOfData(commentOfList.user)}">	
+				<div class="forum_thread_post_textCorrection_rate">
+				<h:commandLink id="#{'btnAcceptSuggestedCorrection'.concat(correction.id)}"
+						class="btn btn-default btn-block btn-sm forum_thread_buttonRate" type="button"
+						a:data-toggle="tooltip" a:data-placement="bottom" a:title="#{msgs.descriptionAcceptCorrection}"
+						action="#{beanCorrection.getCommandLinkToAcceptCorrection(correction)}">
+					<span class="glyphicon glyphicon-ok" style="vertical-align:middle;"> #{msgs.titleAccept}</span>
+				</h:commandLink>
+				</div>
+				<div class="forum_thread_post_textCorrection_rate">
+				<!-- Para rechazar una correccion quiero un link cuyo data-toggle funcione como si tuviera a la vez valores 'tooltip' y 'modal' -->
+				<!-- De stackOverFlow hallo la solucion: usar un span o panelGroup con data-toggle="tooltip" que contenga al commandLink con data-toggle="modal"-->
+				<!-- Y el uso de f:ajax aqui responde a 2 motivos:
+				1: evitar que al salir de la ventana modal se recargue toda la pagina
+				2: el render="@none" es para evitar que el tooltip pierda el estilo al pinchar en el boton, como sucederia si fuera "@form"
+				-->
+				<span data-toggle="tooltip" data-placement="bottom" title="#{msgs.descriptionRejectCorrection}">
+				    <h:commandLink id="#{'btnRejectSuggestedCorrection'.concat(correction.id)}"
+							class="btn btn-default btn-block btn-sm forum_thread_buttonRate" type="button"
+							a:href="#deleteSuggestedCorrection" a:data-toggle="modal" a:data-backdrop="false"
+							actionListener="#{beanCorrection.setCorrectionOfList(correction)}">
+						<f:ajax render="@none"/>
+						<span class="glyphicon glyphicon-remove" style="vertical-align:middle;"> #{msgs.titleReject}</span>
+					</h:commandLink>
+				</span>
+				</div>			
+			</ui:fragment>
+			
+			</div>
+			
+			<!-- dentro de un bucle ui:repeat los ids suelen tener valores inesperados en los componentes jsf -->
+			<!-- por eso la siguiente etiqueta no es un h:panelGroup, sino un div corriente -->
+			<div id="#{divIdForSuggestedCorrection}" class="collapse">
+				<div class="forum_thread_post_textCorrection">#{beanCorrection.getMessageForCorrectionAgrees(correction)}</div>
+				<div class="forum_thread_post_textCorrection">#{beanCorrection.getMessageForCorrectionDisagrees(correction)}</div>
+			</div>
+		</div>
+		<div class="forum_thread_post_textBlock">
+			<div><h:outputText value="#{correction.textHtml}" escape="false"/></div>
+		</div>
+		</ui:repeat>
+	</div>
+</div>
+
+</div>
+</div>
+</h:panelGroup>
+	
+</div>
+</div>
+<div class="forum_thread_post_footerForm">
+<div class="row">
+	<div class="right-side col-sm-12" style="text-align:right;">
+		<div class="forum_topic_points_value general_inline-block">#{beanUtils.limitNumericValue(9999,commentOfList.numVotes)}</div>
+		<div class="general_inline-block">#{msgs.title_points}</div>
+		
+		<!-- Los usuarios anonimos no pueden ver los botones al pie del comentario -->
+		<!-- rendered="#{not empty beanLogin.loggedUser}" -->
+		<ui:fragment rendered="#{beanLogin.loggedUser!=null}">
+		
+		<!-- Solo si el comentario es propio, el usuario puede editarlo -->
+		<!-- (el boton de "citar" no se introduce en este "ui:fragment" porque tambien se muestra en comentarios ajenos) -->
+		<ui:fragment rendered="#{beanUserView.loggedUserIsAdminOrAuthorOfData(commentOfList.user)}">	
+		<!-- Para comentarios propios: boton "Editar" -->
+		<div class="general_inline-block">
+			<!-- aqui un commandLink no funcionaria bien si hicieramos click derecho - 'abrir en nueva pestana' -->
+			<!-- porque beanForumThread es de scope view, conque los parametros pasados a getCommandLinkToCreateComment ya son null al ejecutar el metodo -->
+			<!-- sin embargo si funciona con h:outputLink -->
+			<h:outputLink id="#{'buttonEditComment'.concat(commentOfList.id)}"
+				class="btn btn-default btn-block general_input_button"
+				value="#{beanForumThread.getOutputLinkToCRUDComment(beanForumThread.currentThreadId,2,commentOfList.id)}">
+				#{msgs.titleEdit}
+			</h:outputLink>
+		</div>
+		</ui:fragment>
+		
+		<!-- Solo si el comentario es ajeno, el usuario puede votarlo/corregirlo -->
+		<!-- (el boton de "citar" no se introduce en este "ui:fragment" porque tambien se muestra en comentarios propios) -->
+		<ui:fragment rendered="#{beanUserView.loggedUserIsAdmin() or not beanUserView.loggedUserIsAuthorOfData(commentOfList.user)}">
+		<!-- Para comentarios ajenos: boton "Difundir" -->
+		<div class="general_inline-block">
+			<!-- <input class="btn btn-default btn-block general_input_button" type="button" id="buttonSpreadTopic3" name="spreadTopic3" value="Difundir"/> -->
+			<ui:fragment rendered="#{beanComment.commentAlreadyVotedByUser(commentOfList)==false}">
+				<div class="general_inline-block">
+				<!-- No usa ajax porque es el action quien recarga la pagina -->
+				<!-- f:ajax render="@form :form_threadListComments" -->
+				<h:commandButton id="#{'buttonSpreadComment'.concat(commentOfList.id)}"
+						class="btn btn-default btn-block general_input_button" value="#{msgs.titleSpread}"
+						action="#{beanComment.getCommandLinkToVoteComment(commentOfList, beanForumThread.getOffsetPage())}">
+				</h:commandButton>
+				</div>
+			</ui:fragment>
+			<ui:fragment rendered="#{beanComment.commentAlreadyVotedByUser(commentOfList)}">
+				<div class="general_inline-block general_input_button_disabled">#{msgs.titleAlreadyVoted}</div>
+			</ui:fragment>
+		</div>
+		<!-- Para comentarios ajenos: boton "Corregir" -->
+		<div class="general_inline-block">
+			<!-- aqui un commandLink no funcionaria bien si hicieramos click derecho - 'abrir en nueva pestana' -->
+			<!-- porque beanForumThread es de scope view, conque los parametros pasados a getCommandLinkToCreateComment ya son null al ejecutar el metodo -->
+			<!-- sin embargo si funciona con h:outputLink -->
+			<h:outputLink id="#{'buttonCorrectComment'.concat(commentOfList.id)}"
+				class="btn btn-default btn-block general_input_button"
+				value="#{beanForumThread.getOutputLinkToCreateCorrection(beanForumThread.currentThreadId,commentOfList.id)}">
+				#{msgs.titleCorrect}
+			</h:outputLink>
+		</div>
+		</ui:fragment>
+		
+		<!-- Tanto para comentarios propios como ajenos: boton "Citar" -->
+		<div class="general_inline-block">
+			<!-- <input class="btn btn-default btn-block general_input_button" type="button" id="buttonQuoteTopic3" name="quoteTopic3" value="Citar"/> -->
+			<!-- aqui un commandLink no funcionaria bien si hicieramos click derecho - 'abrir en nueva pestana' -->
+			<!-- porque beanForumThread es de scope view, conque los parametros pasados a getCommandLinkToCreateComment ya son null al ejecutar el metodo -->
+			<!-- sin embargo si funciona con h:outputLink -->
+			<h:outputLink id="#{'buttonQuoteComment'.concat(commentOfList.id)}"
+				class="btn btn-default btn-block general_input_button"
+				value="#{beanForumThread.getOutputLinkToCRUDComment(beanForumThread.currentThreadId,3,commentOfList.id)}">
+				#{msgs.titleQuote}
+			</h:outputLink>
+		</div>
+		
+		</ui:fragment>
+	</div>
+</div>
+</div>
+</div>
+</article>
+
+</ui:composition>

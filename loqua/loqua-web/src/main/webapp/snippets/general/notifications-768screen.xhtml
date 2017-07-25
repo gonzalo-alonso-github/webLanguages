@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+<div id="general_space_for_main_navbar"></div>
+<div id="general_container">
+
+	<!-- Barra de cabecera para pantallas < 1300px -->
+	<div id="general_header" class="noDisplayOver1300screen">
+		<ui:param name="titleHeader" value="Notificaciones" />
+		<ui:include src="/snippets/general/menu_horizontal/menu_with_translator.xhtml" />
+	</div>
+	
+	<!-- Cuerpo bajo la barra de cabecera -->
+	<div id="general_body">
+	
+		<!-- Columna central -->
+		<div class="general_center general_center_in3columns">
+			<ui:repeat var="publicationOfList" value="#{beanPublicationAsNotification.lastNotifications}">
+			<div class="general_section">
+				<div class="general_section_content">
+					<div class="profile_face_publications_table">
+					<div class="profile_face_publications_tableRow">
+						<div class="profile_face_publications_tableCell">
+							<h:outputLink value="#{beanUserView.getOutputLinkToProfile(publicationOfList.user.id)}">
+								#{beanUtils.limitTextLength(16, publicationOfList.user.nick)}
+							</h:outputLink>
+						</div>
+						<div class="general_section_content_date profile_face_publications_tableLastCell">
+							<div class="profile_face_section_dateTime">#{beanSettingsSession.getFormattedDateTime(publicationOfList.datePub)}</div>
+						</div>
+					</div>
+					</div>
+					<div style="display:table; width:100%;">
+					<div style="display:table-row; width:100%;">
+					<div class="general_section_userAvatar">
+						<span class="general_section_userAvatarHelper"></span><o:graphicImage dataURI="true" style="float:left" value="#{beanUserImages.getUserImage(publicationOfList.user)}" alt="#{msgs.titleImgAltAvatar}"/>
+					</div>
+					<div class="general_section_body">
+					<h:panelGroup rendered="#{publicationOfList.selfGenerated==true}">
+						<h:panelGroup class="general_textBold">
+						#{beanPublication.getUserPublicationPart1(publicationOfList)}
+						<ui:param name="pubValueType" value="#{beanPublication.getPublicationValueType(publicationOfList)}" />
+						<h:panelGroup rendered="#{pubValueType==1}">
+							#{publicationOfList.eventValue}
+						</h:panelGroup>
+						<h:panelGroup rendered="#{pubValueType==2 or pubValueType==3}">
+							<h:panelGroup class="profile_face_threadTittle">
+								<h:outputLink value="#{beanComment.getOutputLinkToPost(publicationOfList.eventValue)}">
+									"#{beanUtils.limitTextLength(30, beanPublication.getThreadTitleByPost(publicationOfList))}"
+								</h:outputLink>
+							</h:panelGroup>
+							<h:panelGroup style="white-space: nowrap">:</h:panelGroup>
+						</h:panelGroup>
+						<h:panelGroup class="profile_face_threadTittle" rendered="#{pubValueType==4}">
+							<h:outputLink value="#{beanUserView.getOutputLinkToProfile(publicationOfList.eventValue)}">
+								#{beanUtils.limitTextLength(16, beanPublication.getUserNick(publicationOfList))}
+							</h:outputLink>
+						</h:panelGroup>
+						#{beanPublication.getUserPublicationPart2(publicationOfList)}
+						</h:panelGroup>
+						<h:panelGroup layout="block" rendered="#{pubValueType==2 or pubValueType==3}">
+						<div class="profile_face_comment">
+							"#{beanUtils.limitTextLength(80, beanComment.getCommnentTextByPost(publicationOfList.eventValue))}"
+						</div>
+						<div>
+							<h:outputLink value="#{beanComment.getOutputLinkToPost(publicationOfList.eventValue)}">#{msgs.titleGoToComment}</h:outputLink>
+						</div>
+						</h:panelGroup>
+					</h:panelGroup>
+					</div>
+					</div>
+					</div>
+				</div>
+			</div>
+			</ui:repeat>	
+		</div>
+		
+	</div>
+</div>
+
+</ui:composition>

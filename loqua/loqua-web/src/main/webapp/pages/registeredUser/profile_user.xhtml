@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	template="/templates/template_general.xhtml">
+
+<f:metadata>
+	<f:viewParam name="user" value="#{beanUserView.urlUserId}" />
+	<f:viewAction action="#{beanUserView.setUserByGivenUrl()}" />
+	<!-- para que la lista de publicaciones no incluya las de los contactos -->
+	<f:viewAction action="#{beanPublication.setIncludePubsByContacts(false)}" />
+</f:metadata>
+
+<!-- scripts y css propios de esta pagina -->
+<ui:define name="more_resources">
+	<!-- Para los controles multiselect -->
+	<h:outputScript name="bootstrap/js/bootstrap-multiselect.js"/>
+	<h:outputStylesheet name="bootstrap/css/bootstrap-multiselect.css"/>
+</ui:define>
+
+<!-- Barra superior de navegacion -->
+<ui:define name="menu_horizontal">
+	<ui:include src="/snippets/general/menu_horizontal/menu_main_registered.xhtml" />
+</ui:define>
+
+<!-- Contenido de la pagina -->
+<ui:define name="page">
+	<ui:include src="/snippets/profile/profile_user.xhtml" />
+</ui:define>
+
+</ui:composition>

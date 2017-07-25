@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+
+<h:form id="#{idFormSearchUser}">
+<div class="input-group input-group-sm">
+<h:inputText class="form-control" id="textSearch"
+		required="true" a:placeholder="#{msgs.title_user_search}"
+		value="#{beanUserSearch.stringToSearch}"
+		style="min-width: 120px;">
+	<f:validator validatorId="validatorLength" />
+	<f:attribute name="inputLabel" value="#{msgs.titleSearch}" />
+	<f:attribute name="inputMaxLength" value="100" />
+	<f:converter converterId="converterCleanSpaces" />
+</h:inputText>
+<span class="input-group-btn">
+	<h:commandButton id="btnSearchUser" class="btn btn-default" 
+		onclick="setReadonlyTrue((#{idFormSearchUser}.id).concat(':textSearch'));setTextValue(this.id, '...');disableElement(this.id);"
+		value="#{msgs.titleSearch}" style="min-width: 70px;"
+		action="#{beanUserSearch.searchUser(beanActionResult)}">
+		<!-- Se indica render=@all para acualizar tambien el formulario de la ventana modal 'searchUserNotFoundModal',
+		de forma que aparezca el mensaje de error correspondiente -->
+		<f:ajax execute="@form :#{idFormSearchUser}" render="@form :#{idFormSearchUser} :form_searchUser_Modal"/>
+	</h:commandButton>
+</span>
+</div>
+<h:outputScript
+	rendered="#{beanActionResult.finish and not beanActionResult.success}">
+  		$('#searchUserNotFoundModal').modal('show');
+</h:outputScript>
+</h:form>
+
+</ui:composition>

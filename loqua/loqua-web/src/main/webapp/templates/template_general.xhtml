@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	lang="es" xml:lang="es">
+	
+<f:view locale="#{beanSettingsSession.locale}">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<title>Loqua</title>
+	
+	<!-- Para la rueda spin (animacion de espera) -->
+	<h:outputScript name="js/spin.min.js"/>
+	<!-- Para inicializar rueda spin (animacion de espera) -->
+	<h:outputScript name="js/spinInitialize.js"/>
+	
+	<!-- Para mostrar u ocultar elementos al completar acciones -->
+	<!-- (suele usarse junto a la rueda spin) -->
+	<h:outputScript name="js/showAndHide.js"/>
+	
+	<!-- BOOTSTRAP.CSS: usa el fichero local en lugar del recurso remoto de CDN (Content Delivery Network) -->
+	<!--  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/> -->
+	<h:outputStylesheet name="bootstrap/3.3.7/css/bootstrap-edited-for-jsf.min.css"/>
+	
+	<!-- JQUERY.JS: usa el fichero local en lugar del recurso remoto de CDN (Content Delivery Network) -->
+	<!--  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script> -->
+	<h:outputScript name="jquery/3.2.1/jquery-3.2.1.min.js"/>
+	
+	<!-- JQUERY-UI.JS: Es para que los dialogos modal tengan la propiedad draggable (arrastrable) -->
+	<!-- usa el fichero local en lugar del recurso remoto de CDN (Content Delivery Network) -->
+	<!-- Ojo: se coloca antes del script de bootstrap.min.js; de lo contrario el editor de Summernote muestra mal los tooltips -->
+	<!-- <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
+	<h:outputScript name="jquery/jquery-ui/1.12.1/jquery-ui.min.js"/>
+	
+	<!-- BOOTSTRAP.JS: usa el fichero local en lugar del recurso remoto de CDN (Content Delivery Network) -->
+	<!-- <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> -->
+	<h:outputScript name="bootstrap/3.3.7/js/bootstrap.min.js"/>
+	
+	<ui:insert name="more_resources"></ui:insert>
+	
+	<h:outputStylesheet name="css/general.css"/>
+</h:head>
+<h:body>
+
+	<div id="menu_horizontal">
+		<ui:insert name="menu_horizontal"></ui:insert>
+	</div>
+	
+	<div id="page">
+		<ui:insert name="page"></ui:insert>
+	</div>
+	
+	<h1 class="general_noDisplay">
+		This H1 just performs the 'H42' technique of WCAG 2.0 evaluation
+	</h1>
+</h:body>
+</f:view>
+</html>

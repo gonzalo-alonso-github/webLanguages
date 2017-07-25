@@ -1,0 +1,28 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	template="/templates/template_general.xhtml">
+
+<f:metadata>
+	<f:viewParam name="category" value="#{beanForum.category}" />
+	<f:viewParam name="page" value="#{beanForum.offsetPage}" />
+</f:metadata>
+
+<!-- scripts y css propios de esta pagina -->
+<ui:define name="more_resources">
+	<!-- Para que los botones cambien de aspecto al activarlos y desactivarlos -->
+	<h:outputScript name="js/buttonsForum.js"/>
+</ui:define>
+
+<!-- Barra superior de navegacion -->
+<ui:define name="menu_horizontal">
+	<ui:include src="/snippets/general/menu_horizontal/menu_main_registered.xhtml" />
+</ui:define>
+
+<!-- Contenido de la pagina -->
+<ui:define name="page">
+	<ui:include src="/snippets/forum/forum.xhtml" />
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings 
+	xmlns="http://java.sun.com/xml/ns/persistence/orm" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd"
+  	version="2.0">
+
+	<!-- COMMENT --> 
+	
+	<named-query name="Comment.getCommentsQuotedByComment">
+		<query>
+			select distinct cq from CommentQuoteTo cq
+			join cq.actorComment cm join cq.quotedComment q
+			where cm.id = ?1
+			order by q.id
+		</query>
+	</named-query>
+	<named-query name="Comment.getCommentsByThread">
+		<!-- order by c.date asc = los mas antiguos primero -->
+		<query>
+			select c from Comment c
+			join c.forumThread t
+			where t.id = ?1
+			order by c.date asc
+		</query>
+	</named-query>
+	<named-query name="Comment.getCommentsByThreadReverseOrder">
+		<!-- order by c.date desc = los mas recientes primero -->
+		<query>
+			select c from Comment c
+			join c.forumThread t
+			where t.id = ?1
+			order by c.date desc
+		</query>
+	</named-query>
+	<named-query name="Comment.getNumCommentsByThread">
+		<query>
+			select count(c) from Comment c
+			join c.forumThread t
+			where t.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Comment.getCommentVoters">
+		<query>
+			select distinct cv from CommentVoter cv
+			join cv.comment c
+			where c.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Comment.deleteById">
+		<query>delete from Comment c where c.id=?1</query>
+	</named-query>
+	
+	<!-- CONTACT -->
+	
+	<named-query name="Contact.getContactsByUser">
+		<query>
+			select c from Contact c
+			where c.user.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Contact.getContactRequestsByUser">
+		<query>
+			select c from ContactRequest c
+			where c.userSender.email = ?1
+			and c.userSender.dateRegistered = ?2
+		</query>
+	</named-query>
+	<named-query name="Contact.getContactRequestByBothUsers">
+		<query>
+			select c from ContactRequest c
+			where c.userReceiver.id = ?1
+			and c.userSender.id = ?2
+		</query>
+	</named-query>
+	<named-query name="Contact.getContactRequestsReceivedByUser">
+		<query>
+			select cr from ContactRequest cr
+			where cr.userReceiver.id = ?1
+			and cr.rejected = false
+		</query>
+	</named-query>
+	<named-query name="Contact.deleteAllReciprocalContactsByUser">
+		<query>
+			delete from Contact c
+			where c.user.id=?1
+			or c.userContact.id=?1
+		</query>
+	</named-query>
+	<named-query name="Contact.deleteAllContactRequestsByUser">
+		<query>
+			delete from ContactRequest cr
+			where cr.userSender.id =?1
+			or cr.userReceiver.id =?1
+		</query>
+	</named-query>
+	<named-query name="Contact.deleteReciprocalContact">
+		<query>
+			delete from Contact c
+			where (c.user.id=?1 and c.userContact.id=?2)
+			or (c.user.id=?2 and c.userContact.id=?1)
+		</query>
+	</named-query>
+	<named-query name="ContactRequest.deleteById">
+		<query>
+			delete from ContactRequest cr
+			where cr.id =?1
+		</query>
+	</named-query>
+	
+	<!-- CORRECTION -->
+	
+	<named-query name="Correction.getCorrectionById">
+		<query>
+			select distinct c from Correction c
+			where c.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Correction.getApprovedCorrectionByComment">
+		<query>
+			select cr from Correction cr
+			join cr.comment cm
+			where cr.approved = true
+			and cm.id = ?1
+			order by cr.id
+		</query>
+	</named-query>
+	<named-query name="Correction.getNotApprovedCorrectionsByComment">
+		<query>
+			select distinct cr from Correction cr
+			join cr.comment cm
+			where cr.approved = false
+			and cm.id = ?1
+			order by cr.id
+		</query>
+	</named-query>
+	<named-query name="Correction.getNumAcceptedCorrectionsByUser">
+		<query>
+			select count(cr) from Correction cr
+			join cr.user u
+			where cr.approved = true
+			and u.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Correction.getNumCorrectionAgrees">
+		<query>
+			select count(ca) from CorrectionAgree ca
+			join ca.correction cr
+			where cr.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Correction.getNumCorrectionDisagrees">
+		<query>
+			select count(cd) from CorrectionDisagree cd
+			join cd.correction cr
+			where cr.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Correction.getUserAgreeCorrection">
+		<query>
+			select count(distinct u)
+			from CorrectionAgree ca join ca.user u join ca.correction c
+			where u.id= ?1
+			and c.id= ?2
+		</query>
+	</named-query>
+	<named-query name="Correction.getUserDisagreeCorrection">
+		<query>
+			select count(distinct u)
+			from CorrectionDisagree cd join cd.user u join cd.correction c
+			where u.id= ?1
+			and c.id= ?2
+		</query>
+	</named-query>
+	<named-query name="Correction.deleteById">
+		<query>delete from Correction c where c.id=?1</query>
+	</named-query>
+	
+	<!-- COUNTRY -->
+
+	<named-query name="Country.getAllCountries">
+		<query>select c from Country c</query>
+	</named-query>
+	<named-query name="Country.getCountryById">
+		<query>
+			select c from Country c
+			where c.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Country.getCountryOriginByUser">
+		<query>
+			select co from User u
+			join u.userInfoPrivacity uip
+			join uip.countryOrigin co
+			where u.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Country.getCountryLocationByUser">
+		<query>
+			select cl from User u
+			join u.userInfoPrivacity uip
+			join uip.countryLocation cl
+			where u.id = ?1
+		</query>
+	</named-query>
+	
+	<!-- FEED -->
+	
+	<named-query name="Feed.getFeedById">
+		<query>
+			select f from Feed f
+			where f.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Feed.getAllFeedCategories">
+		<query>
+			select f from FeedCategory f
+			order by f.id
+		</query>
+	</named-query>
+	
+	<!-- LANGUAGE -->
+	
+	<named-query name="Language.getAllLanguages">
+		<query>select l from Language l</query>
+	</named-query>
+	<named-query name="Language.getLanguageByName">
+		<query>
+			select l from Language l
+			where l.name = ?1
+		</query>
+	</named-query>
+	<named-query name="Language.getNativeLanguagesByUser">
+		<query>
+			select l from UserNativeLanguage unl
+			join unl.language l join unl.user u
+			where u.id = ?1
+		</query>
+	</named-query>	
+	<named-query name="Language.getPracticingLanguagesByUser">
+		<query>
+			select l from UserPracticingLanguage upl
+			join upl.language l join upl.user u
+			where u.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Language.getLanguagesByCountry">
+		<query>
+			select l from CountryLanguage cl
+			join cl.country c join cl.language l
+			where c.name = ?1
+			order by c.id
+		</query>
+	</named-query>
+	<named-query name="Language.deleteUserNativeLanguages">
+		<query>
+			delete from UserNativeLanguage unl
+			where unl.user.id =?1
+			and unl.language.id =?2
+		</query>
+	</named-query>
+	<named-query name="Language.deleteUserPracticedLanguages">
+		<query>
+			delete from UserPracticingLanguage upl
+			where upl.user.id =?1
+			and upl.language.id =?2
+		</query>
+	</named-query>
+	
+	<named-query name="Language.deleteNativeLanguagesByUser">
+		<query>
+			delete from UserNativeLanguage unl
+			where unl.user.id =?1
+		</query>
+	</named-query>
+	<named-query name="Language.deletePracticedLanguagesByUser">
+		<query>
+			delete from UserPracticingLanguage upl
+			where upl.user.id =?1
+		</query>
+	</named-query>
+	
+	<!-- MESSAGE -->
+	
+	<named-query name="Message.getMessageById">
+		<query>
+			select m from Message m
+			where m.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Message.getMessagesSentByUser">
+		<query>
+			select m from Message m
+			join m.user u
+			where u.id = ?1
+			order by m.id
+		</query>
+	</named-query>
+	<named-query name="Message.getMessagesReceivedByUser">
+		<query>
+			select m from MessageReceiver mr
+			join mr.user u
+			join mr.message m
+			where u.id = ?1
+			order by m.id
+		</query>
+	</named-query>
+	
+	<named-query name="Message.getNumUnreadMessagesReceivedByUser">
+		<query>
+			select count(mr) from MessageReceiver mr
+			join mr.message m
+			join mr.user u
+			where m.read = false
+			and u.id= ?1
+			order by m.date desc
+		</query>
+	</named-query>
+	<named-query name="Message.deleteSentMessagesByUser">
+		<query>
+			delete from Message m
+			where m.user.id =?1
+		</query>
+	</named-query>
+
+	<!-- THREAD -->
+	
+	<named-query name="Thread.getThreadByGUID">
+		<query>
+			select t from ForumThread t
+			where t.guid = ?1
+			order by t.id
+		</query>
+	</named-query>
+	<named-query name="Thread.getThreadsByCategoryAndLanguage">
+		<query>
+			select t from ForumThread t
+			join t.feed f join f.feedCategory fc join f.language l
+			where fc.id = ?1
+			and l.name = ?2
+			order by t.id
+		</query>
+	</named-query>
+	<named-query name="Thread.getThreadsByLanguages">
+		<query>
+			select t from ForumThread t
+			join t.feed f join f.language l
+			where l.id IN ?1
+			order by t.dateLastComment desc, t.date desc, t.forumThreadInfo.countVisits
+		</query>
+	</named-query>
+	<named-query name="Thread.getNumThreadsByLanguages">
+		<query>
+			select count(t) from ForumThread t
+			join t.feed f join f.language l
+			where l.name IN ?1
+		</query>
+	</named-query>
+	<named-query name="Thread.getThreadsByLanguagesAndCategory">
+		<query>
+			select t from ForumThread t
+			join t.feed f join f.feedCategory fc join f.language l
+			where fc.id = ?1
+			and l.id IN ?2
+			order by t.dateLastComment desc, t.date desc, t.forumThreadInfo.countVisits
+		</query>
+	</named-query>
+	<named-query name="Thread.getNumThreadsByLanguagesAndCategory">
+		<query>
+			select count(t) from ForumThread t
+			join t.feed f join f.feedCategory fc join f.language l
+			where fc.id = ?1
+			and l.name IN ?2
+		</query>
+	</named-query>
+	<named-query name="Thread.get20Threads">
+		<query>
+			select t from ForumThread t
+			order by t.dateLastComment desc, t.date desc, t.forumThreadInfo.countVisits
+		</query>
+	</named-query>
+	<named-query name="Thread.getNumThreads">
+		<query>
+			select count(t) from ForumThread t
+		</query>
+	</named-query>
+	<named-query name="Thread.getThreadsByCategory">
+		<query>
+			select t from ForumThread t
+			join t.feed f join f.feedCategory fc
+			where fc.id = ?1
+			order by t.dateLastComment desc, t.date desc, t.forumThreadInfo.countVisits
+		</query>
+	</named-query>
+	<named-query name="Thread.getNumThreadsByCategory">
+		<query>
+			select count(t) from ForumThread t
+			join t.feed f join f.feedCategory fc
+			where fc.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Thread.getMostValuedThreadsOfTheMonth">
+		<query>
+			select t from ForumThread t
+			where FUNCTION('MONTH',t.date) = ?1
+			and FUNCTION('YEAR',t.date) = ?2
+			order by t.date desc, t.forumThreadInfo.countVotes desc
+		</query>
+	</named-query>
+	<named-query name="Thread.getMostCommentedThreadsOfTheMonth">
+		<query>
+			select t from ForumThread t
+			where FUNCTION('MONTH',t.date) = ?1
+			and FUNCTION('YEAR',t.date) = ?2
+			order by t.date desc, t.forumThreadInfo.countComments desc
+		</query>
+	</named-query>
+	<named-query name="Thread.getLastThreadsByCategory">
+		<query>
+			select t from ForumThread t
+			where t.feed.feedCategory.id = ?1
+			order by t.date desc
+		</query>
+	</named-query>
+	<named-query name="Thread.getThreadVoters">
+		<query>
+			select distinct tv from ForumThreadVoter tv
+			join tv.forumThread t
+			where t.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Thread.getThreadById">
+		<query>
+			select t from ForumThread t
+			where t.id = ?1
+		</query>
+	</named-query>
+			
+	<!-- NOTIFICATION -->
+	<!--
+	<named-query name="Notification.getNotificationByID">
+		<query>
+			select n from Notification n
+			where n.id = ?1
+			order by n.id
+		</query>
+	</named-query>
+	<named-query name="Notification.getNotificationSentByUser">
+		<query>
+			select n from Notification n
+			join n.user u
+			where u.id = ?1
+			order by n.id
+		</query>
+	</named-query>
+	<named-query name="Notification.getNotificationReceivedByUser">
+		<query>
+			select n from NotificationReceiver nr
+			join nr.user u join nr.notification n
+			where u.id = ?1
+			order by n.id
+		</query>
+	</named-query>
+	-->
+	
+	<!-- PHORUM_POST -->
+	
+	<named-query name="ForumPost.getForumPostById">
+		<query>
+			select distinct p from ForumPost p
+			where p.id = ?1
+		</query>
+	</named-query>
+	<named-query name="ForumPost.getForumPostByUser">
+		<query>
+			select p from ForumPost p
+			join p.user u
+			where u.email = ?1
+			and u.dateRegistered = ?2
+		</query>
+	</named-query>
+
+	<!-- PUBLICATION -->
+	
+	<named-query name="Publication.getPublicationById">
+		<query>
+			select p from Publication p where p.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Publication.getEventById">
+		<query>
+			select e from Event e where e.type = ?1
+		</query>
+	</named-query>
+	<named-query name="Publication.deletePublicationsByUser">
+		<query>
+			delete from Publication p
+			where p.user.id =?1
+		</query>
+	</named-query>
+	<named-query name="Publication.getPublicationsByUser">
+		<query>
+			select p from Publication p
+			join p.user u
+			where 
+			(
+				(p.selfGenerated = false)
+				or ( p.id IN (select p2.id from Publication p2 where p2.event.showAsPublication=true) )
+			)
+			and u.id = ?1
+			order by p.datePub desc
+		</query>
+	</named-query>
+	<named-query name="Publication.getPublicationsByUserAndContacts">
+		<query>
+			select p from Publication p, User u
+			where
+			(	(p.user.id = u.id )
+				or (p.user.id IN (select c.userContact.id from Contact c where c.user.id=u.id))
+			)
+			and
+			(
+				(p.selfGenerated = false)
+				or ( p.id IN (select p2.id from Publication p2 where p2.event.showAsPublication=true) )
+			)
+			and u.id = ?1
+			order by p.datePub desc
+		</query>
+	</named-query>
+	<named-query name="Publication.getNumPublicationsByUser">
+		<query>
+			select count(p) from Publication p
+			join p.user u
+			where 
+			(
+				(p.selfGenerated = false)
+				or ( p.id IN (select p2.id from Publication p2 where p2.event.showAsPublication=true) )
+			)
+			and u.id = ?1
+			order by p.datePub desc
+		</query>
+	</named-query>
+	<named-query name="Publication.getNumPublicationsByUserAndContacts">
+		<query>
+			select count(p) from Publication p, User u
+			where
+			(	(p.user.id = u.id )
+				or (p.user.id IN (select c.userContact.id from Contact c where c.user.id=u.id))
+			)
+			and
+			(
+				(p.selfGenerated = false)
+				or ( p.id IN (select p2.id from Publication p2 where p2.event.showAsPublication=true) )
+			)
+			and u.id = ?1
+			order by p.datePub desc
+		</query>
+	</named-query>
+	<named-query name="Publication.achievementTopUsersAlreadyPassedByUser">
+		<query>
+			<![CDATA[
+			select a from Achievement a
+			where a.user.id = ?3
+			and a.event.type = ?2
+			and a.eventValue <= ?1
+			]]>
+		</query>
+	</named-query>
+	<named-query name="Publication.achievementNumCommentsAlreadyPassedByUser">
+		<query>
+			<![CDATA[
+			select a from Achievement a
+			where a.user.id = ?3
+			and a.event.type = ?2
+			and a.eventValue >= ?1
+			]]>
+		</query>
+	</named-query>
+	<named-query name="Publication.achievementNumCorrsAlreadyPassedByUser">
+		<query>
+			<![CDATA[
+			select a from Achievement a
+			where a.user.id = ?3
+			and a.event.type = ?2
+			and a.eventValue >= ?1
+			]]>
+		</query>
+	</named-query>
+	<named-query name="Publication.getAllEventsTypes">
+		<query>
+			select e.type from Event e
+		</query>
+	</named-query>
+	<named-query name="Publication.deleteById">
+		<query>delete from Publication p where p.id=?1</query>
+	</named-query>
+	<named-query name="Publication.getLastNotificationsByUser">
+		<query>
+			select p from Publication p
+			where p.event.showAsNotification = true
+			and p.user.id = ?1
+			order by p.datePub desc
+		</query>
+	</named-query>
+	<named-query name="Publication.getNumUnreadNotificationsByUser">
+		<query>
+			select count(p) from Publication p
+			where p.event.showAsNotification = true
+			and p.user.id = ?1
+			and p.readPub = false
+		</query>
+	</named-query>
+	<named-query name="Publication.setNotificationsToRead">
+		<query>
+			update Publication p
+			set p.readPub = true
+			where p.user.id = ?1
+			and p.readPub = false
+		</query>
+	</named-query>
+	<named-query name="Publication.getPubsForDeletedComment">
+		<query>
+			select p from Publication p
+			where p.event.type between 101 and 200
+			and p.eventValue = ?1
+		</query>
+	</named-query>
+	<named-query name="Publication.getPubsForDeletedCorrection">
+		<query>
+			select p from Publication p
+			where p.event.type between 201 and 300
+			and p.eventValue = ?1
+		</query>
+	</named-query>
+	
+	<!-- USER -->
+	
+	<named-query name="User.getUserById">
+		<query>
+			select u from User u
+			where u.id = ?1
+		</query>
+	</named-query>
+	<named-query name="User.getNumRegisteredUsersAndAdmin">
+		<query>
+			select count(u) from User u
+			where (u.removed=false or u.role = ?1)
+		</query>
+	</named-query>
+	<named-query name="User.getUserNotRemovedByEmail">
+		<query>
+			select u from User u
+			where u.email = ?1
+			and u.removed = false
+		</query>
+	</named-query>
+	<named-query name="User.getUserNotRemovedByNick">
+		<query>
+			select u from User u
+			where u.nick = ?1
+			and u.removed = false
+		</query>
+	</named-query>
+	<named-query name="User.getNumLoginFails">
+		<query>
+			select u.loginFails from User u
+			where (u.removed=false or u.role = ?2)
+			and u.email=?1
+		</query>
+	</named-query>
+	<named-query name="User.getUserToLoginByEmail">
+		<query>
+			select u from User u
+			where u.email = ?1
+			and (u.removed=false or u.role = ?2)
+			order by u.id
+		</query>
+	</named-query>
+	<named-query name="User.getUserByEmailPassword">
+		<query>
+			select u from User u
+			where u.email = ?1 and u.password = ?2
+			order by u.id
+		</query>
+	</named-query>
+	<named-query name="User.getLocaleByUser">
+		<query>
+			select u.locale from User u
+			where u.id = ?1
+		</query>
+	</named-query>
+	<named-query name="User.getNumLastRegistrations">
+		<query>
+			<![CDATA[
+			select count(u) from User u
+			where (u.dateRegistered > ?1)
+			order by u.dateRegistered desc
+			]]>
+		</query>
+	</named-query>
+	<named-query name="User.getUserByUrlConfirm">
+		<query>
+			select u from User u
+			where u.urlConfirm = ?1
+		</query>
+	</named-query>
+	<named-query name="User.getMostValuedUsersOfTheMonth">
+		<query>
+			select distinct u,
+			(u.userInfo.countCommentsMonth+u.userInfo.countCorrectionsMonth) AS valoration
+			from ForumPost p
+			join p.user u
+			where p.date = 
+				(select max(p2.date) from ForumPost p2 where p2.user.id=u.id)
+			order by
+			u.userInfo.pointsMonth desc,
+			p.date asc,
+			valoration desc
+		</query>
+		<!-- con ese 'where' conseguimos que 'p.date' (que es uno de los criterios del order by)
+		sea la fecha del ultimo comentario del usuario.
+		De forma que en caso de empate entre usuarios saldra primero el que antes haya alcanzado la puntuacion -->
+	</named-query>
+	<named-query name="User.getMostActiveUsersOfTheMonth">
+		<query>
+			select distinct u,
+			(u.userInfo.countCommentsMonth+u.userInfo.countCorrectionsMonth) AS activity
+			from ForumPost p
+			join p.user u
+			where p.date = 
+				(select max(p2.date) from ForumPost p2 where p2.user.id=u.id)
+			order by
+			activity desc,
+			p.date asc,
+			u.userInfo.pointsMonth desc
+		</query>
+		<!-- con ese 'where' conseguimos que 'p.date' (que es uno de los criterios del order by)
+		sea la fecha del ultimo comentario del usuario.
+		De forma que en caso de empate saldra primero el que antes haya alcanzado la puntuacion -->
+	</named-query>
+	<named-query name="User.deleteUserInfo">
+		<query>
+			delete from UserInfo ui
+			where ui.id =?1
+		</query>
+	</named-query>
+	<named-query name="User.deleteUserInfoPrivacity">
+		<query>
+			delete from UserInfoPrivacity uip
+			where uip.id =?1
+		</query>
+	</named-query>
+	<named-query name="User.deletePrivacityData">
+		<query>
+			delete from PrivacityData p
+			where p.id =?1
+		</query>
+	</named-query>
+	
+	<!-- CHANGE_PASSWORD AND CHANGE_EMAIL -->
+	
+	<named-query name="ChangePassword.getPasswordChangeByUrlConfirm">
+		<query>
+			select p from ChangePassword p
+			where p.urlConfirm = ?1
+			and p.typeChangePassword = ?2
+		</query>
+	</named-query>
+	<named-query name="ChangePassword.getNumLastPasswordChangesByUser">
+		<query>
+			<![CDATA[
+			select count(p) from ChangePassword p
+			where (p.date > ?1)
+			and p.typeChangePassword = ?2
+			and p.user.id = ?3
+			order by p.date desc
+			]]>
+		</query>
+	</named-query>
+	
+	<named-query name="ChangeEmail.getEmailChangeByUrlConfirm">
+		<query>
+			select e from ChangeEmail e
+			where e.urlConfirm = ?1
+		</query>
+	</named-query>
+	<named-query name="ChangeEmail.getNumLastEmailChangesByUser">
+		<query>
+			<![CDATA[
+			select count(e) from ChangeEmail e
+			where (e.date > ?1)
+			and e.user.id = ?2
+			order by e.date desc
+			]]>
+		</query>
+	</named-query>
+	
+	<!-- CREDENTIALS -->
+	
+	<named-query name="Credentials.getAllCredentials">
+		<query>
+			select c from Credentials c
+		</query>
+	</named-query>
+	
+</entity-mappings>

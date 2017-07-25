@@ -1,0 +1,12 @@
+bin/
+.project
+.settings/
+loqua-ear/.project
+loqua-ear/.settings/
+loqua-ejb/.project
+loqua-ejb/.settings
+loqua-ejb/.classpath
+loqua-web/.project
+loqua-web/.settings
+loqua-web/.classpath
+loqua-web/.tern-project

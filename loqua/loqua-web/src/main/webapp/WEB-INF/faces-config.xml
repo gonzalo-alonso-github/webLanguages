@@ -1,0 +1,588 @@
+<?xml version="1.0"?>
+<!--
+    JBoss, Home of Professional Open Source
+    Copyright 2013, Red Hat, Inc. and/or its affiliates, and individual
+    contributors by the @authors tag. See the copyright.txt in the
+    distribution for a full listing of individual contributors.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<!-- Marker file indicating JSF 2.2 should be enabled in the application -->
+<faces-config version="2.2"
+    xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://xmlns.jcp.org/xml/ns/javaee
+        http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+	
+	<application>
+		<view-handler>
+			com.loqua.presentation.jsfHandler.ViewHandlerCustom
+		</view-handler>
+	</application>
+	<application>
+		<navigation-handler>
+		   com.loqua.presentation.jsfHandler.NavigationHandlerCustom
+		</navigation-handler>
+	</application>
+	
+	<application>
+		<resource-bundle>
+			<base-name>i18n/bundle</base-name>
+			<var>msgs</var>
+		</resource-bundle>
+	</application>
+	<application>
+		<resource-bundle>
+			<base-name>i18n/countriesAndLocales</base-name>
+			<var>msgsCountries</var>
+		</resource-bundle>
+	</application>
+	<application>
+		<resource-bundle>
+			<base-name>i18n/events</base-name>
+			<var>msgsEvents</var>
+		</resource-bundle>
+	</application>
+	
+	<managed-bean eager="true">
+		<managed-bean-name>beanUtils</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.applicationBean.BeanUtils
+		</managed-bean-class>
+		<managed-bean-scope>application</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean eager="true">
+		<managed-bean-name>beanSettingsLocale</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.applicationBean.BeanSettingsLocale
+		</managed-bean-class>
+		<managed-bean-scope>application</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean eager="true">
+		<managed-bean-name>beanSettingsForumPage</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.applicationBean.BeanSettingsForumPage
+		</managed-bean-class>
+		<managed-bean-scope>application</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean eager="true">
+		<managed-bean-name>beanSettingsProfilePage</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.applicationBean.BeanSettingsProfilePage
+		</managed-bean-class>
+		<managed-bean-scope>application</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean eager="true">
+		<managed-bean-name>beanSettingsActionLimits</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.applicationBean.BeanSettingsActionLimits
+		</managed-bean-class>
+		<managed-bean-scope>application</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean eager="true">
+		<managed-bean-name>beanSettingsUser</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.applicationBean.BeanSettingsUser
+		</managed-bean-class>
+		<managed-bean-scope>application</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean eager="true">
+		<managed-bean-name>beanUserImages</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.applicationBean.BeanUserImages
+		</managed-bean-class>
+		<managed-bean-scope>application</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean eager="true">
+		<managed-bean-name>beanCache</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.applicationBean.BeanCache
+		</managed-bean-class>
+		<managed-bean-scope>application</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanSettingsSession</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanSettingsSession
+		</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanLogin</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanLogin
+		</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanMessage</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanMessage
+		</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanUserClasification</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanUserClasification
+		</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanUserData</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanUserData
+		</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanUtilsView</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanUtilsView
+		</managed-bean-class>
+		<managed-bean-scope>view</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanPublicationAsNotification</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanPublicationAsNotification
+		</managed-bean-class>
+		<managed-bean-scope>view</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanUserView</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanUserView
+		</managed-bean-class>
+		<managed-bean-scope>view</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanUserConfirmCurrentPassword</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanUserConfirmCurrentPassword
+		</managed-bean-class>
+		<managed-bean-scope>view</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanForum</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanForum
+		</managed-bean-class>
+		<managed-bean-scope>view</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanForumThread</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanForumThread
+		</managed-bean-class>
+		<managed-bean-scope>view</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanUserContacts</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanUserContacts
+		</managed-bean-class>
+		<managed-bean-scope>view</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanPublication</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanPublication
+		</managed-bean-class>
+		<managed-bean-scope>view</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanCorrection</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanCorrection
+		</managed-bean-class>
+		<managed-bean-scope>view</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanComment</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanComment
+		</managed-bean-class>
+		<managed-bean-scope>view</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanActionResult</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.requestBean.BeanActionResult
+		</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanUserEditProfile</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanUserEditProfile
+		</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanUserEditEmailPassword</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanUserEditEmailPassword
+		</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanUserRestorePassword</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanUserRestorePassword
+		</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanUserRegister</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanUserRegister
+		</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+
+	<managed-bean>
+		<managed-bean-name>beanUserRemove</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanUserRemove
+		</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanPaginationBar</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanPaginationBar
+		</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanTranslator</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanTranslator
+		</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>beanUserSearch</managed-bean-name>
+		<managed-bean-class>
+			com.loqua.presentation.bean.BeanUserSearch
+		</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+
+	<!-- NAVEGACION DESDE MENU HORIZONTAL 'menu_main_anonymous.xhtml' -->
+	<!-- ESTA PRESENTE TANTO EN PAGINAS DE CONFIRMACION COMO DE USUARIO ANONIMO -->
+	
+	<navigation-rule>
+		<from-view-id>/pages/*</from-view-id>
+		
+		<!-- anonimo (menu horizontal y paginas de confirmacion): link al indice -->
+		<navigation-case>
+			<from-outcome>linkAnonymousIndex</from-outcome>
+			<to-view-id>/pages/anonymousUser/forum.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- usuario registrado (paginas de confirmacion)): link al indice -->
+		<navigation-case>
+			<from-outcome>linkRegisteredIndex</from-outcome>
+			<to-view-id>/pages/registeredUser/profile_index.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- anonimo (menu horizontal): login -->
+		<navigation-case>
+			<from-outcome>successLoginUser</from-outcome>
+			<to-view-id>/pages/registeredUser/profile_index.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>successLoginAdmin</from-outcome>
+			<to-view-id>/pages/admin_user/profile_index.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- anonimo (menu horizontal): link a pagina de registro -->
+		<navigation-case>
+			<from-outcome>linkRegister</from-outcome>
+			<to-view-id>/pages/anonymousUser/register.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- anonimo (menu horizontal): link a pagina de recuperar contrasena -->
+		<navigation-case>
+			<from-outcome>linkPasswordRestore</from-outcome>
+			<to-view-id>/pages/anonymousUser/password_restore.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- anonimo (menu horizontal): link al foro -->
+		<navigation-case>
+			<from-outcome>linkAnonymousForum</from-outcome>
+			<to-view-id>/pages/anonymousUser/forum.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>
+	
+	<!-- NAVEGACION DE USUARIO ANONIMO -->
+
+	<!-- anonimo: registrarse -->
+	<navigation-rule>
+		<from-view-id>/pages/anonymousUser/register.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>errorRegister</from-outcome>
+			<to-view-id>/pages/anonymousUser/register.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>successRegister</from-outcome>
+			<to-view-id>/pages/anonymousUser/forum.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>
+
+	<!-- anonimo: recuperar contrasena -->
+	<navigation-rule>
+		<from-view-id>/pages/anonymousUser/password_restore.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>errorRestorePassword</from-outcome>
+			<to-view-id>/pages/anonymousUser/password_restore.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>successRestorePassword</from-outcome>
+			<to-view-id>/pages/anonymousUser/forum.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>
+	
+	<navigation-rule>
+		<from-view-id>/pages/anonymousUser/*</from-view-id>
+		
+		<!-- anonimo: navegacion por el foro  -->
+		<navigation-case>
+			<from-outcome>linkPaginationBar</from-outcome>
+			<to-view-id>/pages/anonymousUser/forum.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>linkForumThread</from-outcome>
+			<to-view-id>/pages/anonymousUser/forum_thread.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- anonimo: error inesperado -->
+		<navigation-case>
+			<from-outcome>errorUnexpected</from-outcome>
+			<to-view-id>/pages/anonymousUser/errorUnexpectedAnonymous.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>errorUnexpectedAnonymous</from-outcome>
+			<to-view-id>/pages/anonymousUser/errorUnexpectedAnonymous.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>
+	
+	<!-- NAVEGACION DE USUARIO REGISTRADO -->
+	
+	<navigation-rule>
+		<from-view-id>/pages/registeredUser/*</from-view-id>
+		
+		<!-- usuario registrado (menu horizontal): link al indice -->
+		<navigation-case>
+			<from-outcome>linkRegisteredIndex</from-outcome>
+			<to-view-id>/pages/registeredUser/profile_index.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<navigation-case>
+			<!-- esta regla "linkIndex" se usa en el snippet profile_me.xhmtl -->
+			<from-outcome>linkIndex</from-outcome>
+			<to-view-id>/pages/registeredUser/profile_index.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- usuario registrado (menu horizontal): link al foro -->
+		<navigation-case>
+			<from-outcome>linkRegisteredForum</from-outcome>
+			<to-view-id>/pages/registeredUser/forum.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- usuario registrado (menu horizontal): cerrar sesion -->
+		<navigation-case>
+			<from-outcome>successLogout</from-outcome>
+			<to-view-id>/pages/anonymousUser/forum.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- usuario registrado (menu horizontal): link a pagina de perfil personal -->
+		<navigation-case>
+			<from-outcome>linkProfileMe</from-outcome>
+			<to-view-id>/pages/registeredUser/profile_me.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- usuario registrado (menu horizontal): link a pagina de edicion de perfil propio -->
+		<navigation-case>
+			<from-outcome>successEditUserProfile</from-outcome>
+			<to-view-id>/pages/registeredUser/profile_edit.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- usuario registrado: link a pagina de perfil de otro usuario -->
+		<!-- (tambien se usa en el bean de buscador de usuarios) -->
+		<navigation-case>
+			<from-outcome>linkProfileUser</from-outcome>
+			<to-view-id>/pages/registeredUser/profile_user.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- usuario registrado: navegacion por el foro -->
+		<navigation-case>
+			<from-outcome>linkPaginationBar</from-outcome>
+			<to-view-id>/pages/registeredUser/forum.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>linkForumThread</from-outcome>
+			<to-view-id>/pages/registeredUser/forum_thread.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- usuario registrado: error inesperado -->
+		<navigation-case>
+			<from-outcome>errorUnexpected</from-outcome>
+			<to-view-id>/pages/registeredUser/errorUnexpectedRegistered.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>errorUnexpectedRegistered</from-outcome>
+			<to-view-id>/pages/registeredUser/errorUnexpectedRegistered.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+	</navigation-rule>	
+	
+	<!-- NAVEGACION DE USUARIO ADMINISTRADOR -->
+	<!-- Deberia copiar y adaptar las reglas de 'NAVEGACION DE USUARIO REGISTRADO' -->
+	<!-- Por ahora solo pongo lo basico -->
+	
+	<navigation-rule>
+		<from-view-id>/pages/admin_user/*</from-view-id>
+		
+		<!-- usuario admin (menu horizontal): link al indice -->
+		<navigation-case>
+			<from-outcome>linkAdminIndex</from-outcome>
+			<to-view-id>/pages/admin_user/profile_index.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		<navigation-case>
+			<!-- esta regla "linkIndex" se usa en el snippet profile_me.xhmtl -->
+			<from-outcome>linkIndex</from-outcome>
+			<to-view-id>/pages/admin_user/profile_index.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- usuario admin (menu horizontal): link al foro -->
+		<navigation-case>
+			<from-outcome>linkAdminForum</from-outcome>
+			<to-view-id>/pages/admin_user/forum.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- usuario admin (menu horizontal): cerrar sesion -->
+		<navigation-case>
+			<from-outcome>successLogout</from-outcome>
+			<to-view-id>/pages/anonymousUser/forum.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- usuario admin (menu horizontal): link a pagina de perfil personal -->
+		<navigation-case>
+			<from-outcome>linkProfileMe</from-outcome>
+			<to-view-id>/pages/admin_user/profile_me.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- usuario admin (menu horizontal): link a pagina de edicion de perfil propio -->
+		<navigation-case>
+			<from-outcome>successEditUserProfile</from-outcome>
+			<to-view-id>/pages/admin_user/profile_edit.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- usuario admin: link a pagina de perfil de otro usuario -->
+		<!-- (tambien se usa en el bean de buscador de usuarios) -->
+		<navigation-case>
+			<from-outcome>linkProfileUser</from-outcome>
+			<to-view-id>/pages/admin_user/profile_user.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- usuario admin: navegacion por el foro -->
+		<navigation-case>
+			<from-outcome>linkPaginationBar</from-outcome>
+			<to-view-id>/pages/admin_user/forum.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>linkForumThread</from-outcome>
+			<to-view-id>/pages/admin_user/forum_thread.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+		<!-- usuario admin: error inesperado -->
+		<navigation-case>
+			<from-outcome>errorUnexpected</from-outcome>
+			<to-view-id>/pages/admin_user/errorUnexpectedAdmin.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>errorUnexpectedAdmin</from-outcome>
+			<to-view-id>/pages/admin_user/errorUnexpectedAdmin.xhtml</to-view-id>
+			<redirect/>
+		</navigation-case>
+		
+	</navigation-rule>
+	
+</faces-config>

@@ -1,0 +1,168 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+<!--
+Este fichero es un snippet: hay variables definidas en otras paginas que se usan aqui.
+En anonymousUser/forumThread.xhtml y en registeredUser/forumThread.xhtml
+es donde se reciben los parametros 'thread' y 'page'
+cuyos valores se guardan en el beanForumThread:
+<f:viewParam name="thread" value="#{beanForumThread.currentThreadId}" />
+<f:viewParam name="page" value="#{beanForumThread.offsetPage}" />
+-->
+
+<div id="general_space_for_main_navbar"></div>
+<div class="container" id="general_container">
+
+	<!-- Barra de cabecera. Contiene un titulo, un buscador y, en determinadas pantallas, un boton de traductor -->
+	<div id="general_header">	
+		<ui:param name="titleHeader" value="#{msgs.titleForumIndex}" />
+		<ui:include src="/snippets/general/menu_horizontal/menu_with_searcherTranslator.xhtml" />
+	</div>
+	
+	<!-- Cuerpo bajo la barra de cabecera. Esta estructurado en 2 columnas, que son: -->
+	<!-- general_center y general_aside_right -->
+	<div id="general_body">
+	
+		
+		<!-- Columna principal -->
+		<div class="general_center general_center_in2columns">
+		
+			<!-- Barra de cabecera y paginacion (en columna principal) -->
+			<div class="container-fluid">
+				<div class="row">
+					<h:form id="form_header_forumThread" prependId="false">
+					<div class="left-side col-md-6 col-sm-2 col-xs-12" style="padding-left:0px; padding-right:0px; padding-bottom:10px;">
+						<ui:fragment rendered="#{not empty beanLogin.loggedUser}">
+							<!-- aqui un commandLink no funcionaria bien si hicieramos click derecho - 'abrir en nueva pestana' -->
+							<!-- porque beanForumThread es de scope view, conque los parametros pasados a getCommandLinkToCreateComment ya son null al ejecutar el metodo -->
+							<!-- sin embargo si funciona con h:outputLink -->
+							<h:outputLink id="buttonNewCommentInHeader"
+								class="btn btn-default general_input_button"
+								value="#{beanForumThread.getOutputLinkToCRUDComment(beanForumThread.currentThreadId,1,null)}">
+								#{msgs.titleToComment}
+							</h:outputLink>
+						</ui:fragment>
+					</div>
+					</h:form>
+					<!-- Barra de paginacion de la propia noticia -->
+					<h:form id="form_paginationBarThread" prependId="false">
+					<ui:param name="sizePaginationBar" 
+						value="#{beanSettingsForumPage.getNumPagesOfThread(beanForumThread.currentThread.forumThreadInfo.countComments)}"/>
+					<ui:param name="typePaginationBar" 
+						value="#{beanPaginationBar.loadTypeSingleNewThreadPaginationBar(sizePaginationBar,beanForumThread.offsetPage)}"/>
+					<ui:param name="selectedThread" value="#{beanForumThread.currentThread}"/>
+					<h:panelGroup layout="block" rendered="#{typePaginationBar != 0}" class="right-side col-md-6 col-sm-10 col-xs-12 general_pagination">
+						<ui:include src="/snippets/forum/paginationBar_simple.xhtml" />
+					</h:panelGroup>
+					</h:form>
+					<div class="left-side col-md-12 col-sm-12 col-xs-12 forum_themeDescription noDisplayUnder992screen" style="padding:0px 0px 4px 4px;">
+						<ul><li>#{msgs.titleVisits}: #{beanForumThread.currentThread.forumThreadInfo.countVisits}</li></ul>
+						<ul><li>#{msgs.titleComments}: #{beanForumThread.currentThread.forumThreadInfo.countComments}</li></ul>
+						<h:panelGroup rendered="#{beanForumThread.offsetPage > 0}">
+							<ul><li>#{msgs.titleCurrentPage}: #{beanForumThread.offsetPage}</li></ul>
+						</h:panelGroup>
+					</div>
+				</div>
+			</div>
+			<!-- Primer post del hilo -->
+			<div class="forum_thread">
+			<div class="forum_thread_border forum_thread_firstPost_height">
+				<div class="forum_thread_post_header general_section_padding">
+					<div class="row">
+						<div class="left-side col-sm-4 col-xs-12">#{beanSettingsSession.getFormattedDateTime(beanForumThread.currentThread.date)}</div>
+						<div class="col-sm-4 col-xs-12 forum_thread_post_header_font">#{msgs.titleSource}: #{beanForumThread.currentThread.feed.name}</div>
+						<div class="right-side col-sm-4 col-xs-12 forum_thread_post_header_number">#0</div>
+					</div>
+				</div>
+				<div class="forum_thread_post_body">
+					<div class="forum_thread_firstPost_body_titular">#{beanUtils.limitTextLength(50, beanForumThread.currentThread.title)}</div>
+					<div class="forum_thread_post_textBlock">
+						#{beanForumThread.currentThread.content}
+					</div>
+				</div>
+			</div>
+			<div class="forum_thread_post_footerForm">
+			<div class="row">
+			<o:form includeViewParams="true" id="form_forumThreadText" prependId="false">
+			<div class="right-side col-sm-12" style="text-align:right;">
+				<div class="forum_topic_points_value general_inline-block">#{beanForumThread.currentThread.forumThreadInfo.countVotes}</div>
+				<div class="general_inline-block">#{msgs.title_points}</div>
+				<!-- rendered="#{not empty beanLogin.loggedUser}" -->
+				<ui:fragment rendered="#{beanLogin.loggedUser!=null}">
+				<ui:fragment rendered="#{beanForumThread.threadAlreadyVotedByUser(beanForumThread.currentThread)==false}">
+					<div class="general_inline-block">
+					<!-- No usa ajax porque es el action quien recarga la pagina -->
+					<!-- f:ajax render="@form :form_forumThreadText" -->
+					<h:commandButton id="#{'buttonSpreadThread'.concat(beanForumThread.currentThread.id)}"
+							class="btn btn-default btn-block general_input_button" value="#{msgs.titleSpread}"
+							action="#{beanForumThread.getCommandLinkToVoteThread(beanForumThread.currentThread, null)}">
+					</h:commandButton>
+					</div>
+				</ui:fragment>
+				<ui:fragment rendered="#{beanForumThread.threadAlreadyVotedByUser(beanForumThread.currentThread)}">
+					<div class="general_inline-block general_input_button_disabled">#{msgs.titleAlreadyVoted}</div>
+				</ui:fragment>
+				</ui:fragment>
+			</div>
+			</o:form>
+			</div>
+			</div>
+			</div>
+		</div>
+		
+		<!-- Columna derecha -->
+		<div class="general_aside_right noDisplayUnder1300screen">
+			<ui:include src="/snippets/general/right/translator_right.xhtml" />
+			<!-- aqui se podria incluir publicidad o mas contenido -->
+		</div>
+		
+		<!--  Comentarios de usuarios -->
+		<div class="general_center general_center_in1column">
+		<o:form includeViewParams="true" id="form_threadListComments" prependId="false">
+		<ui:repeat id="commentsList" varStatus="statusCommentsList"
+				var="commentOfList" value="#{beanForumThread.getListCommentsByThread()}">
+			<ui:include src="/snippets/forum/forum_thread_list_comments.xhtml" />
+		</ui:repeat>
+		</o:form>
+			
+		<!-- Barra inferior de paginacion (en columna principal) -->
+		<div class="container-fluid">
+			<div class="row">
+				<h:form id="form_footer_forumThread" prependId="false">
+				<div class="left-side col-md-6 col-sm-2 col-xs-12" style="padding-left:0px; padding-right:0px; padding-bottom:10px;">
+					<ui:fragment rendered="#{not empty beanLogin.loggedUser}">
+						<!-- aqui un commandLink no funcionaria bien si hicieramos click derecho - 'abrir en nueva pestana' -->
+						<!-- porque beanForumThread es de scope view, conque los parametros pasados a getCommandLinkToCreateComment ya son null al ejecutar el metodo -->
+						<!-- sin embargo si funciona con h:outputLink -->
+						<h:outputLink id="buttonNewCommentInFooter"
+							class="btn btn-default general_input_button"
+							value="#{beanForumThread.getOutputLinkToCRUDComment(beanForumThread.currentThreadId,1,null)}">
+							#{msgs.titleToComment}
+						</h:outputLink>
+					</ui:fragment>
+				</div>
+				</h:form>
+				<!-- Barra de paginacion de la propia noticia -->
+				<h:form id="form_paginationBarThreadFooter" prependId="false">
+				<ui:param name="sizePaginationBar" 
+					value="#{beanSettingsForumPage.getNumPagesOfThread(beanForumThread.currentThread.forumThreadInfo.countComments)}"/>
+				<ui:param name="typePaginationBar" 
+					value="#{beanPaginationBar.loadTypeSingleNewThreadPaginationBar(sizePaginationBar,beanForumThread.offsetPage)}"/>
+				<ui:param name="selectedThread" value="#{beanForumThread.currentThread}"/>
+				<h:panelGroup layout="block" rendered="#{typePaginationBar != 0}" class="right-side col-md-6 col-sm-10 col-xs-12 general_pagination">
+					<ui:include src="/snippets/forum/paginationBar_simple.xhtml" />
+				</h:panelGroup>
+				</h:form>
+			</div>
+		</div>
+		</div>
+	</div>
+</div>
+
+</ui:composition>

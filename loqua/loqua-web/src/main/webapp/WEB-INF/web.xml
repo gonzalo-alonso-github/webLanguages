@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	id="WebApp_ID" version="3.1">
+	<display-name>loqua</display-name>
+	<welcome-file-list>
+		<welcome-file>pages/anonymousUser/phorum.xhtml</welcome-file>
+	</welcome-file-list>
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	 
+	<!-- Sin esta etiqueta las paginas xhtml no podrian acceder a los css ni 
+	a ningun resource -->
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.xhtml</url-pattern>
+	</servlet-mapping>
+
+	 <!-- Para evitar imprimir warnings sobre los mime-types
+	de formatos de tipos de letra que usa bootstrap) -->
+	<mime-mapping>
+		<extension>woff2</extension>
+		<mime-type>application/font-woff2</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+		<extension>woff</extension>
+		<mime-type>application/font-woff</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+		<extension>ttf</extension>
+		<mime-type>css/fonts</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+		<extension>otf</extension>
+		<mime-type>font/opentype</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+		<extension>eot</extension>
+		<mime-type>application/vnd.ms-fontobject</mime-type>
+	</mime-mapping>
+ 
+	 <context-param>
+	   <description>State saving method: 'client' or 'server' (=default). See JSF Specification 2.5.2</description>
+	   <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+	   <param-value>client</param-value>
+	 </context-param>
+	 <context-param>
+	   <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+	   <param-value>resources.application</param-value>
+	 </context-param>
+	
+  	<context-param>
+		<param-name>javax.faces.PROJECT_STAGE</param-name>
+		<param-value>Development</param-value>
+	</context-param>
+	<context-param>
+		<param-name>logLevel</param-name>
+		<param-value>DEBUG</param-value>
+	</context-param>
+    
+    <!-- Para evitar que en la URL aparezca la cadena ";jsessionid=..." -->
+    <!-- Lo comento. Es el FilterEncodingURLparams el que se encarga de eso -->
+	<!--
+	<session-config>
+		<tracking-mode>COOKIE</tracking-mode>
+		<tracking-mode>URL</tracking-mode>
+		<tracking-mode>SSL</tracking-mode>
+	</session-config>
+	-->
+
+    <!-- Con 'filter-mapping' se define el orden en que se aplican los filtros sobre las vistas -->
+    <!-- Pero primero hay que declararlos con 'filter' -->
+    <filter>
+	    <filter-name>filterEncodingURLparams</filter-name>
+	    <filter-class>com.loqua.presentation.filter.FilterEncodingURLparams</filter-class>
+	</filter>
+    <filter>
+	    <filter-name>filterAuthAnonymous</filter-name>
+	    <filter-class>com.loqua.presentation.filter.FilterAuthorizationAnonymousUser</filter-class>
+	</filter>
+	<filter>
+	    <filter-name>filterAuthRegistered</filter-name>
+	    <filter-class>com.loqua.presentation.filter.FilterAuthorizationRegisteredUser</filter-class>
+	</filter>
+	<filter>
+	    <filter-name>filterAuthAdmin</filter-name>
+	    <filter-class>com.loqua.presentation.filter.FilterAuthorizationAdministratorUser</filter-class>
+	</filter>
+	<filter>
+	    <filter-name>filterProfileUser</filter-name>
+	    <filter-class>com.loqua.presentation.filter.FilterProfileUser</filter-class>
+	</filter>
+	<filter>
+	    <filter-name>filterForum</filter-name>
+	    <filter-class>com.loqua.presentation.filter.FilterForum</filter-class>
+	</filter>
+	<filter>
+	    <filter-name>filterForumThread</filter-name>
+	    <filter-class>com.loqua.presentation.filter.FilterForumThread</filter-class>
+	</filter>
+	<filter>
+	    <filter-name>filterForumThreadComment</filter-name>
+	    <filter-class>com.loqua.presentation.filter.FilterForumThreadComment</filter-class>
+	</filter>
+	<filter>
+	    <filter-name>filterForumThreadCorrection</filter-name>
+	    <filter-class>com.loqua.presentation.filter.FilterForumThreadCorrection</filter-class>
+	</filter>
+	<!-- La etiqueta 'url-pattern' ya se ha definido en las clases Filter correspondientes -->
+    <!-- Pero es necesario mantener aqui la etiqueta 'url-pattern' aunque este vacia -->
+	<!-- Primero se aplican los filtros de autorizacion; despues los filtros secundarios -->
+	<filter-mapping>
+	    <filter-name>filterEncodingURLparams</filter-name>
+	    <url-pattern />
+	</filter-mapping>
+    <filter-mapping>
+	    <filter-name>filterAuthAnonymous</filter-name>
+	    <url-pattern />
+	</filter-mapping>
+    <filter-mapping>
+	    <filter-name>filterAuthRegistered</filter-name>
+	    <url-pattern />
+	</filter-mapping>
+    <filter-mapping>
+	    <filter-name>filterAuthAdmin</filter-name>
+	    <url-pattern />
+	</filter-mapping>
+	<!-- Filtro para '/pages/*/profile_user.xhtml' -->
+	<filter-mapping>
+	    <filter-name>filterProfileUser</filter-name>
+	    <url-pattern />
+	</filter-mapping>
+	<!-- Filtro para '/pages/*/phorum.xhtml' -->
+	<filter-mapping>
+	    <filter-name>filterForum</filter-name>
+	    <url-pattern />
+	</filter-mapping>
+	<!-- Filtro para '/pages/*/phorum_thread.xhtml' -->
+	<filter-mapping>
+	    <filter-name>filterForumThread</filter-name>
+	    <url-pattern />
+	</filter-mapping>
+	<!-- Filtro para '/pages/*/phorum_thread_comment.xhtml' -->
+	<filter-mapping>
+	    <filter-name>filterForumThreadComment</filter-name>
+	    <url-pattern />
+	</filter-mapping>
+	<!-- Filtro para '/pages/*/phorum_thread_correction.xhtml' -->
+	<filter-mapping>
+	    <filter-name>filterForumThreadCorrection</filter-name>
+	    <url-pattern />
+	</filter-mapping>
+</web-app>

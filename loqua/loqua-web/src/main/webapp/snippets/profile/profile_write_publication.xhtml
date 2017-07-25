@@ -1,0 +1,137 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+
+<!-- Formulario para escribir una nueva publicacion en el perfil de usuario -->
+
+#{msgs.descriptionWritePublication}
+<!-- Pantallas mayores de 480px -->
+<h:form id="form_publicationCreateOver480screen" prependId="false">
+<div class="general_section noDisplayUnder480screen">
+	<div class="profile_face_section_commentContent">
+		<div class="row">
+			<div class="left-side col-sm-6 col-xs-6">#{beanUtils.limitTextLength(16, beanLogin.loggedUser.nick)}</div>
+		</div>
+		
+		<div style="width:100%; display:table">
+		<div style="width:100%; display:table-row;">
+		<div class="general_section_userAvatar">
+			<span class="general_section_userAvatarHelper"></span><o:graphicImage dataURI="true" style="float:left" value="#{beanUserImages.getLoggedUserImage()}" alt="#{msgs.titleImgAltAvatar}"/>
+		</div>
+		
+		<div class="profile_face_textareaComment" style="display:table-cell">
+			<h:inputTextarea id="textareaCommentOver480screen" title="textareaComment"
+					value="#{beanPublication.publicationToCRUD.content}"
+					class="form-control" style="overflow-y:scroll;resize:none">
+				<f:validator validatorId="validatorProfilePublication" />
+				<f:attribute name="inputMaxLength" value="250" />
+				<f:converter converterId="converterCleanSpaces" />
+			</h:inputTextarea>
+		</div>
+		</div>
+		</div>
+		<!-- crear una publicacion en el perfil propio -->
+		<div class="form profile_face_formComment">
+		<!-- Animacion 'spin' con mensage de espera, o mensaje de error-->
+		<div id="divWaitPublicationOver480screen" class="form-group general_textCenter general_noDisplay">
+			<div class="col-xs-12 col-sm-12">
+				<h:outputText id="msgRunningPublicationOver480screen" value="#{msgs.descriptionWait}"/>
+				<h:panelGroup id="spinnerWheelPublicationOver480screen" layout="block"
+					style="margin:25px auto auto auto;"/>
+			</div>
+		</div>
+		<div class="form-group general_textCenter">
+			<div class="col-xs-12 col-sm-12">			
+				<h:outputText id="msgResultCreatePublicationOver480screen" value="#{beanActionResult.msgActionResult}" />
+			</div>
+		</div>
+		<!-- Privacidad y boton submit -->
+		<div class="general_textRight">
+			<div><h:message for="textareaCommentOver480screen"/></div>
+			<div style="display:inline-block; vertical-align:middle;">
+				<label for="selectPrivacityPublicationOver480screen" class="general_noDisplay">This label just performs the 'H44' technique of WCAG 2.0 evaluation</label>
+				<h:selectOneMenu id="selectPrivacityPublicationOver480screen"
+					class="form-control general_input_selectButton"
+					value="#{beanPublication.publicationToCRUD.privacity}">
+				<c:forEach items="#{beanSettingsUser.listPrivacityLevels}" var="item">	
+					<f:selectItem
+						itemLabel="#{beanSettingsSession.getTranslation(item)}"
+						itemValue="#{item}"
+						a:title="#{beanSettingsSession.getTranslation(item.concat('_description'))}"/>
+				</c:forEach>
+			</h:selectOneMenu>
+			</div>
+			<h:commandButton id="btnPublicationOver480screen" class="btn btn-default general_input_button" 
+					onclick="showElement('divWaitPublicationOver480screen');setSpinnerInLayout('spinnerWheelPublicationOver480screen');disableElement(this.id);"
+					value="#{msgs.titleSend}"
+					action="#{beanPublication.generatePublication(beanUserView.user, beanActionResult)}">
+				<f:ajax execute="@form :form_publicationCreateOver480screen" render="@form :form_publicationCreateOver480screen :form_listPublications"/>
+			</h:commandButton>
+		</div>
+		</div>
+	</div>
+</div>
+</h:form>
+
+<!-- Pantallas inferiores a 480px -->
+<h:form id="form_publicationCreateUnder480screen" prependId="false">
+<div class="noDisplayOver480screen" style="matgin-bottom:20px;">
+	<div style="padding: 0px 8px 4px 8px; margin-bottom:30px;">
+		<div class="form">
+			<div style="width:100% !important;">
+				<h:inputTextarea id="textareaCommentUnder480screen" title="textareaComment"
+						value="#{beanPublication.publicationToCRUD.content}"
+						class="form-control" style="overflow-y:scroll;resize:none">
+					<f:validator validatorId="validatorProfilePublication" />
+					<f:attribute name="inputMaxLength" value="250" />
+					<f:converter converterId="converterCleanSpaces" />
+				</h:inputTextarea>
+				<h:message for="textareaCommentUnder480screen" />
+				
+				<!-- Animacion 'spin' con mensage de espera, o mensaje de error-->
+				<div id="divWaitPublicationUnder480screen" class="form-group general_textCenter general_noDisplay">
+					<div class="col-xs-12 col-sm-12">
+						<h:outputText id="msgRunningPublicationUnder480screen" value="#{msgs.descriptionWait}"/>
+						<h:panelGroup id="spinnerWheelPublicationUnder480screen" layout="block"
+							style="margin:25px auto auto auto;"/>
+					</div>
+				</div>
+				<div class="form-group general_textCenter">
+					<div class="col-xs-12 col-sm-12">			
+						<h:outputText id="msgResultCreatePublicationUnder480screen" value="#{beanActionResult.msgActionResult}" />
+					</div>
+				</div>
+				<!-- Privacidad y boton submit -->
+				<div class="textRight">
+					<div style="display:inline-block; vertical-align:middle;">
+						<label for="selectPrivacityPublicationUnder480screen" class="general_noDisplay">This label just performs the 'H44' technique of WCAG 2.0 evaluation</label>
+						<h:selectOneMenu id="selectPrivacityPublicationUnder480screen"
+							class="form-control general_input_selectButton"
+							value="#{beanPublication.publicationToCRUD.privacity}">
+						<c:forEach items="#{beanSettingsUser.listPrivacityLevels}" var="item">	
+							<f:selectItem
+								itemLabel="#{beanSettingsSession.getTranslation(item)}"
+								itemValue="#{item}"
+								a:title="#{beanSettingsSession.getTranslation(item.concat('_description'))}"/>
+						</c:forEach>
+						</h:selectOneMenu>
+					</div>
+					<h:commandButton id="btnPublicationUnder480screen" class="btn btn-default general_input_button" 
+							onclick="showElement('divWaitPublicationUnder480screen');setSpinnerInLayout('spinnerWheelPublicationUnder480screen');disableElement(this.id);"
+							value="#{msgs.titleSend}"
+							action="#{beanPublication.generatePublication(beanActionResult)}">
+						<f:ajax execute="@form :form_publicationCreateUnder480screen" render="@form :form_publicationCreateUnder480screen :form_listPublications"/>
+					</h:commandButton>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</h:form>
+
+</ui:composition>

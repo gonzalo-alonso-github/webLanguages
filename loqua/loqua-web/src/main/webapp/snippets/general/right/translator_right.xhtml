@@ -1,0 +1,66 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<!-- <div class="forum_aside_translator_fixed_container"> -->
+<!-- <div class="forum_aside_translator_fixed"> -->
+<div class="general_aside_section general_section_padding">
+	<div class="general_aside_section_tittle">#{msgs.titleTranslator}</div>
+	<div id="aside_section_best">
+		<h:form id="form_translatorRight">
+		<div class="general_aside_section_right">
+			<label for="selectLanguageInputRight" class="general_aside_section_label">#{msgs.titleInputLanguage}:</label>
+			<!--
+			<select id="selectLanguageInputRight" class="form-control general_input_selectButton" style="height:24px; padding:0;">
+					<option id="optionInputLangEnglishRight" value="en">#{msgs.en}</option>
+					<option id="optionInputLangSpanishRight" value="es">#{msgs.es}</option>
+			</select>
+			-->
+			<h:selectOneMenu id="selectLanguageInputRight" required="true"
+					value="#{beanTranslator.inputLanguageName}"
+					class="form-control general_input_selectButton" style="height:24px; padding:0;">
+				<f:selectItems value="#{beanTranslator.listLanguages}"/>				
+			</h:selectOneMenu>
+			<!--
+			<textarea id="textareaInputRight" title="textareaInputRight" name="general_textareaTranslator" cols="10" class="form-control"></textarea>
+			-->
+			<h:inputTextarea id="textareaInputRight" title="textareaInputRight"
+				value="#{beanTranslator.inputText}"
+				cols="10" class="form-control" style="overflow-y:scroll;resize:none"/>
+			<label for="selectLanguageOutputRight" class="general_aside_section_label">#{msgs.titleOutputLanguage}:</label>
+			<!--
+			<select id="selectLanguageOutputRight" class="form-control general_input_selectButton" style="height:24px; padding:0;">
+					<option id="optionOutputLangEnglishRight" value="en">#{msgs.en}</option>
+					<option id="optionOutputLangSpanishRight" value="es">#{msgs.es}</option>
+			</select>
+			-->
+			<h:selectOneMenu id="selectLanguageOutputRight" required="true"
+					value="#{beanTranslator.outputLanguageName}"
+					class="form-control general_input_selectButton" style="height:24px; padding:0;">
+				<f:selectItems value="#{beanTranslator.listLanguages}"/>				
+			</h:selectOneMenu>
+			<!--
+			<textarea id="textareaOutputRight" title="textareaOutputRight" name="general_textareaTranslator" cols="10" class="form-control" readonly="readonly"></textarea>
+			-->
+			<h:inputTextarea id="textareaOutputRight" title="textareaOutputRight"
+				value="#{beanTranslator.outputText}" readonly="true"
+				cols="10" class="form-control" style="overflow-y:scroll;resize:none"/>
+			<div class="form-group general_textCenter">
+				<div class="col-xs-12 col-sm-12">
+				<h:outputText id="msgError" value="#{beanTranslator.error}" />
+				</div>
+			</div>
+			<h:commandButton id="buttonTranslateRight" value="#{msgs.titleTranslate}"
+				class="btn btn-default btn-block general_aside_section_menuButton"
+				action="#{beanTranslator.translate()}">
+				<f:ajax execute="@form :form_translatorRight" render="@form :form_translatorRight"/>
+			</h:commandButton>
+		</div>
+		</h:form>
+	</div>
+</div>
+<!-- </div>  -->
+<!-- </div>  -->
+
+</ui:composition>

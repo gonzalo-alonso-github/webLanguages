@@ -1,0 +1,92 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+
+<!-- Barra de cabecera para pantallas < 1300px -->
+<div id="general_header_tittle">
+	<div class="container-fluid">
+		<div class="row" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 4px 8px 0 rgba(0, 0, 0, 0.2);">
+		
+			<!-- La barra de cabecera contiene un titulo y un boton para mostrar el traductor -->
+			<div class="general_subHeader_margin">
+			<!-- Este es el titulo -->
+			<div class="general_subHeader_tittle noDisplayUnder768screen">
+				<div class="general_inline-block">
+					Loqua
+					<span class="glyphicon glyphicon-chevron-right" style="vertical-align:middle; margin-bottom:4px;"></span>
+					<h:outputText value="#{tittleHeader}"/>
+				</div>
+			</div>
+			<!-- Estos son los elementos a la derecha del titulo -->
+			<div class="general_subHeader_containerElements">
+				<!-- Este es el boton para mostrar el traductor en una ventana 'modal' -->
+				<div class="general_subHeader_element">
+					<div class="input-group input-group-sm">
+						<span class="input-group-btn" style="display:inline">
+							<a href="#translator" class="btn btn-default" id="buttonTranslator"
+								data-toggle="modal" data-backdrop="false">
+								#{msgs.titleTranslator}
+							</a>
+							<!-- data-backdrop: "true" / "false" / "static" -->
+						</span>
+					</div>
+				</div>
+				<!-- Este es el boton para mostrar los links del menu de la izquierda de pantallas grandes -->
+				<div class="general_subHeader_element noDisplayOver992screen">
+					<div class="input-group input-group-sm">
+						<span class="input-group-btn" style="display:inline">
+							<button class="btn btn-default" type="button" id="buttonStatus" 
+									data-toggle="collapse" data-target="#status" onclick="changeButtonStyle(this.id);">
+								#{beanUtils.limitTextLength(12, beanUserView.user.nick)}
+							</button>
+						</span>
+					</div>
+				</div>
+			</div>
+			<div class="general_clearBoth"></div>
+			<div class="collapse general_header_submenu" id="status">
+				<ul>
+					<h:form id="form_addOrDeleteFromContactsUnder768screen" prependId="false">
+					<!-- Solo se muestra el enlace para enviar peticion de contacto
+					si este perfil de usuario aun no es contacto del usuario logueado (el que esta visitando la pagina)
+					y si este perfil de usuario aun no ha recibido una peticion de contacto por parte del usuario logueado: -->
+					<ui:fragment rendered="#{beanUserContacts.isContactOfLoggedUser(beanUserView.user)==false}">
+					<ui:fragment rendered="#{beanUserContacts.contactRequestAlreadySent(beanUserView.user)==false}">
+					<li>
+						<a href="#sendContactRequest" data-toggle="modal" data-backdrop="false">#{msgs.titleSendContactRequest}</a>
+					</li>
+					</ui:fragment>
+					</ui:fragment>
+					<!-- Solo se muestra el enlace para eliminar el contacto
+					si este perfil de usuario es contacto del usuario logueado (el que esta visitando la pagina): -->
+					<ui:fragment rendered="#{beanUserContacts.isContactOfLoggedUser(beanUserView.user)==true}">
+					<li>
+						<h:commandLink id="#{'deleteContactFromHorizontalMenu'.concat(beanUserView.user.id)}"
+								a:data-target="#deleteContact" a:data-toggle="modal" a:data-backdrop="false"
+								actionListener="#{beanUserContacts.setBothUsers(beanLogin.loggedUser, beanUserView.user)}"
+								class="general_left_menu_link">
+							#{msgs.titleDeleteFromContacts}
+							<f:ajax render="@none"/>
+						</h:commandLink>
+					</li>
+					</ui:fragment>
+					</h:form>
+					<li>
+						<h:outputLink value="#{beanUserView.getOutputLinkToContacts(beanUserView.user.id)}">
+							#{msgs.titleViewUserContacts}
+						</h:outputLink>
+					</li>
+					<!-- <li><a href="pages/adminUser/message_write.xhtml">#{msgs.titleSendMessage}</a></li> -->
+					<!-- <li><a href="pages/adminUser/clasification.xhtml">#{msgs.titleViewUserStats}</a></li> -->					
+				</ul>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<ui:include src="/snippets/general/menu_horizontal/menu_elements/menu_elements_modal_windows.xhtml" />
+
+</ui:composition>
