@@ -149,7 +149,7 @@ public class BeanUserData implements Serializable{
 		int result = 0;
 		try{
 			result = Factories.getService().getServiceUser()
-					.getNumRegisteredUsersAndAdminFromMemory();
+					.getNumRegisteredUsersAndAdminFromDB(); // FromCache
 		}catch (Exception e){
 			// TODO Log
 		}

@@ -12,8 +12,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
-@XmlRootElement(name = "fhorumThreadInfo")
+@XmlRootElement(name = "forumThreadInfo")
 @Entity
 @Table(name="ForumThreadInfo")
 public class ForumThreadInfo implements Serializable {
@@ -30,21 +31,24 @@ public class ForumThreadInfo implements Serializable {
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
-	@OneToOne(cascade = CascadeType.ALL) @JoinColumn(name="forumThread_id")
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name="forumThread_id", referencedColumnName="id")
 	private ForumThread forumThread;
 	
 	// // // // // // //
 	// CONSTRUCTORES
 	// // // // // // //
 	
-	public ForumThreadInfo(){
-		forumThread = new ForumThread();
-		forumThread.setForumThreadInfo(this);
-	}
+	public ForumThreadInfo(){}
 	
 	public ForumThreadInfo( ForumThread thread ){
 		this.forumThread = thread;
 		thread.setForumThreadInfo(this);
+	}
+	
+	public void unlink(){
+		forumThread.setForumThreadInfo( null );
+		forumThread = null;
 	}
 	
 	// // // // // // // // // // // // // //
@@ -62,11 +66,11 @@ public class ForumThreadInfo implements Serializable {
 	 * Relacion entre entidades:<br>
 	 *  1 ThreadInfo <--> 1 Thread
 	 */
-	/*@XmlTransient*/@XmlElement
+	@XmlTransient
 	public ForumThread getForumThread() {
 		return forumThread;
 	}
-	ForumThread _getForumThread() {
+	ForumThread _setForumThread() {
 		return forumThread;
 	}
 	public void setForumThread(ForumThread trhead) {

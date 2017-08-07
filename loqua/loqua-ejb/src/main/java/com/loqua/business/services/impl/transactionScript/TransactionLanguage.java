@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import com.loqua.business.exception.EntityAlreadyFoundException;
 import com.loqua.business.exception.EntityNotFoundException;
-import com.loqua.business.services.impl.memory.Memory;
+import com.loqua.business.services.impl.cache.Cache;
 import com.loqua.model.Language;
 import com.loqua.model.User;
 import com.loqua.persistence.LanguageJPA;
@@ -35,42 +35,46 @@ public class TransactionLanguage {
 		return languageJPA.getAllLanguages();
 	}
 	
-	public Map<Long, Language> getAllLanguagesFromMemory(){
+	public Map<Long, Language> getAllLanguagesFromCache(){
 		// A diferencia de this.getAllLanguagesFromDB(),
 		// este metodo evita hacer un acceso a base de datos,
-		// puesto que devuelve la lista guardada en Memory
+		// puesto que devuelve la lista guardada en Cache
 		Map<Long, Language> result = 
-				Memory.getMemoryListsLanguages().getAllLanguages();
+				Cache.getCacheListsLanguages().getAllLanguages();
 		if( result.isEmpty() ){
 			// Pero si esta vacia, entonces
-			// activamos desde ahora la actualizacion periodica de la memoria:
-			Memory.getMemoryListsLanguages().changed();
-			Memory.updateMemoryListsLanguages();
-			result = Memory.getMemoryListsLanguages().getAllLanguages();
+			// activamos desde ahora la actualizacion periodica de la Cache:
+			Cache.getCacheListsLanguages().changed();
+			Cache.updateCacheListsLanguages();
+			result = Cache.getCacheListsLanguages().getAllLanguages();
 		}
 		return result;
 	}
 	
-	public Language getLanguageByIdFromMemory(Long languageID){
-		Language result = new Language();
-		Map<Long, Language> allLanguages = getAllLanguagesFromMemory();
-		result = allLanguages.get(languageID);
-		return result;
-	}
-	
-	public List<Language> getListLanguagesByIdsFromMemory(
+	public List<Language> getListLanguagesByIdsFromCache(
 			List<Long> languagesIDs){
 		List<Language> result = new ArrayList<Language>();
 		Map<Long, Language> filteredLanguages = 
-				getMapLanguagesByIdsFromMemory(languagesIDs);
+				getMapLanguagesByIdsFromCache(languagesIDs);
 		result = new ArrayList<Language>(filteredLanguages.values());
 		return result;
 	}
 	
-	public Map<Long, Language> getMapLanguagesByIdsFromMemory(
+	public Map<Long, Language> getMapLanguagesByIdsFromDB(
+			List<Long> languagesIDs){
+		List< Language> listLanguagesByIds = 
+				languageJPA.getLanguagesByIds(languagesIDs);
+		Map<Long,Language> mapLanguages = new HashMap<Long,Language>();
+		for(Language language : listLanguagesByIds){
+			mapLanguages.put(language.getId(), language);
+		}
+		return mapLanguages;
+	}
+	
+	public Map<Long, Language> getMapLanguagesByIdsFromCache(
 			List<Long> languagesIDs){
 		Map<Long, Language> filteredLanguages = new HashMap<Long, Language>();
-		Map<Long, Language> allLanguages = getAllLanguagesFromMemory();
+		Map<Long, Language> allLanguages = getAllLanguagesFromCache();
 		filteredLanguages = (allLanguages.entrySet()
 	            .stream().filter(l -> languagesIDs.contains(l.getKey()))
 	            .collect(Collectors.toMap(l->l.getKey(), l->l.getValue()))
@@ -101,18 +105,21 @@ public class TransactionLanguage {
 	public void createUserNativeLanguage( User user,
 			List<Long> originalNativeLanguagesIDs,
 			List<Long> editedNativeLanguagesIDs)
-			throws EntityAlreadyFoundException {
+			throws EntityAlreadyFoundException, EntityNotFoundException {
 		try {
 			List<Long> languagesIDsToUpdate = 
 					new ArrayList<Long>(editedNativeLanguagesIDs);
 			languagesIDsToUpdate.removeAll(originalNativeLanguagesIDs);
 			
 			for( Long languageId : languagesIDsToUpdate ){
-				Language lang = getLanguageByIdFromMemory(languageId);
+				//Language lang = getLanguageByIdFromCache(languageId);
+				Language lang = languageJPA.getLanguageById(languageId);
 				languageJPA.createUserNativeLanguage(user, lang);
 			}
 		} catch (EntityAlreadyPersistedException ex) {
 			throw new EntityAlreadyFoundException(ex);
+		} catch (EntityNotPersistedException ex) {
+			throw new EntityNotFoundException(ex);
 		}
 	}
 	
@@ -126,7 +133,8 @@ public class TransactionLanguage {
 			languagesIDsToDelete.removeAll(editedNativeLanguagesIDs);
 			
 			for( Long languageId : languagesIDsToDelete ){
-				Language lang = getLanguageByIdFromMemory(languageId);
+				//Language lang = getLanguageByIdFromCache(languageId);
+				Language lang = languageJPA.getLanguageById(languageId);
 				languageJPA.deleteUserNativeLanguage(userLogged, lang);
 			}
 		} catch (EntityNotPersistedException ex) {
@@ -146,18 +154,21 @@ public class TransactionLanguage {
 	public void createUserPracticedLanguage(User user,
 			List<Long> originalPracticedLanguagesIDs,
 			List<Long> editedPracticedLanguagesIDs)
-			throws EntityAlreadyFoundException {
+			throws EntityAlreadyFoundException, EntityNotFoundException {
 		try {
 			List<Long> languagesIDsToUpdate = 
 					new ArrayList<Long>(editedPracticedLanguagesIDs);
 			languagesIDsToUpdate.removeAll(originalPracticedLanguagesIDs);
 			
 			for( Long languageId : languagesIDsToUpdate ){
-				Language lang = getLanguageByIdFromMemory(languageId);
+				//Language lang = getLanguageByIdFromCache(languageId);
+				Language lang = languageJPA.getLanguageById(languageId);
 				languageJPA.createUserPracticedLanguage(user, lang);
 			}
 		} catch (EntityAlreadyPersistedException ex) {
 			throw new EntityAlreadyFoundException(ex);
+		} catch (EntityNotPersistedException ex) {
+			throw new EntityNotFoundException(ex);
 		}
 	}
 	
@@ -171,14 +182,24 @@ public class TransactionLanguage {
 			languagesIDsToDelete.removeAll(editedPracticedLanguagesIDs);
 			
 			for( Long languageId : languagesIDsToDelete ){
-				Language lang = getLanguageByIdFromMemory(languageId);
+				// Language lang = getLanguageByIdFromCache(languageId);
+				Language lang = languageJPA.getLanguageById(languageId);
 				languageJPA.deleteUserPracticedLanguage(userLogged, lang);
 			}
 		} catch (EntityNotPersistedException ex) {
 			throw new EntityNotFoundException(ex);
 		}
 	}
-
+	
+	/*
+	private Language getLanguageByIdFromCache(Long languageID){
+		Language result = new Language();
+		Map<Long, Language> allLanguages = getAllLanguagesFromCache();
+		result = allLanguages.get(languageID);
+		return result;
+	}
+	*/
+	
 	public void deleteNativeLanguagesByUser(User user)
 			throws EntityNotFoundException {
 		try {

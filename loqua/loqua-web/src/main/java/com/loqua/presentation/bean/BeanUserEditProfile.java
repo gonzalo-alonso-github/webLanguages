@@ -162,7 +162,8 @@ public class BeanUserEditProfile implements Serializable{
 	private void updatePracticingLanguagesInSession() {
 		Map<Long,Language> mapPracticedLanguages=new HashMap<Long,Language>();
 		mapPracticedLanguages = Factories.getService().getServiceLanguage()
-				.getMapLanguagesByIdsFromMemory(listPracticingLanguagesIDs);
+				.getMapLanguagesByIdsFromDB(listPracticingLanguagesIDs);
+				//FromCache
 		beanUserData.setMapPracticingLanguages(mapPracticedLanguages);
 	}
 	
@@ -173,7 +174,8 @@ public class BeanUserEditProfile implements Serializable{
 	private void updateNativeLanguagesInSession() {
 		Map<Long,Language> mapNativeLanguages=new HashMap<Long,Language>();
 		mapNativeLanguages = Factories.getService().getServiceLanguage()
-				.getMapLanguagesByIdsFromMemory(listNativeLanguagesIDs);
+				.getMapLanguagesByIdsFromDB(listNativeLanguagesIDs);
+				//FromCache
 		beanUserData.setMapNativeLanguages(mapNativeLanguages);
 	}
 	

@@ -40,7 +40,25 @@ public class BeanCache implements Serializable {
 	// METODOS
 	// // // //
 	
-	public List<Language> getAllLanguagesFromMemory(){
+	public List<Language> getAllLanguagesFromDB(){
+		// se usa desde snippets/profile/profile_edit.xhtml
+		// no confundir con beanSettingsSession.getAllLanguagesFromProperties()
+		// aquel metodo obtiene, del fichero .properties,
+		// los idiomas de las vistas del sitio web; mientras que aqui obtenemos,
+		// de la tabla Language, los idiomas que manejan los usuarios en el foro
+		
+		List<Language> allLanguages = new ArrayList<Language>();
+		try{
+			allLanguages = new ArrayList<Language>(Factories.getService()
+					.getServiceLanguage().getListAllLanguagesFromDB());
+		}catch (Exception e){
+			// TODO Log
+		}
+		return allLanguages;
+	}
+	/*
+	public List<Language> getAllLanguagesFromCache(){
+		// se usa desde snippets/profile/profile_edit.xhtml
 		// no confundir con beanSettingsSession.getAllLanguagesFromProperties()
 		// aquel metodo obtiene, del fichero .properties,
 		// los idiomas de las vistas del sitio web; mientras que aqui obtenemos,
@@ -55,12 +73,13 @@ public class BeanCache implements Serializable {
 		// mediante la siguiente llamada a ServiceLanguage:
 		try{
 			allLanguages = new ArrayList<Language>(Factories.getService()
-					.getServiceLanguage().getAllLanguagesFromMemory().values());
+					.getServiceLanguage().getAllLanguagesFromCache().values());
 		}catch (Exception e){
 			// TODO Log
 		}
 		return allLanguages;
 	}
+	*/
 	
 	public void loadAllCountries(){
 		allCountries = 

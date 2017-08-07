@@ -662,6 +662,18 @@ textarea[name=general_textareaTranslator]{
 	font-size: 16px;
 }
 
+.forum_thread_post_header a:hover, .message_header a:hover{
+	color: white;
+}
+
+.forum_thread_post_header a:visited, .message_header a:visited{
+	color: white;
+}
+
+.forum_thread_post_header a:link, .message_header a:link{
+	color: white;
+}
+
 .forum_thread_post_header_font{
 	text-align:center;
 }
@@ -682,6 +694,36 @@ textarea[name=general_textareaTranslator]{
 
 .forum_thread_firstPost_height{
 	min-height: 270px;
+}
+
+.forum_thread_firstPost_body_height{
+	/* unos 70 pixels menos que el 'forum_thread_firstPost_height' */
+	/* La noticia consta de 3 secciones rodeadas por un mismo borde:
+	- header (marco coloreado donde se muestra la fecha y la fuente)
+	- body (consta del titular y el cuerpo)
+	- enlace linkToViewEntireContent (enlace de "Ver noticia completa")
+	La clase 'forum_thread_firstPost_height'
+	establece que todo ello mide 270px de altura minima.
+	Se desea que el enlace se muestre en el bottom de esos 270px. Para ello:
+	- se calcula la altura minima que ocupan header+body (resultan 200px)
+	- se agrega dicho espacio (200px) antes del enlace
+	Eso es todo. Y el calculo se hace de la siguiente manera:
+	- se suma la altura que ocupan los componentes de header+body:
+		-- 'forum_thread_post_header': 16px de altura
+		-- 'forum_thread_post_body': 10px de altura
+		-- 'forum_thread_post_textBlock': 16px de altura
+		-- 'forum_thread_firstPost_body_titular': 16px de altura
+		-- 'forum_thread_post_linkToViewEntireContent': 16px de altura
+	- se resta 270 menos esa cantidad; resultan unos 200px */
+	min-height: 200px;
+}
+
+.forum_thread_post_linkToViewEntireContent{
+	font-style: italic;
+	margin-top:8px;
+	margin-bottom:8px;
+	padding-left:8px;
+	padding-right:8px;
 }
 
 .forum_thread_firstPost_body_titular, .message_subject{

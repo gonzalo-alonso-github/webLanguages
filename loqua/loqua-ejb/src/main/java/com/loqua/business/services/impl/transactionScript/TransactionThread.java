@@ -1,15 +1,17 @@
 package com.loqua.business.services.impl.transactionScript;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import com.loqua.business.exception.EntityAlreadyFoundException;
 import com.loqua.business.exception.EntityNotFoundException;
-import com.loqua.business.services.impl.memory.Memory;
-import com.loqua.model.Language;
+import com.loqua.business.services.impl.cache.Cache;
 import com.loqua.model.ForumThread;
 import com.loqua.model.ForumThreadInfo;
 import com.loqua.model.ForumThreadVoter;
+import com.loqua.model.Language;
 import com.loqua.persistence.ThreadJPA;
 import com.loqua.persistence.exception.EntityAlreadyPersistedException;
 import com.loqua.persistence.exception.EntityNotPersistedException;
@@ -40,50 +42,78 @@ public class TransactionThread {
 	
 	public List<ForumThread> getThreadsByLanguagesFromDB(
 			List<Long> listLanguagesIDs) {
-		return threadJPA.getThreadsByLanguages(listLanguagesIDs);
+		return threadJPA.getAllThreadsByLanguages(listLanguagesIDs);
 	}
 
-	public List<ForumThread> getThreadsByLanguagesAndCategoryFromDB(
+	public List<ForumThread> getAllThreadsByLanguagesAndCategoryFromDB(
 			List<Long> listLanguagesIDs, Long category){
-		return threadJPA.getThreadsByLanguagesAndCategory(
-				listLanguagesIDs, category);
+		if( category==null || category==0 ){
+			return threadJPA.getAllThreadsByLanguages(
+					listLanguagesIDs);
+		}else{
+			return threadJPA.getAllThreadsByLanguagesAndCategoryFromDB(
+					listLanguagesIDs, category);
+		}
 	}
 	
-	public List<ForumThread> getThreadsByLanguagesAndCategoryFromMemory(
+	public List<ForumThread> getThreadsByLanguagesAndCategoryFromDB(
+			List<Language> listLanguages, Long category,
+			Integer offsetThreads, int numThreadsToReturn) {
+		List<Long> listLanguagesIDs=listLanguagesToLanguageIDs(listLanguages);
+		offsetThreads=(offsetThreads==null || offsetThreads==0)? 
+				0 : (offsetThreads-1)*numThreadsToReturn;
+		return threadJPA.getThreadsByLanguagesAndCategory(
+				listLanguagesIDs, category, offsetThreads, numThreadsToReturn);
+	}
+	
+	public List<ForumThread> getThreadsByLanguagesAndCategoryFromCache(
 			List<Language> listLanguages, Long category,
 			Integer offsetThreads, int numThreadsToReturn) {
 		// A diferencia de this.getThreadsByLanguagesAndCategoryFromDB(...),
 		// este metodo evita hacer un acceso a base de datos,
-		// puesto que devuelve la lista guardada en Memory
+		// puesto que devuelve la lista guardada en Cache
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		List<Long> listLanguagesIDs=listLanguagesToLanguageIDs(listLanguages);
 		offsetThreads=(offsetThreads==null || offsetThreads==0)? 
 				0 : (offsetThreads-1)*numThreadsToReturn;
-		result= Memory.getMemoryListsThreads().getThreadsByLanguagesAndCategory(
+		result= Cache.getCacheListsThreads().getThreadsByLanguagesAndCategory(
 				listLanguagesIDs, category, offsetThreads, numThreadsToReturn);
 		if( result.isEmpty() ){
 			// Pero si esta vacia, entonces
-			// activamos desde ahora la actualizacion periodica de la memoria:
-			Memory.getMemoryListsThreads().changed();
-			Memory.updateMemoryListsThreads(true);
-			result= Memory.getMemoryListsThreads().getThreadsByLanguagesAndCategory(
+			// activamos desde ahora la actualizacion periodica de la Cache:
+			Cache.getCacheListsThreads().changed();
+			Cache.updateCacheListsThreads(true);
+			result= Cache.getCacheListsThreads().getThreadsByLanguagesAndCategory(
 					listLanguagesIDs, category, offsetThreads, numThreadsToReturn);
 		}
 		return result;
 	}
 	
-	public Integer getNumThreadsByLanguagesAndCategoryFromMemory(
+	public Integer getNumThreadsByLanguagesAndCategoryFromDB(
+			List<Language> listLanguages, Long category){
+		Integer result = 0;
+		List<Long> listLanguagesIDs=listLanguagesToLanguageIDs(listLanguages);
+		if( category==null || category==0 ){
+			result = threadJPA.getNumThreadsByLanguages(listLanguagesIDs);
+		}else{
+			result = threadJPA.getNumThreadsByLanguagesAndCategory(
+					listLanguagesIDs, category);
+		}
+		return result;
+	}
+	
+	public Integer getNumThreadsByLanguagesAndCategoryFromCache(
 			List<Language> listLanguages, Long category){
 		Integer result = null;
 		List<Long> listLanguagesIDs=listLanguagesToLanguageIDs(listLanguages);
-		result = Memory.getMemoryListsThreads()
+		result = Cache.getCacheListsThreads()
 				.getNumThreadsByLanguagesAndCategory(listLanguagesIDs, category);
 		if( result==null ){
-			// Si el valor no estaba guardado en memoria
-			// activamos desde ahora la actualizacion periodica de la memoria:
-			Memory.getMemoryListsThreads().changed();
-			Memory.updateMemoryListsThreads(true);
-			result = Memory.getMemoryListsThreads()
+			// Si el valor no estaba guardado en Cache
+			// activamos desde ahora la actualizacion periodica de la Cache:
+			Cache.getCacheListsThreads().changed();
+			Cache.updateCacheListsThreads(true);
+			result = Cache.getCacheListsThreads()
 				.getNumThreadsByLanguagesAndCategory(listLanguagesIDs, category);
 		}
 		return result;
@@ -101,40 +131,62 @@ public class TransactionThread {
 		return threadJPA.getThreads();
 	}
 	
-	public List<ForumThread> getThreadsByCategoryFromDB(Long category) {
-		return threadJPA.getThreadsByCategory(category);
+	public List<ForumThread> getAllThreadsByCategoryFromDB(Long category) {
+		return threadJPA.getAllThreadsByCategory(category);
 	}
 	
-	public List<ForumThread> getThreadsByCategoryFromMemory(Long category,
+	public List<ForumThread> getThreadsByCategoryFromDB(Long category,
+			Integer offsetThreads, int numThreadsToReturn) {
+		offsetThreads=(offsetThreads==null || offsetThreads==0)? 
+				0 : (offsetThreads-1)*numThreadsToReturn;
+		if( category==null || category==0 ){
+			return threadJPA.getThreads(offsetThreads, numThreadsToReturn);
+		}else{
+			return threadJPA.getThreadsByCategory(
+				category, offsetThreads, numThreadsToReturn);
+		}
+	}
+	
+	public List<ForumThread> getThreadsByCategoryFromCache(Long category,
 			Integer offsetThreads, int numThreadsToReturn) {
 		// A diferencia de this.getThreadsByCategoryFromBD(...),
 		// este metodo evita hacer un acceso a base de datos,
-		// puesto que devuelve la lista guardada en Memory
+		// puesto que devuelve la lista guardada en Cache
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		offsetThreads=(offsetThreads==null || offsetThreads==0)? 
 				0 : (offsetThreads-1)*numThreadsToReturn;
-		result= Memory.getMemoryListsThreads().getThreadsByCategory(
+		result= Cache.getCacheListsThreads().getThreadsByCategory(
 				category, offsetThreads, numThreadsToReturn);
 		if( result.isEmpty() ){
 			// Pero si esta vacia, entonces
-			// activamos desde ahora la actualizacion periodica de la memoria:
-			Memory.getMemoryListsThreads().changed();
-			Memory.updateMemoryListsThreads(true);
-			result= Memory.getMemoryListsThreads().getThreadsByCategory(
+			// activamos desde ahora la actualizacion periodica de la Cache:
+			Cache.getCacheListsThreads().changed();
+			Cache.updateCacheListsThreads(true);
+			result= Cache.getCacheListsThreads().getThreadsByCategory(
 					category, offsetThreads, numThreadsToReturn);
 		}
 		return result;
 	}
 	
-	public Integer getNumThreadsByCategoryFromMemory(Long category){
+	public Integer getNumThreadsByCategoryFromDB(Long category){
+		Integer result = 0;
+		if( category==null || category==0 ){
+			result = threadJPA.getNumThreads();
+		}else{
+			result = threadJPA.getNumThreadsByCategory(category);
+		}
+		return result;
+	}
+	
+	public Integer getNumThreadsByCategoryFromCache(Long category){
 		Integer result = null;
-		result = Memory.getMemoryListsThreads().getNumThreadsByCategory(category);
+		result = Cache.getCacheListsThreads().getNumThreadsByCategory(category);
 		if( result==null ){
-			// Si el valor no estaba guardado en memoria
-			// activamos desde ahora la actualizacion periodica de la memoria:
-			Memory.getMemoryListsThreads().changed();
-			Memory.updateMemoryListsThreads(true);
-			result= Memory.getMemoryListsThreads().getNumThreadsByCategory(category);
+			// Si el valor no estaba guardado en Cache
+			// activamos desde ahora la actualizacion periodica de la Cache:
+			Cache.getCacheListsThreads().changed();
+			Cache.updateCacheListsThreads(true);
+			result= Cache.getCacheListsThreads().getNumThreadsByCategory(category);
 		}
 		return result;
 	}
@@ -143,18 +195,18 @@ public class TransactionThread {
 		return threadJPA.getMostValuedThreadsOfTheMonth();
 	}
 	
-	public List<ForumThread> getMostValuedThreadsOfTheMonthFromMemory() {
+	public List<ForumThread> getMostValuedThreadsOfTheMonthFromCache() {
 		// A diferencia de this.getMostValuedThreadsOfTheMonthFromDB(),
 		// este metodo evita hacer un acceso a base de datos,
-		// puesto que devuelve la lista guardada en Memory
-		List<ForumThread> result = Memory.getMemoryListsThreads()
+		// puesto que devuelve la lista guardada en Cache
+		List<ForumThread> result = Cache.getCacheListsThreads()
 				.getMostValuedThreadsOfTheMonth();
 		if( result.isEmpty() ){
 			// Pero si esta vacia, entonces
-			// activamos desde ahora la actualizacion periodica de la memoria:
-			Memory.getMemoryListsThreads().changed();
-			Memory.updateMemoryListsThreads(true);
-			result = Memory.getMemoryListsThreads().getMostValuedThreadsOfTheMonth();
+			// activamos desde ahora la actualizacion periodica de la Cache:
+			Cache.getCacheListsThreads().changed();
+			Cache.updateCacheListsThreads(true);
+			result = Cache.getCacheListsThreads().getMostValuedThreadsOfTheMonth();
 		}
 		return result;
 	}
@@ -163,18 +215,18 @@ public class TransactionThread {
 		return threadJPA.getMostCommentedThreadsOfTheMonth();
 	}
 	
-	public List<ForumThread> getMostCommentedThreadsOfTheMonthFromMemory() {
+	public List<ForumThread> getMostCommentedThreadsOfTheMonthFromCache() {
 		// A diferencia de this.getMostCommentedThreadsOfTheMonthFromDB(),
 		// este metodo evita hacer un acceso a base de datos,
-		// puesto que devuelve la lista guardada en Memory
-		List<ForumThread> result = Memory.getMemoryListsThreads()
+		// puesto que devuelve la lista guardada en Cache
+		List<ForumThread> result = Cache.getCacheListsThreads()
 				.getMostCommentedThreadsOfTheMonth();
 		if( result.isEmpty() ){
 			// Pero si esta vacia, entonces
-			// activamos desde ahora la actualizacion periodica de la memoria:
-			Memory.getMemoryListsThreads().changed();
-			Memory.updateMemoryListsThreads(true);
-			result=Memory.getMemoryListsThreads().getMostCommentedThreadsOfTheMonth();
+			// activamos desde ahora la actualizacion periodica de la Cache:
+			Cache.getCacheListsThreads().changed();
+			Cache.updateCacheListsThreads(true);
+			result=Cache.getCacheListsThreads().getMostCommentedThreadsOfTheMonth();
 		}
 		return result;
 	}
@@ -183,25 +235,39 @@ public class TransactionThread {
 		return threadJPA.getLastThreadsByCategory(category);
 	}
 	
-	public List<ForumThread> getLastThreadsByCategoryFromMemory(Long category) {
+	public List<ForumThread> getLastThreadsByCategoryFromCache(Long category) {
 		// A diferencia de this.getLastThreadsByCategoryFromDB(),
 		// este metodo evita hacer un acceso a base de datos,
-		// puesto que devuelve la lista guardada en Memory
-		List<ForumThread> result = Memory.getMemoryListsThreads()
+		// puesto que devuelve la lista guardada en Cache
+		List<ForumThread> result = Cache.getCacheListsThreads()
 				.getLastThreadsByCategory(category);
 		if( result.isEmpty() ){
 			// Pero si esta vacia, entonces
-			// activamos desde ahora la actualizacion periodica de la memoria:
-			Memory.getMemoryListsThreads().changed();
-			Memory.updateMemoryListsThreads(true);
-			result=Memory.getMemoryListsThreads()
+			// activamos desde ahora la actualizacion periodica de la Cache:
+			Cache.getCacheListsThreads().changed();
+			Cache.updateCacheListsThreads(true);
+			result=Cache.getCacheListsThreads()
 					.getLastThreadsByCategory(category);
 		}
 		return result;
 	}
 	
-	public List<ForumThreadVoter> getThreadVoters(Long threadId) {
-		return threadJPA.getThreadVoters(threadId);
+	public List<ForumThread> getAllForumThreadGUIDsInLastHour() {
+		// Este metodo se llama desde el cliente Aggregator
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		int currentYear = calendar.get(Calendar.YEAR);
+		int currentMonth = calendar.get(Calendar.MONTH);
+		int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+		int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+		calendar.clear();
+		calendar.set(currentYear, currentMonth, currentDay, currentHour, 0);
+		// Date que representa a la actual hora en punto menos un segundo:
+		Date currentHourDate = new Date(calendar.getTimeInMillis() - 1000);
+		// Date que representa a la anterior hora en punto:
+		Date previousHourDate = new Date(calendar.getTimeInMillis()-3600000);
+		return threadJPA.getAllForumThreadGUIDsInLastHour(
+				currentHourDate,previousHourDate);
 	}
 	
 	public boolean threadAlreadyVotedByUser(Long userId, Long threadId){
@@ -212,23 +278,41 @@ public class TransactionThread {
 		return false;
 	}
 	
-	public void create(ForumThread newThreadToCreate, boolean justNow)
-			throws EntityAlreadyFoundException{
+	private List<ForumThreadVoter> getThreadVoters(Long threadId) {
+		return threadJPA.getThreadVoters(threadId);
+	}
+	
+	public void restCreateForumThread(ForumThread threadToCreate, boolean justNow)
+			throws EntityAlreadyFoundException, Exception{
 		try {
-			threadJPA.create(newThreadToCreate);
-			Memory.getMemoryListsThreads().changed();
-			Memory.updateMemoryListsThreads(justNow);
-		} catch (EntityAlreadyPersistedException ex) {
+			threadJPA.restCreateForumThread(threadToCreate);
+			/* Queda comentado. A priori no se va a usar la Cache
+			Cache.getCacheListsThreads().changed();
+			Cache.updateCacheListsThreads(justNow); */
+		} catch( EntityAlreadyPersistedException ex) {
 			throw new EntityAlreadyFoundException(ex);
 		}
 	}
-	
+	/*
+	public void restCreateForumThreadsByList(
+			List<ForumThread> threadsToCreate, boolean justNow)
+			throws EntityAlreadyFoundException, Exception{
+		try {
+			threadJPA.restCreateForumThreadsByList(threadsToCreate);
+			Cache.getCacheListsThreads().changed();
+			Cache.updateCacheListsThreads(justNow);
+		} catch( EntityAlreadyPersistedException ex ) {
+			throw new EntityAlreadyFoundException(ex);
+		}
+	}
+	*/
 	public void updateAllDataByThread(ForumThread threadToUpdate,
 			boolean justNow) throws EntityNotFoundException {
 		try {
 			threadJPA.updateAllDataByThread(threadToUpdate);
-			Memory.getMemoryListsThreads().changed();
-			Memory.updateMemoryListsThreads(justNow);
+			/* Queda comentado. A priori no se va a usar la Cache
+			Cache.getCacheListsThreads().changed();
+			Cache.updateCacheListsThreads(justNow); */
 		} catch (EntityNotPersistedException ex) {
 			throw new EntityNotFoundException(ex);
 		}
@@ -238,8 +322,9 @@ public class TransactionThread {
 			throws EntityNotFoundException {
 		try {
 			threadJPA.updateDataByThread(threadToUpdate);
-			Memory.getMemoryListsThreads().changed();
-			Memory.updateMemoryListsThreads(justNow);
+			/* Queda comentado. A priori no se va a usar la Cache
+			Cache.getCacheListsThreads().changed();
+			Cache.updateCacheListsThreads(justNow); */
 		} catch (EntityNotPersistedException ex) {
 			throw new EntityNotFoundException(ex);
 		}

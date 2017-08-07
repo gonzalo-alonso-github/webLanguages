@@ -110,7 +110,7 @@ public class BeanForum implements Serializable{
 		List<FeedCategory> result = new ArrayList<FeedCategory>();
 		try{
 			result = Factories.getService().getServiceFeed()
-					.getAllFeedCategoriesFromMemory();
+					.getAllFeedCategoriesFromDB(); //FromCache()
 		}catch( Exception e ){
 			// TODO Log
 		}
@@ -121,7 +121,7 @@ public class BeanForum implements Serializable{
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		try{
 			result = Factories.getService().getServiceThread()
-					.getLastThreadsByCategoryFromMemory(categoryID);
+					.getLastThreadsByCategoryFromDB(categoryID); //FromCache
 		}catch( Exception e ){
 			// TODO Log
 		}
@@ -132,7 +132,7 @@ public class BeanForum implements Serializable{
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		try{
 			result = Factories.getService().getServiceThread()
-					.getMostValuedThreadsOfTheMonthFromMemory();
+					.getMostValuedThreadsOfTheMonthFromDB(); //FromCache
 		}catch( Exception e ){
 			// TODO Log
 		}
@@ -143,7 +143,7 @@ public class BeanForum implements Serializable{
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		try{
 			result = Factories.getService().getServiceThread()
-					.getMostCommentedThreadsOfTheMonthFromMemory();
+					.getMostCommentedThreadsOfTheMonthFromDB(); //FromCache
 		}catch( Exception e ){
 			// TODO Log
 		}
@@ -154,7 +154,7 @@ public class BeanForum implements Serializable{
 		List<User> result = new ArrayList<User>();
 		try{
 			result = Factories.getService().getServiceUser()
-					.getMostValuedUsersOfTheMonthFromMemory();
+					.getMostValuedUsersOfTheMonthFromDB(); // FromCache
 		}catch( Exception e ){
 			// TODO Log
 		}
@@ -165,7 +165,7 @@ public class BeanForum implements Serializable{
 		List<User> result = new ArrayList<User>();
 		try{
 			result = Factories.getService().getServiceUser()
-					.getMostActiveUsersOfTheMonthFromMemory();
+					.getMostActiveUsersOfTheMonthFromDB(); // FromCache
 		}catch( Exception e ){
 			// TODO Log
 		}
@@ -180,20 +180,20 @@ public class BeanForum implements Serializable{
 				// si no esta vacia, obtener las noticias mas recientes,
 				// de dichos idiomas, de la categoria elegida
 				result = Factories.getService().getServiceThread()
-						.getThreadsByLanguagesAndCategoryFromMemory(listLanguages,
-								category, offsetPage,
-								numNewsPerPage);
+						.getThreadsByLanguagesAndCategoryFromDB(
+								listLanguages, category, offsetPage,
+								numNewsPerPage); //FromCache
 				numNewsTotal = Factories.getService().getServiceThread()
-						.getNumThreadsByLanguagesAndCategoryFromMemory(
-								listLanguages, category);
+						.getNumThreadsByLanguagesAndCategoryFromDB(
+								listLanguages, category); //FromCache
 			}else{
 				// si esta vacia, obtener las noticias mas recientes,
 				// de cualquier idioma, de la categoria elegida
 				result = Factories.getService().getServiceThread()
-						.getThreadsByCategoryFromMemory(category,offsetPage,
-								numNewsPerPage);
+						.getThreadsByCategoryFromDB(category,offsetPage,
+								numNewsPerPage); //FromCache
 				numNewsTotal = Factories.getService().getServiceThread()
-						.getNumThreadsByCategoryFromMemory(category);
+						.getNumThreadsByCategoryFromDB(category); //FromCache
 			}
 		}catch( Exception e ){
 			// TODO Log
@@ -209,13 +209,13 @@ public class BeanForum implements Serializable{
 				// si no esta vacia, obtener las noticias mas recientes,
 				// de dichos idiomas, de la categoria elegida
 				numNewsTotal = Factories.getService().getServiceThread()
-						.getNumThreadsByLanguagesAndCategoryFromMemory(
-								listLanguages, category);
+						.getNumThreadsByLanguagesAndCategoryFromDB(
+								listLanguages, category);  //FromCache
 			}else{
 				// si esta vacia, obtener las noticias mas recientes,
 				// de cualquier idioma, de la categoria elegida
 				numNewsTotal = Factories.getService().getServiceThread()
-						.getNumThreadsByCategoryFromMemory(category);
+						.getNumThreadsByCategoryFromDB(category); //FromCache
 			}
 		}catch( Exception e ){
 			// TODO Log

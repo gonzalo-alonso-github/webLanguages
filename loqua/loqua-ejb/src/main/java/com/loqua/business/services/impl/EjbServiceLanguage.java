@@ -35,30 +35,25 @@ public class EjbServiceLanguage
 
 	
 	@Override
-	public List<Language> getAllLanguagesFromDB(){
+	public List<Language> getListAllLanguagesFromDB(){
 		return transactionLanguage.getAllLanguagesFromDB();
 	}
 	
 	@Override
-	public Map<Long, Language> getAllLanguagesFromMemory(){
-		return transactionLanguage.getAllLanguagesFromMemory();
+	public Map<Long, Language> getAllLanguagesFromCache(){
+		return transactionLanguage.getAllLanguagesFromCache();
 	}
 	
 	@Override
-	public Language getLanguageByIdFromMemory(Long languageID){
-		return transactionLanguage.getLanguageByIdFromMemory(languageID);
-	}
-	
-	@Override
-	public List<Language> getListLanguagesByIdsFromMemory(
+	public Map<Long, Language> getMapLanguagesByIdsFromDB(
 			List<Long> languagesIDs){
-		return transactionLanguage.getListLanguagesByIdsFromMemory(languagesIDs);
+		return transactionLanguage.getMapLanguagesByIdsFromDB(languagesIDs);
 	}
 	
 	@Override
-	public Map<Long, Language> getMapLanguagesByIdsFromMemory(
+	public Map<Long, Language> getMapLanguagesByIdsFromCache(
 			List<Long> languagesIDs){
-		return transactionLanguage.getMapLanguagesByIdsFromMemory(languagesIDs);
+		return transactionLanguage.getMapLanguagesByIdsFromCache(languagesIDs);
 	}
 	
 	@Override
@@ -85,7 +80,7 @@ public class EjbServiceLanguage
 	public void createUserNativeLanguage( User user,
 			List<Long> originalNativeLanguagesIDs,
 			List<Long> editedNativeLanguagesIDs)
-			throws EntityAlreadyFoundException {
+			throws EntityAlreadyFoundException, EntityNotFoundException {
 		transactionLanguage.createUserNativeLanguage(
 				user, originalNativeLanguagesIDs, editedNativeLanguagesIDs);
 	}
@@ -103,7 +98,7 @@ public class EjbServiceLanguage
 	public void createUserPracticedLanguage(User user,
 			List<Long> originalPracticedLanguagesIDs,
 			List<Long> editedPracticedLanguagesIDs)
-			throws EntityAlreadyFoundException {
+			throws EntityAlreadyFoundException, EntityNotFoundException {
 		transactionLanguage.createUserPracticedLanguage(user,
 				originalPracticedLanguagesIDs, editedPracticedLanguagesIDs);
 	}

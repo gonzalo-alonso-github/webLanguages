@@ -9,6 +9,7 @@ import javax.persistence.IdClass;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import com.loqua.model.compoundkeys.ForumThreadVoterKey;
 
@@ -71,6 +72,7 @@ public class ForumThreadVoter implements Serializable {
 		user = u;
 	}
 	
+	@XmlTransient
 	public ForumThread getForumThread() {
 		return forumThread;
 	}

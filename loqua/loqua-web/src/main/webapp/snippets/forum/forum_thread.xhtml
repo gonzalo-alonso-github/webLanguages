@@ -76,16 +76,17 @@ cuyos valores se guardan en el beanForumThread:
 				<div class="forum_thread_post_header general_section_padding">
 					<div class="row">
 						<div class="left-side col-sm-4 col-xs-12">#{beanSettingsSession.getFormattedDateTime(beanForumThread.currentThread.date)}</div>
-						<div class="col-sm-4 col-xs-12 forum_thread_post_header_font">#{msgs.titleSource}: #{beanForumThread.currentThread.feed.name}</div>
+						<div class="col-sm-4 col-xs-12 forum_thread_post_header_font">#{msgs.titleSource}: <a href="#{beanForumThread.currentThread.url}" target="_blank">#{beanForumThread.currentThread.feedName}</a></div>
 						<div class="right-side col-sm-4 col-xs-12 forum_thread_post_header_number">#0</div>
 					</div>
 				</div>
-				<div class="forum_thread_post_body">
-					<div class="forum_thread_firstPost_body_titular">#{beanUtils.limitTextLength(50, beanForumThread.currentThread.title)}</div>
+				<div class="forum_thread_post_body forum_thread_firstPost_body_height">
+					<div class="forum_thread_firstPost_body_titular">#{beanUtils.limitTextLength(190, beanForumThread.currentThread.title)}</div>
 					<div class="forum_thread_post_textBlock">
-						#{beanForumThread.currentThread.content}
+						<h:outputText value="#{beanUtils.limitTextLength(3490,beanForumThread.currentThread.content)}" escape="false"/>
 					</div>
 				</div>
+				<div class="forum_thread_post_linkToViewEntireContent"><a href="#{beanForumThread.currentThread.url}" target="_blank">#{msgs.titleViewEntireContent}</a></div>
 			</div>
 			<div class="forum_thread_post_footerForm">
 			<div class="row">

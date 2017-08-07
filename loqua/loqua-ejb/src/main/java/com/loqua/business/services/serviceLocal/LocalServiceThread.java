@@ -2,9 +2,9 @@ package com.loqua.business.services.serviceLocal;
 
 import javax.ejb.Local;
 
-import com.loqua.business.services.ServiceThread;
+import com.loqua.business.services.ServiceForumThread;
 
 @Local
-public interface LocalServiceThread extends ServiceThread{
+public interface LocalServiceThread extends ServiceForumThread{
 	
 }

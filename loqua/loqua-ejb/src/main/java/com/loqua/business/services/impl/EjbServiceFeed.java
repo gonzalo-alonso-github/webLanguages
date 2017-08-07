@@ -26,19 +26,29 @@ public class EjbServiceFeed
 	}
 	
 	@Override
-	public List<Long> getAllFeedCategoriesIdsFromMemory() {
-		return transactionFeed.getAllFeedCategoriesIdsFromMemory();
+	public List<Feed> restGetAllFeeds() {
+		// Para el cliente Aggregator
+		return transactionFeed.getAllFeeds();
+	}
+	
+	@Override
+	public List<Long> getAllFeedCategoriesIdsFromDB() {
+		return transactionFeed.getAllFeedCategoriesIdsFromDB();
+	}
+	@Override
+	public List<Long> getAllFeedCategoriesIdsFromCache() {
+		return transactionFeed.getAllFeedCategoriesIdsFromCache();
 	}
 	
 	@Override
 	public List<FeedCategory> getAllFeedCategoriesFromDB() {
 		return transactionFeed.getAllFeedCategoriesFromDB();
 	}
-	
 	@Override
-	public List<FeedCategory> getAllFeedCategoriesFromMemory() {
-		return transactionFeed.getAllFeedCategoriesFromMemory();
+	public List<FeedCategory> getAllFeedCategoriesFromCache() {
+		return transactionFeed.getAllFeedCategoriesFromCache();
 	}
+	
 	/*
 	@Override
 	public void createFeedCategory(FeedCategory feedCategory, boolean justNow) 

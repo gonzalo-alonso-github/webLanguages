@@ -2,6 +2,7 @@ package com.loqua.persistence;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityExistsException;
@@ -18,9 +19,12 @@ import com.loqua.persistence.util.JPA;
 public class ThreadJPA {
 	
 	private static final int MAX_NEWS_TO_RETURN = 1000;
-	private static final String ENTITY_NOT_PERSISTED_EXCEPTION=
+	private static final String FORUMTHREAD_NOT_PERSISTED_EXCEPTION=
 			"EntityNotPersistedException: 'Thread' entity not found"
 			+ " at Persistence layer";
+	private static final String FORUMTHREAD_ALREADY_PERSISTED_EXCEPTION=
+			"EntityAlreadyPersistedException: 'FotumThread' entity already"
+			+ " found at Persistence layer";
 	private static final String THREADVOTER_ALREADY_PERSISTED_EXCEPTION=
 			"EntityAlreadyPersistedException: 'ThreadVoter' entity already"
 			+ " found at Persistence layer";
@@ -38,7 +42,7 @@ public class ThreadJPA {
 				.getSingleResult();
 		}catch( NoResultException ex ){
 			throw new EntityNotPersistedException(
-					ENTITY_NOT_PERSISTED_EXCEPTION, ex);
+					FORUMTHREAD_NOT_PERSISTED_EXCEPTION, ex);
 		}catch( RuntimeException ex ){
 			//HibernateException,IllegalArgumentException,ClassCastException...
 			throw new PersistenceRuntimeException(
@@ -57,7 +61,7 @@ public class ThreadJPA {
 				.getSingleResult();
 		}catch( NoResultException ex ){
 			throw new EntityNotPersistedException(
-					ENTITY_NOT_PERSISTED_EXCEPTION, ex);
+					FORUMTHREAD_NOT_PERSISTED_EXCEPTION, ex);
 		}catch( RuntimeException ex ){
 			//HibernateException,IllegalArgumentException,ClassCastException...
 			throw new PersistenceRuntimeException(
@@ -67,19 +71,61 @@ public class ThreadJPA {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<ForumThread> getThreadsByLanguages(List<Long> listLanguagesIDs) {
-		/*
-		if( offsetRows==null ){
-			offsetRows=0;
-		}else{
-			offsetRows=(offsetRows-1)*limit;
+	public List<ForumThread> getThreads(){
+		List<ForumThread> result = new ArrayList<ForumThread>();
+		try{
+			result = (List<ForumThread>) JPA.getManager()
+					.createNamedQuery("Thread.getThreadsInOrder")
+					.setMaxResults(MAX_NEWS_TO_RETURN) // limit
+					.getResultList();				
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
 		}
-		*/
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<ForumThread> getThreads(
+			Integer offsetRows, int numThreadsToReturn){
+		List<ForumThread> result = new ArrayList<ForumThread>();
+		try{
+			result = (List<ForumThread>) JPA.getManager()
+					.createNamedQuery("Thread.getThreadsInOrder")
+					.setFirstResult(offsetRows) // offset
+					.setMaxResults(numThreadsToReturn) // limit
+					.getResultList();				
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+		return result;
+	}
+	
+	public Integer getNumThreads() {
+		Long result = 0L;
+		try{
+			result = (Long) JPA.getManager()
+					.createNamedQuery(
+						"Thread.getNumThreads", Long.class)
+					.getResultList().stream().findFirst().orElse(null);
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+		return result.intValue();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<ForumThread> getAllThreadsByLanguages(
+			List<Long> listLanguagesIDs) {
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		try{
 			result = (List<ForumThread>) JPA.getManager()
 					.createNamedQuery("Thread.getThreadsByLanguages")
-					//.setFirstResult(offsetRows) // offset
 					.setMaxResults(MAX_NEWS_TO_RETURN) // limit
 					.setParameter(1, listLanguagesIDs)
 					.getResultList();
@@ -92,21 +138,13 @@ public class ThreadJPA {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<ForumThread> getThreadsByLanguagesAndCategory(
+	public List<ForumThread> getAllThreadsByLanguagesAndCategoryFromDB(
 			List<Long> listLanguagesIDs, Long category){
-		/*
-		if( offsetRows==null ){
-			offsetRows=0;
-		}else{
-			offsetRows=(offsetRows-1)*limit;
-		}
-		*/
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		try{
 			result = (List<ForumThread>) JPA.getManager()
 					.createNamedQuery(
 						"Thread.getThreadsByLanguagesAndCategory")
-					//.setFirstResult(offsetRows) // offset
 					.setMaxResults(MAX_NEWS_TO_RETURN) // limit
 					.setParameter(1, category)
 					.setParameter(2, listLanguagesIDs)
@@ -120,20 +158,69 @@ public class ThreadJPA {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<ForumThread> getThreads(){
-		/*
-		if( offsetRows==null ){
-			offsetRows=0;
-		}else{
-			offsetRows=(offsetRows-1)*limit;
-		}
-		*/
+	public List<ForumThread> getThreadsByLanguagesAndCategory(
+			List<Long> listLanguagesIDs, Long category,
+			Integer offsetRows, int numThreadsToReturn){
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		try{
 			result = (List<ForumThread>) JPA.getManager()
-					.createNamedQuery("Thread.get20Threads")
-					//.setFirstResult(offsetRows) // offset
+					.createNamedQuery(
+						"Thread.getThreadsByLanguagesAndCategory")
+					.setFirstResult(offsetRows) // offset
+					.setMaxResults(numThreadsToReturn) // limit
+					.setParameter(1, category)
+					.setParameter(2, listLanguagesIDs)
+					.getResultList();
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+		return result;
+	}
+	
+	public Integer getNumThreadsByLanguages(List<Long> listLanguagesIDs) {
+		Long result = 0L;
+		try{
+			result = (Long) JPA.getManager()
+					.createNamedQuery(
+						"Thread.getNumThreadsByLanguagesAndCategory",Long.class)
+					.setParameter(1, listLanguagesIDs)
+					.getResultList().stream().findFirst().orElse(null);
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+		return result.intValue();
+	}
+	
+	public Integer getNumThreadsByLanguagesAndCategory(
+			List<Long> listLanguagesIDs, Long category) {
+		Long result = 0L;
+		try{
+			result = (Long) JPA.getManager()
+					.createNamedQuery(
+						"Thread.getNumThreadsByLanguagesAndCategory",Long.class)
+					.setParameter(1, category)
+					.setParameter(2, listLanguagesIDs)
+					.getResultList().stream().findFirst().orElse(null);
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+		return result.intValue();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<ForumThread> getAllThreadsByCategory(Long category){
+		List<ForumThread> result = new ArrayList<ForumThread>();
+		try{
+			result = (List<ForumThread>) JPA.getManager()
+					.createNamedQuery("Thread.getThreadsByCategory")
 					.setMaxResults(MAX_NEWS_TO_RETURN) // limit
+					.setParameter(1, category)
 					.getResultList();				
 		}catch( RuntimeException ex ){
 			//HibernateException,IllegalArgumentException,ClassCastException...
@@ -144,20 +231,14 @@ public class ThreadJPA {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<ForumThread> getThreadsByCategory(Long category){
-		/*
-		if( offsetRows==null ){
-			offsetRows=0;
-		}else{
-			offsetRows=(offsetRows-1)*limit;
-		}
-		*/
+	public List<ForumThread> getThreadsByCategory(Long category,
+			Integer offsetRows, int numThreadsToReturn){
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		try{
 			result = (List<ForumThread>) JPA.getManager()
 					.createNamedQuery("Thread.getThreadsByCategory")
-					//.setFirstResult(offsetRows) // offset
-					.setMaxResults(MAX_NEWS_TO_RETURN) // limit
+					.setFirstResult(offsetRows) // offset
+					.setMaxResults(numThreadsToReturn) // limit
 					.setParameter(1, category)
 					.getResultList();				
 		}catch( RuntimeException ex ){
@@ -166,6 +247,22 @@ public class ThreadJPA {
 					PERSISTENCE_GENERAL_EXCEPTION, ex);
 		}
 		return result;
+	}
+	
+	public Integer getNumThreadsByCategory(Long category) {
+		Long result = 0L;
+		try{
+			result = (Long) JPA.getManager()
+					.createNamedQuery(
+						"Thread.getNumThreadsByCategory", Long.class)
+					.setParameter(1, category)
+					.getResultList().stream().findFirst().orElse(null);
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+		return result.intValue();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -228,6 +325,24 @@ public class ThreadJPA {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public List<ForumThread> getAllForumThreadGUIDsInLastHour(
+			Date currentDate, Date lastHourDate){
+		List<ForumThread> result = new ArrayList<ForumThread>();
+		try{
+			result = (List<ForumThread>) JPA.getManager()
+				.createNamedQuery("Thread.getAllForumThreadGUIDsInLastHour")
+				.setParameter(1, currentDate)
+				.setParameter(2, lastHourDate)
+				.getResultList();
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
 	public List<ForumThreadVoter> getThreadVoters( Long threadId ){
 		List<ForumThreadVoter> result = new ArrayList<ForumThreadVoter>();
 		try{
@@ -243,19 +358,45 @@ public class ThreadJPA {
 		return result;
 	}
 	
-	public void create(ForumThread newThreadToCreate)
-			throws EntityAlreadyPersistedException {
+	public void restCreateForumThread(ForumThread threadToCreate)
+			throws EntityAlreadyPersistedException, Exception{
 		try{
-			JPA.getManager().persist( newThreadToCreate );
+			/*Feed feed = JPA.getManager().find(
+					Feed.class, threadToCreate.getFeed().getId());
+			threadToCreate.setFeed(feed);*/
+			JPA.getManager().persist( threadToCreate );
+			JPA.getManager().persist( threadToCreate.getForumThreadInfo() );
 			JPA.getManager().flush();
-			JPA.getManager().refresh(newThreadToCreate);
+			JPA.getManager().refresh(threadToCreate);
+		}catch( EntityExistsException ex ){
+			throw new EntityAlreadyPersistedException(
+					FORUMTHREAD_ALREADY_PERSISTED_EXCEPTION, ex);
 		}catch( RuntimeException ex ){
 			//HibernateException,IllegalArgumentException,ClassCastException...
-			throw new PersistenceRuntimeException(
+			throw new /*PersistenceRuntimeException*/Exception(
 					PERSISTENCE_GENERAL_EXCEPTION, ex);
 		}
 	}
-	
+	/*
+	public void restCreateForumThreadsByList(List<ForumThread> threadsToCreate)
+			throws EntityAlreadyPersistedException, Exception{
+		try{
+			for( ForumThread threadToCreate : threadsToCreate ){
+				JPA.getManager().persist( threadToCreate );
+				JPA.getManager().persist(threadToCreate.getForumThreadInfo());
+				JPA.getManager().flush();
+				JPA.getManager().refresh(threadToCreate);
+			}
+		}catch( EntityExistsException ex ){
+			throw new EntityAlreadyPersistedException(
+					FORUMTHREAD_ALREADY_PERSISTED_EXCEPTION, ex);
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new Exception(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+	}
+	*/
 	public void createThreadVoter(Long userId, Long threadId)
 			throws EntityAlreadyPersistedException, EntityNotPersistedException {
 		try{
@@ -291,7 +432,7 @@ public class ThreadJPA {
 			JPA.getManager().merge( threadToUpdate );
 		}catch( NoResultException ex ){
 			throw new EntityNotPersistedException(
-					ENTITY_NOT_PERSISTED_EXCEPTION, ex);
+					FORUMTHREAD_NOT_PERSISTED_EXCEPTION, ex);
 		}catch( RuntimeException ex ){
 			//HibernateException,IllegalArgumentException,ClassCastException...
 			throw new PersistenceRuntimeException(
@@ -305,7 +446,7 @@ public class ThreadJPA {
 			JPA.getManager().merge( threadToUpdate );
 		}catch( NoResultException ex ){
 			throw new EntityNotPersistedException(
-					ENTITY_NOT_PERSISTED_EXCEPTION, ex);
+					FORUMTHREAD_NOT_PERSISTED_EXCEPTION, ex);
 		}catch( RuntimeException ex ){
 			//HibernateException,IllegalArgumentException,ClassCastException...
 			throw new PersistenceRuntimeException(

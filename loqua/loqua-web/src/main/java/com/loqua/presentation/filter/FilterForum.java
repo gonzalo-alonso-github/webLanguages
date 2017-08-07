@@ -192,7 +192,7 @@ public class FilterForum implements Filter {
 		List<Long> result = new ArrayList<Long>();
 		try{
 			result = Factories.getService().getServiceFeed()
-					.getAllFeedCategoriesIdsFromMemory();
+					.getAllFeedCategoriesIdsFromDB(); //FromCache();
 		}catch( Exception e ){
 			// TODO Log
 		}
@@ -233,14 +233,14 @@ public class FilterForum implements Filter {
 				// si no esta vacia, obtener las noticias mas recientes,
 				// de dichos idiomas, de la categoria elegida
 				totalNumThreads = Factories.getService().getServiceThread()
-						.getNumThreadsByLanguagesAndCategoryFromMemory(
-								listLanguages, requestedCategory);
+						.getNumThreadsByLanguagesAndCategoryFromDB(
+								listLanguages, requestedCategory); //FromCache
 			}else{
 				// si esta vacia, obtener las noticias mas recientes,
 				// de cualquier idioma, de la categoria elegida
 				totalNumThreads = Factories.getService().getServiceThread()
-						.getNumThreadsByCategoryFromMemory(
-								requestedCategory);
+						.getNumThreadsByCategoryFromDB(
+								requestedCategory); //FromCache
 			}
 		}catch( Exception e ){
 			// TODO Log
