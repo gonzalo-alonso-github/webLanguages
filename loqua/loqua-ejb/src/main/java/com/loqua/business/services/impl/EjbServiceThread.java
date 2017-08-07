@@ -33,54 +33,82 @@ public class EjbServiceThread
 	}
 	
 	@Override
-	public List<ForumThread> getThreadsByLanguagesAndCategoryFromDB(
+	public List<ForumThread> getAllThreadsByLanguagesAndCategoryFromDB(
 			List<Long> listLanguagesIDs, Long category) {
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		if( category==null || category==0 ){
 			result= transactionThread.getThreadsByLanguagesFromDB(
 					listLanguagesIDs);
 		}else{
-			result= transactionThread.getThreadsByLanguagesAndCategoryFromDB(
+			result= transactionThread.getAllThreadsByLanguagesAndCategoryFromDB(
 					listLanguagesIDs, category);
 		}
 		return result;
 	}
 	
 	@Override
-	public List<ForumThread> getThreadsByLanguagesAndCategoryFromMemory(
+	public List<ForumThread> getThreadsByLanguagesAndCategoryFromDB(
 			List<Language> listLanguages, Long category,
 			Integer offsetThreads, int numThreadsToReturn) {
-		return transactionThread.getThreadsByLanguagesAndCategoryFromMemory(
+		return transactionThread.getThreadsByLanguagesAndCategoryFromDB(
 				listLanguages, category, offsetThreads, numThreadsToReturn);
 	}
 	
 	@Override
-	public Integer getNumThreadsByLanguagesAndCategoryFromMemory(
+	public List<ForumThread> getThreadsByLanguagesAndCategoryFromCache(
+			List<Language> listLanguages, Long category,
+			Integer offsetThreads, int numThreadsToReturn) {
+		return transactionThread.getThreadsByLanguagesAndCategoryFromCache(
+				listLanguages, category, offsetThreads, numThreadsToReturn);
+	}
+	
+	@Override
+	public Integer getNumThreadsByLanguagesAndCategoryFromDB(
 			List<Language> listLanguages, Long category){
-		return transactionThread.getNumThreadsByLanguagesAndCategoryFromMemory(
+		return transactionThread.getNumThreadsByLanguagesAndCategoryFromDB(
 				listLanguages, category);
 	}
 	
 	@Override
-	public List<ForumThread> getThreadsByCategoryFromDB(Long category) {
+	public Integer getNumThreadsByLanguagesAndCategoryFromCache(
+			List<Language> listLanguages, Long category){
+		return transactionThread.getNumThreadsByLanguagesAndCategoryFromCache(
+				listLanguages, category);
+	}
+	
+	@Override
+	public List<ForumThread> getAllThreadsByCategoryFromDB(Long category) {
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		if( category==null || category==0 ){
 			result = transactionThread.getThreads();
 		}else{
-			result= transactionThread.getThreadsByCategoryFromDB(category);
+			result= transactionThread.getAllThreadsByCategoryFromDB(category);
 		}
 		return result;
 	}
 	
 	@Override
-	public List<ForumThread> getThreadsByCategoryFromMemory(Long category,
+	public List<ForumThread> getThreadsByCategoryFromDB(Long category,
 			Integer offsetThreads, int numThreadsToReturn) {
-		return transactionThread.getThreadsByCategoryFromMemory(
+		return transactionThread.getThreadsByCategoryFromDB(
 				category,offsetThreads,numThreadsToReturn);
 	}
 	
-	public Integer getNumThreadsByCategoryFromMemory(Long category){
-		return transactionThread.getNumThreadsByCategoryFromMemory(category);
+	@Override
+	public List<ForumThread> getThreadsByCategoryFromCache(Long category,
+			Integer offsetThreads, int numThreadsToReturn) {
+		return transactionThread.getThreadsByCategoryFromCache(
+				category,offsetThreads,numThreadsToReturn);
+	}
+	
+	@Override
+	public Integer getNumThreadsByCategoryFromDB(Long category){
+		return transactionThread.getNumThreadsByCategoryFromDB(category);
+	}
+	
+	@Override
+	public Integer getNumThreadsByCategoryFromCache(Long category){
+		return transactionThread.getNumThreadsByCategoryFromCache(category);
 	}
 	
 	@Override
@@ -89,8 +117,8 @@ public class EjbServiceThread
 	}
 	
 	@Override
-	public List<ForumThread> getMostValuedThreadsOfTheMonthFromMemory() {
-		return transactionThread.getMostValuedThreadsOfTheMonthFromMemory();
+	public List<ForumThread> getMostValuedThreadsOfTheMonthFromCache() {
+		return transactionThread.getMostValuedThreadsOfTheMonthFromCache();
 	}
 	
 	@Override
@@ -99,8 +127,8 @@ public class EjbServiceThread
 	}
 	
 	@Override
-	public List<ForumThread> getMostCommentedThreadsOfTheMonthFromMemory() {
-		return transactionThread.getMostCommentedThreadsOfTheMonthFromMemory();
+	public List<ForumThread> getMostCommentedThreadsOfTheMonthFromCache() {
+		return transactionThread.getMostCommentedThreadsOfTheMonthFromCache();
 	}
 	
 	@Override
@@ -109,8 +137,14 @@ public class EjbServiceThread
 	}
 	
 	@Override
-	public List<ForumThread> getLastThreadsByCategoryFromMemory(Long category) {
-		return transactionThread.getLastThreadsByCategoryFromMemory(category);
+	public List<ForumThread> getLastThreadsByCategoryFromCache(Long category) {
+		return transactionThread.getLastThreadsByCategoryFromCache(category);
+	}
+	
+	@Override
+	public List<ForumThread> getAllForumThreadGUIDsInLastHour() {
+		// Para el cliente Aggregator
+		return transactionThread.getAllForumThreadGUIDsInLastHour();
 	}
 	
 	@Override
@@ -120,11 +154,20 @@ public class EjbServiceThread
 	}
 	
 	@Override
-	public void createThread(ForumThread threadToCreate, boolean justNow) 
-			throws EntityAlreadyFoundException {
-		transactionThread.create(threadToCreate, justNow);
+	public void restCreateForumThread(ForumThread threadToCreate, boolean justNow) 
+			throws EntityAlreadyFoundException, Exception {
+		// Para el cliente Aggregator
+		transactionThread.restCreateForumThread(threadToCreate, justNow);
 	}
-	
+	/*
+	@Override
+	public void restCreateForumThreadsByList(
+			List<ForumThread> threadsToCreate, boolean justNow) 
+			throws EntityAlreadyFoundException, Exception {
+		// Para el cliente Aggregator
+		transactionThread.restCreateForumThreadsByList(threadsToCreate,justNow);
+	}
+	*/
 	@Override
 	public void updateAllDataByThread(ForumThread threadToUpdate,
 			boolean justNow) throws EntityNotFoundException{

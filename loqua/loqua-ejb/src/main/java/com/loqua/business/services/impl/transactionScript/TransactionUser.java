@@ -14,7 +14,7 @@ import com.loqua.business.services.ServiceMessage;
 import com.loqua.business.services.ServicePublication;
 import com.loqua.business.services.impl.ManagementEmail;
 import com.loqua.business.services.impl.MapEntityCounterByDate;
-import com.loqua.business.services.impl.memory.Memory;
+import com.loqua.business.services.impl.cache.Cache;
 import com.loqua.business.services.locator.LocatorLocalEjbServices;
 import com.loqua.model.User;
 import com.loqua.model.UserInfo;
@@ -114,10 +114,11 @@ public class TransactionUser {
 	public void create(User userToCreate) throws EntityAlreadyFoundException {
 		try {
 			userJPA.create(userToCreate);
-			Memory.getMemoryListsUsers().changed();
-			Memory.updateMemoryListsUsers(true);
-			Memory.getMemoryListsUsers().updateNumLastRegistrationsFromDB();
-			Memory.getMemoryListsUsers().updateNumRegisteredUsersFromDB();
+			/* Queda comentado. A priori no se va a usar la Cache
+			Cache.getCacheListsUsers().changed();
+			Cache.updateCacheListsUsers(true);
+			Cache.getCacheListsUsers().updateNumLastRegistrationsFromDB();
+			Cache.getCacheListsUsers().updateNumRegisteredUsersFromDB(); */
 		} catch (EntityAlreadyPersistedException ex) {
 			throw new EntityAlreadyFoundException(ex);
 		}
@@ -127,9 +128,10 @@ public class TransactionUser {
 			throws EntityNotFoundException {
 		try {
 			userJPA.updateAllDataByUser(userToUpdate);
-			Memory.getMemoryListsUsers().changed();
-			Memory.updateMemoryListsUsers(justNow);
-			Memory.getMemoryListsUsers().updateNumRegisteredUsersFromDB();
+			/* Queda comentado. A priori no se va a usar la Cache
+			Cache.getCacheListsUsers().changed();
+			Cache.updateCacheListsUsers(justNow);
+			Cache.getCacheListsUsers().updateNumRegisteredUsersFromDB(); */
 		} catch (EntityNotPersistedException ex) {
 			throw new EntityNotFoundException(ex);
 		}
@@ -139,9 +141,10 @@ public class TransactionUser {
 			throws EntityNotFoundException {
 		try {
 			userJPA.updateDataByUser(userToUpdate);
-			Memory.getMemoryListsUsers().changed();
-			Memory.updateMemoryListsUsers(true);
-			Memory.getMemoryListsUsers().updateNumRegisteredUsersFromDB();
+			/* Queda comentado. A priori no se va a usar la Cache
+			Cache.getCacheListsUsers().changed();
+			Cache.updateCacheListsUsers(true);
+			Cache.getCacheListsUsers().updateNumRegisteredUsersFromDB(); */
 		} catch (EntityNotPersistedException ex) {
 			throw new EntityNotFoundException(ex);
 		}
@@ -162,18 +165,18 @@ public class TransactionUser {
 		return userJPA.getMostValuedUsersOfTheMonth();
 	}
 
-	public List<User> getMostValuedUsersOfTheMonthFromMemory() {
+	public List<User> getMostValuedUsersOfTheMonthFromCache() {
 		// A diferencia de this.getMostValuedUsersOfTheMonth(),
 		// este metodo evita hacer un acceso a base de datos,
-		// puesto que devuelve la lista guardada en Memory
-		List<User> result = Memory.getMemoryListsUsers()
+		// puesto que devuelve la lista guardada en Cache
+		List<User> result = Cache.getCacheListsUsers()
 				.getMostValuedUsersOfTheMonth();
 		if( result.isEmpty() ){
 			// Pero si esta vacia, entonces
-			// activamos desde ahora la actualizacion periodica de la memoria:
-			Memory.getMemoryListsUsers().changed();
-			Memory.updateMemoryListsUsers(true);
-			result = Memory.getMemoryListsUsers()
+			// activamos desde ahora la actualizacion periodica de la Cache:
+			Cache.getCacheListsUsers().changed();
+			Cache.updateCacheListsUsers(true);
+			result = Cache.getCacheListsUsers()
 					.getMostValuedUsersOfTheMonth();
 		}
 		return result;
@@ -183,18 +186,18 @@ public class TransactionUser {
 		return userJPA.getMostActiveUsersOfTheMonth();
 	}
 	
-	public List<User> getMostActiveUsersOfTheMonthFromMemory() {
-		// A diferencia de this.getMemoryMostActiveUsersOfTheMonth(),
+	public List<User> getMostActiveUsersOfTheMonthFromCache() {
+		// A diferencia de this.getCacheMostActiveUsersOfTheMonth(),
 		// este metodo evita hacer un acceso a base de datos,
-		// puesto que devuelve la lista guardada en Memory
-		List<User> result = Memory.getMemoryListsUsers()
+		// puesto que devuelve la lista guardada en Cache
+		List<User> result = Cache.getCacheListsUsers()
 				.getMostActiveUsersOfTheMonth();
 		if( result.isEmpty() ){
 			// Pero si esta vacia, entonces
-			// activamos desde ahora la actualizacion periodica de la memoria:
-			Memory.getMemoryListsUsers().changed();
-			Memory.updateMemoryListsUsers(true);
-			result = Memory.getMemoryListsUsers()
+			// activamos desde ahora la actualizacion periodica de la Cache:
+			Cache.getCacheListsUsers().changed();
+			Cache.updateCacheListsUsers(true);
+			result = Cache.getCacheListsUsers()
 					.getMostActiveUsersOfTheMonth();
 		}
 		return result;
@@ -212,7 +215,7 @@ public class TransactionUser {
 	
 	public Map<Integer, User> getSmallClasificationByUser(User user){
 		Map<Integer, User> result = null;
-		int lastPosition = getNumRegisteredUsersAndAdminFromMemory();
+		int lastPosition = getNumRegisteredUsersAndAdminFromCache();
 		try{
 			result = userJPA.getSmallClasificationByUser(user, lastPosition);
 		} catch (EntityNotPersistedException ex) {
@@ -241,8 +244,10 @@ public class TransactionUser {
 	private String validateNumLastRegistrations(
 			Map<String, Integer> mapActionsLimits){
 		String result = "noError";
+		/*MapEntityCounterByDate numOccurrences =
+				getNumLastRegistrationsFromCache();*/
 		MapEntityCounterByDate numOccurrences =
-				getNumLastRegistrationsFromMemory();
+				getNumLastRegistrationsFromDB();
 		if( numOccurrences.getOccurrencesLastMinute() >= 
 				mapActionsLimits.get("limitRegistrationsAtLastMinute") 
 			|| numOccurrences.getOccurrencesLastFiveMinutes() >=
@@ -262,32 +267,31 @@ public class TransactionUser {
 		return result;
 	}
 	
-	public MapEntityCounterByDate getNumLastRegistrationsFromDB()
-			/*throws EntityNotFoundException*/ {
+	public MapEntityCounterByDate getNumLastRegistrationsFromDB(){
 		MapEntityCounterByDate result = new MapEntityCounterByDate();
 		try {
 			result = userJPA.getNumLastRegistrations();
 		} catch (EntityNotPersistedException ex) {
-			//throw new EntityNotFoundException(ex);
 			result = new MapEntityCounterByDate();
 		}
 		return result;
 	}
-	
-	private MapEntityCounterByDate getNumLastRegistrationsFromMemory() {
+	/*
+	private MapEntityCounterByDate getNumLastRegistrationsFromCache() {
 		// A diferencia de this.getNumLastRegistrationsFromDB(),
 		// este metodo evita hacer un acceso a base de datos,
-		// puesto que devuelve el Map guardado en Memory
-		MapEntityCounterByDate result = Memory.getMemoryListsUsers()
+		// puesto que devuelve el Map guardado en Cache
+		MapEntityCounterByDate result = Cache.getCacheListsUsers()
 				.getNumLastRegistrations();
 		if( result.isEmpty() ){
 			// Pero si esta vacio, entonces si lo cargamos desde base de datos
 			result = getNumLastRegistrationsFromDB();
-			Memory.getMemoryListsUsers().setNumLastRegistrations( result );
+			Cache.getCacheListsUsers().setNumLastRegistrations( result );
 		}
 		return result;
 	}
-
+	*/
+	
 	public User getUserByUrlConfirm(String urlConfirm) 
 			/*throws EntityNotFoundException*/ {
 		User result = new User();
@@ -309,15 +313,15 @@ public class TransactionUser {
 		}
 		return result;
 	}
-	public int getNumRegisteredUsersAndAdminFromMemory() {
+	public int getNumRegisteredUsersAndAdminFromCache() {
 		// A diferencia de this.getNumRegisteredUsersFromDB(),
 		// este metodo evita hacer un acceso a base de datos,
-		// puesto que devuelve el valor guardado en Memory
-		int result = Memory.getMemoryListsUsers().getNumRegisteredUsers();
+		// puesto que devuelve el valor guardado en Cache
+		int result = Cache.getCacheListsUsers().getNumRegisteredUsers();
 		if( result==-1 ){
 			// Pero si esta vacio, entonces si lo cargamos desde base de datos
 			result = getNumRegisteredUsersAndAdminFromDB();
-			Memory.getMemoryListsUsers().setNumRegisteredUsers( result );
+			Cache.getCacheListsUsers().setNumRegisteredUsers( result );
 		}
 		return result;
 	}

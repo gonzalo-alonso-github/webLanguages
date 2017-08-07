@@ -10,16 +10,24 @@ import com.loqua.model.User;
 
 public interface ServiceLanguage {
 
+	/* A priori no se va a utilizar ninguno de los metodos
+	que contienen el sufijo 'FromCache'. Si se utilizan, entonces conviene
+	descomentar el uso de la Cache aquellos metodos de la clase
+	TansactionLanguage que realicen creaciones y actualizaciones:
+	createUserNativeLanguage(User, List<Long>, List<Long>)
+	deleteUserNativeLanguage
+	createUserPracticedLanguage(User, List<Long>, List<Long>)
+	deleteUserPracticedLanguage*/
+	
 	Language getLanguageByName(String name);
 	
-	List<Language> getAllLanguagesFromDB();
-	Map<Long, Language> getAllLanguagesFromMemory();
+	List<Language> getListAllLanguagesFromDB();
+	Map<Long, Language> getAllLanguagesFromCache();
 	
-	Language getLanguageByIdFromMemory(Long languageID);
+	//List<Language> getListLanguagesByIdsFromCache(List<Long> languagesIDs);
 	
-	List<Language> getListLanguagesByIdsFromMemory(List<Long> languagesIDs);
-	
-	Map<Long, Language> getMapLanguagesByIdsFromMemory(List<Long> languagesIDs);
+	Map<Long, Language> getMapLanguagesByIdsFromDB(List<Long> languagesIDs);
+	Map<Long, Language> getMapLanguagesByIdsFromCache(List<Long> languagesIDs);
 	
 	List<Language> getNativeLanguagesByUser(Long userID);
 
@@ -32,7 +40,7 @@ public interface ServiceLanguage {
 	void createUserNativeLanguage(User user,
 			List<Long> beanUserNativeLanguagesIDs,
 			List<Long> editedNativeLanguagesIDs)
-			throws EntityAlreadyFoundException;
+			throws EntityAlreadyFoundException, EntityNotFoundException;
 	void deleteUserNativeLanguage(User user,
 			List<Long> beanUserNativeLanguagesIDs,
 			List<Long> editedNativeLanguagesIDs)
@@ -41,7 +49,7 @@ public interface ServiceLanguage {
 	void createUserPracticedLanguage(User user,
 			List<Long> beanUserPracticedLanguagesIDs,
 			List<Long> editedPracticedLanguagesIDs)
-			throws EntityAlreadyFoundException;
+			throws EntityAlreadyFoundException, EntityNotFoundException;
 	void deleteUserPracticedLanguage(User user,
 			List<Long> beanUserPracticedLanguagesIDs,
 			List<Long> editedPracticedLanguagesIDs)

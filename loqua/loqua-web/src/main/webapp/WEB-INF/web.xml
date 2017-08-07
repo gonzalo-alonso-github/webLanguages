@@ -5,14 +5,49 @@
 	id="WebApp_ID" version="3.1">
 	<display-name>loqua</display-name>
 	<welcome-file-list>
-		<welcome-file>pages/anonymousUser/phorum.xhtml</welcome-file>
+		<welcome-file>pages/anonymousUser/forum.xhtml</welcome-file>
 	</welcome-file-list>
+	
+	<!-- Configuracion de RESTEasy (1 de 3):
+	Variable de contexto para que Resteasy reconozca el mapeo /rest/
+	a servicios REST. Ademas de esto hay que incluir el propio 
+	<mapping> y el servlet Resteasy -->
+	<context-param>
+		<param-name>resteasy.servlet.mapping.prefix</param-name>
+		<param-value>/rest</param-value>
+	</context-param>
+	
 	<servlet>
 		<servlet-name>Faces Servlet</servlet-name>
 		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
-	 
+	
+	<!-- Configuracion de RESTEasy (2 de 3):
+	Servlet resteasy que se encarga de procesar las peticiones
+	correspondientes a servicios REST. Lleva un parametro de inicializacion
+	donde deben estar registradas todas las clases que implementan
+	servicios REST en esta aplicación web
+	-->
+	<servlet>
+		<servlet-name>resteasy</servlet-name>
+			<servlet-class>
+				org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
+			</servlet-class>
+		<init-param>
+			<param-name>javax.ws.rs.Application</param-name>
+			<param-value>com.loqua.rest.Application</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<!-- Configuracion de RESTEasy (3 de 3):
+	Regla de mapeo para todas las peticiones REST -->
+	<servlet-mapping>
+		<servlet-name>resteasy</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+	
 	<!-- Sin esta etiqueta las paginas xhtml no podrian acceder a los css ni 
 	a ningun resource -->
 	<servlet-mapping>
@@ -43,15 +78,15 @@
 		<mime-type>application/vnd.ms-fontobject</mime-type>
 	</mime-mapping>
  
-	 <context-param>
-	   <description>State saving method: 'client' or 'server' (=default). See JSF Specification 2.5.2</description>
-	   <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
-	   <param-value>client</param-value>
-	 </context-param>
-	 <context-param>
-	   <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
-	   <param-value>resources.application</param-value>
-	 </context-param>
+	<context-param>
+		<description>State saving method: 'client' or 'server' (=default). See JSF Specification 2.5.2</description>
+		<param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+		<param-value>client</param-value>
+	</context-param>
+	<context-param>
+		<param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+		<param-value>resources.application</param-value>
+	</context-param>
 	
   	<context-param>
 		<param-name>javax.faces.PROJECT_STAGE</param-name>
@@ -62,8 +97,8 @@
 		<param-value>DEBUG</param-value>
 	</context-param>
     
-    <!-- Para evitar que en la URL aparezca la cadena ";jsessionid=..." -->
-    <!-- Lo comento. Es el FilterEncodingURLparams el que se encarga de eso -->
+	<!-- Para evitar que en la URL aparezca la cadena ";jsessionid=..." -->
+	<!-- Lo comento. Es el FilterEncodingURLparams el que se encarga de eso -->
 	<!--
 	<session-config>
 		<tracking-mode>COOKIE</tracking-mode>
@@ -71,87 +106,88 @@
 		<tracking-mode>SSL</tracking-mode>
 	</session-config>
 	-->
-
-    <!-- Con 'filter-mapping' se define el orden en que se aplican los filtros sobre las vistas -->
-    <!-- Pero primero hay que declararlos con 'filter' -->
-    <filter>
-	    <filter-name>filterEncodingURLparams</filter-name>
-	    <filter-class>com.loqua.presentation.filter.FilterEncodingURLparams</filter-class>
-	</filter>
-    <filter>
-	    <filter-name>filterAuthAnonymous</filter-name>
-	    <filter-class>com.loqua.presentation.filter.FilterAuthorizationAnonymousUser</filter-class>
+	
+	<!-- Con 'filter-mapping' se define el orden en que se aplican los filtros sobre las vistas -->
+	<!-- Pero primero hay que declararlos con 'filter' -->
+	<filter>
+		<filter-name>filterEncodingURLparams</filter-name>
+		<filter-class>com.loqua.presentation.filter.FilterEncodingURLparams</filter-class>
 	</filter>
 	<filter>
-	    <filter-name>filterAuthRegistered</filter-name>
-	    <filter-class>com.loqua.presentation.filter.FilterAuthorizationRegisteredUser</filter-class>
+		<filter-name>filterAuthAnonymous</filter-name>
+		<filter-class>com.loqua.presentation.filter.FilterAuthorizationAnonymousUser</filter-class>
 	</filter>
 	<filter>
-	    <filter-name>filterAuthAdmin</filter-name>
-	    <filter-class>com.loqua.presentation.filter.FilterAuthorizationAdministratorUser</filter-class>
+		<filter-name>filterAuthRegistered</filter-name>
+		<filter-class>com.loqua.presentation.filter.FilterAuthorizationRegisteredUser</filter-class>
 	</filter>
 	<filter>
-	    <filter-name>filterProfileUser</filter-name>
-	    <filter-class>com.loqua.presentation.filter.FilterProfileUser</filter-class>
+		<filter-name>filterAuthAdmin</filter-name>
+		<filter-class>com.loqua.presentation.filter.FilterAuthorizationAdministratorUser</filter-class>
 	</filter>
 	<filter>
-	    <filter-name>filterForum</filter-name>
-	    <filter-class>com.loqua.presentation.filter.FilterForum</filter-class>
+		<filter-name>filterProfileUser</filter-name>
+		<filter-class>com.loqua.presentation.filter.FilterProfileUser</filter-class>
 	</filter>
 	<filter>
-	    <filter-name>filterForumThread</filter-name>
-	    <filter-class>com.loqua.presentation.filter.FilterForumThread</filter-class>
+		<filter-name>filterForum</filter-name>
+		<filter-class>com.loqua.presentation.filter.FilterForum</filter-class>
 	</filter>
 	<filter>
-	    <filter-name>filterForumThreadComment</filter-name>
-	    <filter-class>com.loqua.presentation.filter.FilterForumThreadComment</filter-class>
+		<filter-name>filterForumThread</filter-name>
+		<filter-class>com.loqua.presentation.filter.FilterForumThread</filter-class>
 	</filter>
 	<filter>
-	    <filter-name>filterForumThreadCorrection</filter-name>
-	    <filter-class>com.loqua.presentation.filter.FilterForumThreadCorrection</filter-class>
+		<filter-name>filterForumThreadComment</filter-name>
+		<filter-class>com.loqua.presentation.filter.FilterForumThreadComment</filter-class>
 	</filter>
+	<filter>
+		<filter-name>filterForumThreadCorrection</filter-name>
+		<filter-class>com.loqua.presentation.filter.FilterForumThreadCorrection</filter-class>
+	</filter>
+	
 	<!-- La etiqueta 'url-pattern' ya se ha definido en las clases Filter correspondientes -->
-    <!-- Pero es necesario mantener aqui la etiqueta 'url-pattern' aunque este vacia -->
+	<!-- Pero es necesario mantener aqui la etiqueta 'url-pattern' aunque este vacia -->
 	<!-- Primero se aplican los filtros de autorizacion; despues los filtros secundarios -->
 	<filter-mapping>
-	    <filter-name>filterEncodingURLparams</filter-name>
-	    <url-pattern />
+		<filter-name>filterEncodingURLparams</filter-name>
+		<url-pattern />
 	</filter-mapping>
-    <filter-mapping>
-	    <filter-name>filterAuthAnonymous</filter-name>
-	    <url-pattern />
+	<filter-mapping>
+		<filter-name>filterAuthAnonymous</filter-name>
+		<url-pattern />
 	</filter-mapping>
-    <filter-mapping>
-	    <filter-name>filterAuthRegistered</filter-name>
-	    <url-pattern />
+	<filter-mapping>
+		<filter-name>filterAuthRegistered</filter-name>
+		<url-pattern />
 	</filter-mapping>
-    <filter-mapping>
-	    <filter-name>filterAuthAdmin</filter-name>
-	    <url-pattern />
+	<filter-mapping>
+		<filter-name>filterAuthAdmin</filter-name>
+		<url-pattern />
 	</filter-mapping>
 	<!-- Filtro para '/pages/*/profile_user.xhtml' -->
 	<filter-mapping>
-	    <filter-name>filterProfileUser</filter-name>
-	    <url-pattern />
+		<filter-name>filterProfileUser</filter-name>
+		<url-pattern />
 	</filter-mapping>
 	<!-- Filtro para '/pages/*/phorum.xhtml' -->
 	<filter-mapping>
-	    <filter-name>filterForum</filter-name>
-	    <url-pattern />
+		<filter-name>filterForum</filter-name>
+		<url-pattern />
 	</filter-mapping>
 	<!-- Filtro para '/pages/*/phorum_thread.xhtml' -->
 	<filter-mapping>
-	    <filter-name>filterForumThread</filter-name>
-	    <url-pattern />
+		<filter-name>filterForumThread</filter-name>
+		<url-pattern />
 	</filter-mapping>
 	<!-- Filtro para '/pages/*/phorum_thread_comment.xhtml' -->
 	<filter-mapping>
-	    <filter-name>filterForumThreadComment</filter-name>
-	    <url-pattern />
+		<filter-name>filterForumThreadComment</filter-name>
+		<url-pattern />
 	</filter-mapping>
 	<!-- Filtro para '/pages/*/phorum_thread_correction.xhtml' -->
 	<filter-mapping>
-	    <filter-name>filterForumThreadCorrection</filter-name>
-	    <url-pattern />
+		<filter-name>filterForumThreadCorrection</filter-name>
+		<url-pattern />
 	</filter-mapping>
 </web-app>

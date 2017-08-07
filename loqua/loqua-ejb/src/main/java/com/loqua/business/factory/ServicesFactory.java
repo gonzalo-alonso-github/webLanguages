@@ -8,7 +8,7 @@ import com.loqua.business.services.ServiceCredentials;
 import com.loqua.business.services.ServiceFeed;
 import com.loqua.business.services.ServiceLanguage;
 import com.loqua.business.services.ServiceMessage;
-import com.loqua.business.services.ServiceThread;
+import com.loqua.business.services.ServiceForumThread;
 import com.loqua.business.services.ServiceForumPost;
 import com.loqua.business.services.ServicePublication;
 import com.loqua.business.services.ServiceUser;
@@ -23,7 +23,7 @@ public interface ServicesFactory{
 	public ServiceFeed getServiceFeed();
 	public ServiceLanguage getServiceLanguage();
 	public ServiceMessage getServiceMessage();
-	public ServiceThread getServiceThread();
+	public ServiceForumThread getServiceThread();
 	public ServiceForumPost getServiceForumPost();
 	public ServicePublication getServicePublication();
 	public ServiceUser getServiceUser();

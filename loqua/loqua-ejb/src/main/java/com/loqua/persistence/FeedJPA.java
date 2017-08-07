@@ -44,6 +44,36 @@ public class FeedJPA {
 	}
 
 	@SuppressWarnings("unchecked")
+	public List<Feed> getAllFeeds() {
+		List<Feed> result = new ArrayList<Feed>();
+		try{
+			result = (List<Feed>) JPA.getManager()
+				.createNamedQuery("Feed.getAllFeeds")
+				.getResultList();
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Long> getAllFeedCategoriesIds() {
+		List<Long> result = new ArrayList<Long>();
+		try{
+			result = (List<Long>) JPA.getManager()
+				.createNamedQuery("Feed.getAllFeedCategoriesIds")
+				.getResultList();
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
 	public List<FeedCategory> getAllFeedCategories() {
 		List<FeedCategory> result = new ArrayList<FeedCategory>();
 		try{

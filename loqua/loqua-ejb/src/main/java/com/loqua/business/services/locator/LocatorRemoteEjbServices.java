@@ -13,7 +13,7 @@ import com.loqua.business.services.ServiceCredentials;
 import com.loqua.business.services.ServiceFeed;
 import com.loqua.business.services.ServiceLanguage;
 import com.loqua.business.services.ServiceMessage;
-import com.loqua.business.services.ServiceThread;
+import com.loqua.business.services.ServiceForumThread;
 import com.loqua.business.services.ServiceForumPost;
 import com.loqua.business.services.ServicePublication;
 import com.loqua.business.services.ServiceUser;
@@ -150,10 +150,10 @@ public class LocatorRemoteEjbServices implements ServicesFactory {
 	}
 
 	@Override
-	public ServiceThread getServiceThread() {
+	public ServiceForumThread getServiceThread() {
 		try {
 			Context ctx = new InitialContext();
-			return (ServiceThread) ctx.lookup( SERVICE_NEW_JNDI_KEY );
+			return (ServiceForumThread) ctx.lookup( SERVICE_NEW_JNDI_KEY );
 		} catch (NamingException e) {
 			throw new RuntimeException("JNDI problem", e);
 		}

@@ -76,7 +76,7 @@ public class BeanUserClasification implements Serializable{
 	
 	public boolean isTheVeryLastUser( int position ){
 		int numRegisteredUsers = Factories.getService().getServiceUser()
-				.getNumRegisteredUsersAndAdminFromMemory();
+				.getNumRegisteredUsersAndAdminFromDB(); // FromCache()
 		if(position==numRegisteredUsers) return true;
 		return false;
 	}

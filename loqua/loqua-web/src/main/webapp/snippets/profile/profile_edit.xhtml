@@ -33,7 +33,7 @@
 							<h:selectManyListbox class="btn-sm" id="selectNativeLanguage"
 									value="#{beanUserEditProfile.listNativeLanguagesIDs}">
 								<f:selectItems var="lang"
-									value = "#{beanCache.allLanguagesFromMemory}"
+									value = "#{beanCache.allLanguagesFromDB}"
 									itemLabel="#{beanSettingsSession.getTranslationCountries(lang.getLocale())}"
 									itemValue="#{lang.getId()}"/>
 								<f:converter converterId="converterSelectItemToLong" />
@@ -64,7 +64,7 @@
 								<h:selectManyListbox class="btn-sm" id="selectPracticeLanguage"
 										value="#{beanUserEditProfile.listPracticingLanguagesIDs}">	
 									<f:selectItems var="lang"
-										value="#{beanCache.allLanguagesFromMemory}"
+										value="#{beanCache.allLanguagesFromDB}"
 										itemLabel="#{beanSettingsSession.getTranslationCountries(lang.getLocale())}"
 										itemValue="#{lang.getId()}"/>
 									<f:converter converterId="converterSelectItemToLong" />
@@ -217,28 +217,26 @@
 						</div>
 						-->
 						
-						<!-- Podriamos comentar todo este div al igual que el de arriba
-						(el del selectReceivingCorrectionRequests)
-						porque este selectPrivacityReceiveMessages tampoco tiene utilidad,
-						ya que en esta version de la aplicacion no hay mensajes.
-						Sin embargo no lo comento para evitar errores en la linea de
-						"beanSettingsSession.getTranslation('to_'.concat(item))" -->
+						<!--
+						Se comenta el componente de permisos sobre mensajes, porque no se utiliza.
+						En JSF no conviene introducir el caracter numeral en comentarios.
+						asi que aqui se sustituyen 'numerales' por 'puntos suspensivos'
 						<div class="form-group">
 							<label for="selectPrivacityReceiveMessages" class="control-label col-xs-12 col-sm-4 profile_sectionForm_margin">#{msgs.titleReceivingMessages}:</label>
 							<div class="col-xs-10 col-sm-3 profile_sectionForm_margin" style="margin-top:6px;">
-								<!-- Mientras no se pinche el boton submit no se llamara al set beanUserView.user.privacityData.receivingMessages -->
 								<h:selectOneMenu id="selectPrivacityReceiveMessages"
 										class="form-control general_input_selectButton"
 										value="#{beanUserView.user.privacityData.receivingMessages}">
 									<c:forEach items="#{beanSettingsUser.listPrivacityLevels}" var="item">	
 										<f:selectItem
-											itemLabel="#{beanSettingsSession.getTranslation('to_'.concat(item))}"
-											itemValue="#{item}"
-											a:title="#{beanSettingsSession.getTranslation('to_'.concat(item).concat('_description'))}"/>
+											itemLabel="...{beanSettingsSession.getTranslation('to_'.concat(item))}"
+											itemValue="...{item}"
+											a:title="...{beanSettingsSession.getTranslation('to_'.concat(item).concat('_description'))}"/>
 									</c:forEach>
 								</h:selectOneMenu>
 							</div>
 						</div>
+						-->
 						
 						<!-- Animacion 'spin' con mensage de espera -->
 						<div id="divWaitEditPrivacity" class="form-group general_textCenter general_noDisplay">

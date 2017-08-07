@@ -36,6 +36,8 @@ public class ForumThread implements Serializable {
 	private String content;
 	private Date date;
 	private Date dateLastComment;
+	private Date dateAggregated;
+	private String feedName;
 	
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
@@ -57,7 +59,10 @@ public class ForumThread implements Serializable {
 	// CONSTRUCTORES
 	// // // // // // //
 	
-	public ForumThread(){}
+	public ForumThread(){
+		forumThreadInfo = new ForumThreadInfo();
+		forumThreadInfo.setForumThread(this);
+	}
 	
 	public ForumThread( ForumThreadInfo threadInfo, Feed feed ){
 		this.forumThreadInfo = threadInfo;
@@ -81,26 +86,36 @@ public class ForumThread implements Serializable {
 	 * Relacion entre entidades:<br>
 	 *  1 Thread <--> 1 ThreadInfo
 	 */
-	/*@XmlElement*/@XmlTransient
+	@XmlTransient
 	public ForumThreadInfo getForumThreadInfo() {
 		return forumThreadInfo;
 	}
-	ForumThreadInfo _getForumThreadInfo() {
+	ForumThreadInfo _setForumThreadInfo() {
 		return forumThreadInfo;
 	}
 	public void setForumThreadInfo(ForumThreadInfo info) {
 		forumThreadInfo = info;
 	}
+	public ForumThread setForumThreadInfoThis(ForumThreadInfo info) {
+		forumThreadInfo = info;
+		return this;
+	}
 	
 	/** Relacion entre entidades:<br>
 	 *  * Thread <--> 1 Feed
 	 */
-	@XmlTransient
 	public Feed getFeed() {
 		return feed;
 	}
 	void _setFeed(Feed f) {
 		feed = f;
+	}
+	public void setFeed(Feed f) {
+		feed = f;
+	}
+	public ForumThread setFeedThis(Feed f) {
+		feed = f;
+		return this;
 	}
 	
 	/** Relacion entre entidades:<br>
@@ -170,6 +185,10 @@ public class ForumThread implements Serializable {
 	public void setGuid(String guid) {
 		this.guid = guid;
 	}
+	public ForumThread setGuidThis(String guid) {
+		this.guid = guid;
+		return this;
+	}
 	
 	@XmlElement
 	public String getUrl() {
@@ -177,6 +196,10 @@ public class ForumThread implements Serializable {
 	}
 	public void setUrl(String url) {
 		this.url = url;
+	}
+	public ForumThread setUrlThis(String url) {
+		this.url = url;
+		return this;
 	}
 	
 	@XmlElement
@@ -186,6 +209,10 @@ public class ForumThread implements Serializable {
 	public void setTitle(String title) {
 		this.title = title;
 	}
+	public ForumThread setTitleThis(String title) {
+		this.title = title;
+		return this;
+	}
 	
 	@XmlElement
 	public String getContent() {
@@ -193,6 +220,10 @@ public class ForumThread implements Serializable {
 	}
 	public void setContent(String content) {
 		this.content = content;
+	}
+	public ForumThread setContentThis(String content) {
+		this.content = content;
+		return this;
 	}
 	
 	@XmlElement
@@ -202,6 +233,10 @@ public class ForumThread implements Serializable {
 	public void setDate(Date date) {
 		this.date = date;
 	}
+	public ForumThread setDateThis(Date date) {
+		this.date = date;
+		return this;
+	}
 	
 	@XmlElement
 	public Date getDateLastComment() {
@@ -209,6 +244,34 @@ public class ForumThread implements Serializable {
 	}
 	public void setDateLastComment(Date dateLastComment) {
 		this.dateLastComment = dateLastComment;
+	}
+	public ForumThread setDateLastCommentThis(Date dateLastComment) {
+		this.dateLastComment = dateLastComment;
+		return this;
+	}
+	
+	@XmlElement
+	public Date getDateAggregated() {
+		return dateAggregated;
+	}
+	public void setDateAggregated(Date dateAggregated) {
+		this.dateAggregated = dateAggregated;
+	}
+	public ForumThread setDateAggregatedThis(Date dateAggregated) {
+		this.dateAggregated = dateAggregated;
+		return this;
+	}
+	
+	@XmlElement
+	public String getFeedName() {
+		return feedName;
+	}
+	public void setFeedName(String feedName) {
+		this.feedName = feedName;
+	}
+	public ForumThread setFeedNameThis(String feedName) {
+		this.feedName = feedName;
+		return this;
 	}
 	
 	@XmlElement
@@ -255,6 +318,7 @@ public class ForumThread implements Serializable {
 	public String toString() {
 		return "ForumThread [guid=" + guid + ", title=" + title
 				+ ", url=" + url + ", date=" + date.toString()
-				+ ", dateLastComment=" + dateLastComment.toString() + "]";
+				+ ", dateLastComment=" + dateLastComment.toString()
+				+ ", dateAggregated=" + dateAggregated.toString() + "]";
 	}
 }

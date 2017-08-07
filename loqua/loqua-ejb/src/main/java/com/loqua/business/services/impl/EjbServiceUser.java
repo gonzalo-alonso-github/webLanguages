@@ -109,8 +109,8 @@ public class EjbServiceUser
 		return transactionUser.getMostValuedUsersOfTheMonthFromDB();
 	}
 	@Override
-	public List<User> getMostValuedUsersOfTheMonthFromMemory() {
-		return transactionUser.getMostValuedUsersOfTheMonthFromMemory();
+	public List<User> getMostValuedUsersOfTheMonthFromCache() {
+		return transactionUser.getMostValuedUsersOfTheMonthFromCache();
 	}
 	
 	@Override
@@ -118,8 +118,8 @@ public class EjbServiceUser
 		return transactionUser.getMostActiveUsersOfTheMonthFromDB();
 	}
 	@Override
-	public List<User> getMostActiveUsersOfTheMonthFromMemory() {
-		return transactionUser.getMostActiveUsersOfTheMonthFromMemory();
+	public List<User> getMostActiveUsersOfTheMonthFromCache() {
+		return transactionUser.getMostActiveUsersOfTheMonthFromCache();
 	}
 	
 	@Override
@@ -132,8 +132,8 @@ public class EjbServiceUser
 		return transactionUser.getNumRegisteredUsersAndAdminFromDB();
 	}
 	@Override
-	public int getNumRegisteredUsersAndAdminFromMemory() {
-		return transactionUser.getNumRegisteredUsersAndAdminFromMemory();
+	public int getNumRegisteredUsersAndAdminFromCache() {
+		return transactionUser.getNumRegisteredUsersAndAdminFromCache();
 	}
 	
 	// // // // // // // // // // // // // // //

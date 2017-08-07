@@ -80,7 +80,7 @@ public class BeanSettingsActionLimits implements Serializable {
 				}
 			}
 		} catch( Exception e) {
-			//throw new RuntimeException("Propeties file can not be loaded", e);
+			//throw new RuntimeException("Properties file can not be loaded", e);
 			// TODO log
 		}
 	}

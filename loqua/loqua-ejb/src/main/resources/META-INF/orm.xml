@@ -212,6 +212,18 @@
 			where f.id = ?1
 		</query>
 	</named-query>
+	<named-query name="Feed.getAllFeeds">
+		<query>
+			select f from Feed f
+			order by f.id
+		</query>
+	</named-query>
+	<named-query name="Feed.getAllFeedCategoriesIds">
+		<query>
+			select f.id from FeedCategory f
+			order by f.id
+		</query>
+	</named-query>
 	<named-query name="Feed.getAllFeedCategories">
 		<query>
 			select f from FeedCategory f
@@ -223,6 +235,18 @@
 	
 	<named-query name="Language.getAllLanguages">
 		<query>select l from Language l</query>
+	</named-query>
+	<named-query name="Language.getLanguageById">
+		<query>
+			select l from Language l
+			where l.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Language.getLanguagesByIds">
+		<query>
+			select l from Language l
+			where l.id IN ?1
+		</query>
 	</named-query>
 	<named-query name="Language.getLanguageByName">
 		<query>
@@ -373,7 +397,7 @@
 			and l.name IN ?2
 		</query>
 	</named-query>
-	<named-query name="Thread.get20Threads">
+	<named-query name="Thread.getThreadsInOrder">
 		<query>
 			select t from ForumThread t
 			order by t.dateLastComment desc, t.date desc, t.forumThreadInfo.countVisits
@@ -420,6 +444,15 @@
 			select t from ForumThread t
 			where t.feed.feedCategory.id = ?1
 			order by t.date desc
+		</query>
+	</named-query>
+	<named-query name="Thread.getAllForumThreadGUIDsInLastHour">
+		<query>
+			<![CDATA[
+			select t from ForumThread t
+			where t.dateAggregated BETWEEN ?2 AND ?1
+			order by t.dateAggregated desc
+			]]>
 		</query>
 	</named-query>
 	<named-query name="Thread.getThreadVoters">

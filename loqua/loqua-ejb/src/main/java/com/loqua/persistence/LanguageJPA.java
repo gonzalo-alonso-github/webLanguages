@@ -70,6 +70,40 @@ public class LanguageJPA {
 		return result;
 	}
 	
+	public Language getLanguageById(Long languageId) 
+			throws EntityNotPersistedException {
+		Language result = new Language();
+		try{
+			result = (Language) JPA.getManager()
+				.createNamedQuery("Language.getLanguageById")
+				.setParameter(1, languageId)
+				.getSingleResult();
+		}catch( NoResultException ex ){
+			throw new EntityNotPersistedException(
+					LANGUAGE_NOT_PERSISTED_EXCEPTION, ex);
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Language> getLanguagesByIds(List<Long> listLanguagesIDs) {
+		List<Language> result = new ArrayList<Language>();
+		try{
+			result = (List<Language>) JPA.getManager()
+					.createNamedQuery("Language.getLanguagesByIds")
+					.setParameter(1, listLanguagesIDs)
+					.getResultList();
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+		return result;
+	}
 	@SuppressWarnings("unchecked")
 	public List<Language> getNativeLanguagesByUser( Long userID ){
 		List<Language> result = new ArrayList<Language>();

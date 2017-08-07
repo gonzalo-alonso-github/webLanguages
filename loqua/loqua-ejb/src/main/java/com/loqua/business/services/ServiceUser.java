@@ -10,6 +10,15 @@ import com.loqua.model.User;
 
 public interface ServiceUser {
 
+	/* A priori no se va a utilizar ninguno de los metodos
+	que contienen el sufijo 'FromCache'. Si se utilizan, entonces conviene
+	descomentar el uso de la Cache aquellos metodos de la clase
+	TansactionUser que realicen creaciones y actualizaciones:
+	TansactionUser.create
+	TansactionUser.updateAllDataByUser
+	TansactionUser.updateDataByUser
+	TansactionUser.validateNumLastRegistrations */
+	
 	User getUserById(Long userID) throws EntityNotFoundException;
 	
 	User getUserNotRemovedByEmail(String email);
@@ -36,15 +45,15 @@ public interface ServiceUser {
 	User getUserByUrlConfirm(String urlConfirm);
 
 	List<User> getMostValuedUsersOfTheMonthFromDB();
-	List<User> getMostValuedUsersOfTheMonthFromMemory();
+	List<User> getMostValuedUsersOfTheMonthFromCache();
 
 	List<User> getMostActiveUsersOfTheMonthFromDB();
-	List<User> getMostActiveUsersOfTheMonthFromMemory();
+	List<User> getMostActiveUsersOfTheMonthFromCache();
 	
 	Map<Integer, User> getSmallClasificationByUser(User user);
 	
 	int getNumRegisteredUsersAndAdminFromDB();
-	int getNumRegisteredUsersAndAdminFromMemory();
+	int getNumRegisteredUsersAndAdminFromCache();
 	
 	String sendEmailForRegister(User user, List<String> content,
 			String subject, Map<String, Integer> mapActionsLimits);

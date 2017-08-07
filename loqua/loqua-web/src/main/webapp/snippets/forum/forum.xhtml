@@ -44,7 +44,7 @@
 								<!-- sin embargo si funciona con h:outputLink -->
 								<h:outputLink value="#{beanForumThread.getOutputLinkToThread(thread.id,0)}">#{thread.title}</h:outputLink>
 								<div>#{beanSettingsSession.getFormattedDate(thread.date)}</div>
-								<div>#{msgs.titleSource}: #{thread.feed.name}</div>
+								<div>#{msgs.titleSource}: <a href="#{thread.url}" target="_blank">#{thread.feedName}</a></div>
 							</li>
 						</ui:repeat>
 					</ul>
@@ -214,7 +214,8 @@
 						<h:outputLink  value="#{beanForumThread.getOutputLinkToThread(thread.id,0)}">#{thread.title}</h:outputLink>
 					</div>
 					<div></div>
-					<div class="forum_topic_header_basicInfo">#{beanSettingsSession.getFormattedDate(thread.date)} #{msgs.prepositionIn} #{thread.feed.name}</div>
+					<div class="forum_topic_header_basicInfo">#{beanSettingsSession.getFormattedDate(thread.date)} #{msgs.prepositionIn} <a href="#{thread.url}" target="_blank">#{thread.feedName}</a>
+					</div>
 					<div class="forum_topic_header_basicInfo">#{thread.forumThreadInfo.countVisits} #{msgs.title_visits}</div>
 					<div class="forum_topic_header_basicInfo">#{thread.forumThreadInfo.countComments} #{msgs.title_comments}</div>
 					<div class="forum_topic_header_basicInfo last">

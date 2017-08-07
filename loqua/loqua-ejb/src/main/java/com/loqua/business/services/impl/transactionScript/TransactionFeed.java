@@ -3,7 +3,7 @@ package com.loqua.business.services.impl.transactionScript;
 import java.util.List;
 
 import com.loqua.business.exception.EntityNotFoundException;
-import com.loqua.business.services.impl.memory.Memory;
+import com.loqua.business.services.impl.cache.Cache;
 import com.loqua.model.Feed;
 import com.loqua.model.FeedCategory;
 import com.loqua.persistence.FeedJPA;
@@ -23,17 +23,25 @@ public class TransactionFeed {
 		return result;
 	}
 	
-	public List<Long> getAllFeedCategoriesIdsFromMemory() {
+	public List<Feed> getAllFeeds() {
+		// Este metodo see llama desde el cliente Aggregator
+		return feedJPA.getAllFeeds();
+	}
+	
+	public List<Long> getAllFeedCategoriesIdsFromDB() {
+		return feedJPA.getAllFeedCategoriesIds();
+	}
+	public List<Long> getAllFeedCategoriesIdsFromCache() {
 		// Este metodo evita hacer un acceso a base de datos,
-		// puesto que devuelve la lista guardada en Memory
-		List<Long> result = Memory.getMemoryListsThreads()
+		// puesto que devuelve la lista guardada en Cache
+		List<Long> result = Cache.getCacheListsThreads()
 				.getListAllCategoriesIds();
 		if( result.isEmpty() ){
 			// Pero si esta vacia, entonces
-			// activamos desde ahora la actualizacion periodica de la memoria:
-			Memory.getMemoryListsThreads().changed();
-			Memory.updateMemoryListsThreads(true);
-			result = Memory.getMemoryListsThreads().getListAllCategoriesIds();
+			// activamos desde ahora la actualizacion periodica de la Cache:
+			Cache.getCacheListsThreads().changed();
+			Cache.updateCacheListsThreads(true);
+			result = Cache.getCacheListsThreads().getListAllCategoriesIds();
 		}
 		return result;
 	}
@@ -42,18 +50,18 @@ public class TransactionFeed {
 		return feedJPA.getAllFeedCategories();
 	}
 	
-	public List<FeedCategory> getAllFeedCategoriesFromMemory() {
+	public List<FeedCategory> getAllFeedCategoriesFromCache() {
 		// A diferencia de this.getAllFeedCategoriesFromDB(),
 		// este metodo evita hacer un acceso a base de datos,
-		// puesto que devuelve la lista guardada en Memory
-		List<FeedCategory> result = Memory.getMemoryListsThreads()
+		// puesto que devuelve la lista guardada en Cache
+		List<FeedCategory> result = Cache.getCacheListsThreads()
 				.getListAllCategories();
 		if( result.isEmpty() ){
 			// Pero si esta vacia, entonces
-			// activamos desde ahora la actualizacion periodica de la memoria:
-			Memory.getMemoryListsThreads().changed();
-			Memory.updateMemoryListsThreads(true);
-			result=Memory.getMemoryListsThreads().getListAllCategories();
+			// activamos desde ahora la actualizacion periodica de la Cache:
+			Cache.getCacheListsThreads().changed();
+			Cache.updateCacheListsThreads(true);
+			result=Cache.getCacheListsThreads().getListAllCategories();
 		}
 		return result;
 	}
@@ -62,8 +70,9 @@ public class TransactionFeed {
 			throws EntityAlreadyFoundException{
 		try {
 			feedJPA.createFeedCategory(feedCategory);
-			Memory.getMemoryListsThreads().changed();
-			Memory.updateMemoryListsThreads(justNow);
+			// Queda comentado. A priori no se va a usar la Cache
+			// Cache.getCacheListsThreads().changed();
+			// Cache.updateCacheListsThreads(justNow);
 		} catch (EntityAlreadyPersistedException ex) {
 			throw new EntityAlreadyFoundException(ex);
 		}
@@ -73,8 +82,9 @@ public class TransactionFeed {
 			throws EntityNotFoundException {
 		try {
 			feedJPA.updateFeedCategory(feedCategory);
-			Memory.getMemoryListsThreads().changed();
-			Memory.updateMemoryListsThreads(justNow);
+			// Queda comentado. A priori no se va a usar la Cache
+			// Cache.getCacheListsThreads().changed();
+			// Cache.updateCacheListsThreads(justNow);
 		} catch (EntityNotPersistedException ex) {
 			throw new EntityNotFoundException(ex);
 		}
