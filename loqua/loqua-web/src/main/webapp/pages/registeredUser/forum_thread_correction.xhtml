@@ -27,6 +27,7 @@
 	<h:outputScript name="summernote/js/summernoteInitialize.js"/>
 	
 	<h:outputScript name="js/tooltip.js"/>
+	<h:outputScript name="js/createCorrections.js"/>
 </ui:define>
 
 <!-- Barra superior de navegacion -->
@@ -38,6 +39,8 @@
 <!-- Contenido de la pagina -->
 <ui:define name="page">
 	<ui:include src="/snippets/forum/forum_thread_correction.xhtml" />
+	
+	<ui:include src="/snippets/forum/modal_windows.xhtml" />
 </ui:define>
 
 </ui:composition>

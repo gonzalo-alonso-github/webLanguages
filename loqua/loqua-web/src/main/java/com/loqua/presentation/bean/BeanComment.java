@@ -212,6 +212,7 @@ public class BeanComment implements Serializable{
 	
 	private String createComment(ForumThread thread)
 			throws EntityAlreadyFoundException, EntityNotFoundException{
+		compilePlainTextComment();
 		Comment comm = Factories.getService().getServiceComment().sendComment(
 				thread, plainTextComment, textCodeComment,
 				beanLogin.getLoggedUser());
@@ -220,6 +221,7 @@ public class BeanComment implements Serializable{
 	
 	private String updateTextComment(ForumThread thread)
 			throws EntityAlreadyFoundException, EntityNotFoundException{
+		compilePlainTextComment();
 		Factories.getService().getServiceComment().updateTextComment(
 				commentToCRUD, plainTextComment, textCodeComment);
 		return getCommandLinkToPostStatic(commentToCRUD);
@@ -227,6 +229,7 @@ public class BeanComment implements Serializable{
 	
 	private String quoteComment(ForumThread thread)
 			throws EntityAlreadyFoundException, EntityNotFoundException{
+		compilePlainTextComment();
 		Comment comm = Factories.getService().getServiceComment().quoteComment(
 				commentToCRUD, plainTextComment, textCodeComment,
 				beanLogin.getLoggedUser());
@@ -240,6 +243,21 @@ public class BeanComment implements Serializable{
 		try {
 			ec.redirect(url);
 		} catch (IOException e) {}
+	}
+	
+	private void compilePlainTextComment() {
+		/* En la vista de crear/editar/citar comentarios,
+		el usuario esablece el texto del comentario mediante un summernote.
+		No es muy eficaz: une las palabras cuando hay saltos de linea entre ellas
+		(ej: traduce "<p>word1</p><p>word2</p>" por "word1word2"). 
+		En este caso se solvento agregando mediante javascript un "\n"
+		para indicar el salto al final de cada parrafo (ej: "word1\nword2").
+		Al hacer eso, el String automaticamente agrega un caracter de escape
+		(ej: "word1\\nword2").
+		Asi que, para que quede correctamente guardado en la bdd,
+		ahora se necesita sustituir "\\n" por "\n". */
+		String regExpNewParagraph = "(\\\\n)";
+		plainTextComment = plainTextComment.replaceAll(regExpNewParagraph, "\n");
 	}
 	
 	// // // // // // // // // // // // // // //
@@ -294,9 +312,21 @@ public class BeanComment implements Serializable{
 	}
 	
 	public String getTextCodeComment() {
+		textCodeComment = verifyTextCodeSummernote(textCodeComment);
 		return textCodeComment;
 	}
 	public void setTextCodeComment(String textCode) {
-		this.textCodeComment = textCode;
+		this.textCodeComment = verifyTextCodeSummernote(textCode);
+	}
+	private String verifyTextCodeSummernote(String textCode){
+		if( textCode!=null ){
+			String summernotePreffix = "<p>";
+			String summernoteSuffix = "</p>";
+			if( ! textCode.startsWith(summernotePreffix)
+					&& ! textCode.endsWith(summernoteSuffix)){
+				textCode = summernotePreffix + textCode + summernoteSuffix;
+			}
+		}
+		return textCode;
 	}
 }

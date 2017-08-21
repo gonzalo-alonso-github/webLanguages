@@ -80,7 +80,7 @@ public class EjbServiceThread
 	public List<ForumThread> getAllThreadsByCategoryFromDB(Long category) {
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		if( category==null || category==0 ){
-			result = transactionThread.getThreads();
+			result = transactionThread.getAllThreads();
 		}else{
 			result= transactionThread.getAllThreadsByCategoryFromDB(category);
 		}

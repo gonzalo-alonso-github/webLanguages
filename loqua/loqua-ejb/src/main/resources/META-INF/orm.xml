@@ -377,7 +377,7 @@
 		<query>
 			select count(t) from ForumThread t
 			join t.feed f join f.language l
-			where l.name IN ?1
+			where l.id IN ?1
 		</query>
 	</named-query>
 	<named-query name="Thread.getThreadsByLanguagesAndCategory">
@@ -394,7 +394,7 @@
 			select count(t) from ForumThread t
 			join t.feed f join f.feedCategory fc join f.language l
 			where fc.id = ?1
-			and l.name IN ?2
+			and l.id IN ?2
 		</query>
 	</named-query>
 	<named-query name="Thread.getThreadsInOrder">
