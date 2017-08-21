@@ -51,7 +51,7 @@ public class TransactionThread {
 			return threadJPA.getAllThreadsByLanguages(
 					listLanguagesIDs);
 		}else{
-			return threadJPA.getAllThreadsByLanguagesAndCategoryFromDB(
+			return threadJPA.getAllThreadsByLanguagesAndCategory(
 					listLanguagesIDs, category);
 		}
 	}
@@ -62,8 +62,14 @@ public class TransactionThread {
 		List<Long> listLanguagesIDs=listLanguagesToLanguageIDs(listLanguages);
 		offsetThreads=(offsetThreads==null || offsetThreads==0)? 
 				0 : (offsetThreads-1)*numThreadsToReturn;
-		return threadJPA.getThreadsByLanguagesAndCategory(
-				listLanguagesIDs, category, offsetThreads, numThreadsToReturn);
+		if( category==null || category==0 ){
+			return threadJPA.getThreadsByLanguages(
+					listLanguagesIDs, offsetThreads, numThreadsToReturn);
+		}else{
+			return threadJPA.getThreadsByLanguagesAndCategory(
+					listLanguagesIDs, category,
+					offsetThreads, numThreadsToReturn);
+		}
 	}
 	
 	public List<ForumThread> getThreadsByLanguagesAndCategoryFromCache(
@@ -127,8 +133,8 @@ public class TransactionThread {
 		return result;
 	}
 	
-	public List<ForumThread> getThreads() {
-		return threadJPA.getThreads();
+	public List<ForumThread> getAllThreads() {
+		return threadJPA.getAllThreads();
 	}
 	
 	public List<ForumThread> getAllThreadsByCategoryFromDB(Long category) {

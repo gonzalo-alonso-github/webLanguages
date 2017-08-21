@@ -1,5 +1,8 @@
 package com.loqua.presentation.bean;
 
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
+//import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -362,6 +365,28 @@ public class BeanCorrection implements Serializable{
 	
 	private String createCorrection(ForumThread thread)
 			throws EntityAlreadyFoundException, EntityNotFoundException{
+		/* aqui no es necesario llamar a compilePlainTextCorrection();
+		porque para crear una Correction no se usa summernote */
+		plainTextCorrection = "";
+		String sentence = "";
+		int iterator = 0;
+		// procesar desde la primera hasta la penultima frase:
+		for( ;iterator<sentencesToCorrect.toArray().length-1; iterator++ ){
+			sentence = sentencesToCorrect.get(iterator);
+			if( sentence.trim().length()!=0 ){
+				plainTextCorrection += escapeHtml4(sentence);
+				if(sentence.endsWith(".")==false){plainTextCorrection += ".";}
+				plainTextCorrection += " ";
+			}
+		}
+		// procesar la ultima frase:
+		sentence = sentencesToCorrect.get(iterator);
+		if( sentence.trim().length()!=0 ){
+			plainTextCorrection += escapeHtml4(sentence);
+			if( sentence.endsWith(".")==false ){ plainTextCorrection += "."; }
+		}
+		// con el set hacemos que textCodeCorrection = mismo texto, en html:
+		setTextCodeCorrection(plainTextCorrection);
 		Factories.getService().getServiceCorrection().sendCorrection(
 				commentToCorrect, plainTextCorrection, textCodeCorrection,
 				beanLogin.getLoggedUser());
@@ -370,6 +395,7 @@ public class BeanCorrection implements Serializable{
 	
 	private String updateTextCorrection(ForumThread thread)
 			throws EntityAlreadyFoundException, EntityNotFoundException{
+		compilePlainTextCorrection();
 		Factories.getService().getServiceCorrection().updateTextCorrection(
 				correctionToCRUD, plainTextCorrection, textCodeCorrection);
 		return BeanComment.getCommandLinkToPostStatic(commentToCorrect);
@@ -382,6 +408,22 @@ public class BeanCorrection implements Serializable{
 		try {
 			ec.redirect(url);
 		} catch (IOException e) {}
+	}
+	
+	private void compilePlainTextCorrection() {
+		/* En la vista de editar correcciones,
+		el usuario esablece el texto de la correccion mediante un summernote.
+		No es muy eficaz: une las palabras cuando hay saltos de linea entre ellas
+		(ej: traduce "<p>word1</p><p>word2</p>" por "word1word2"). 
+		En este caso se solvento agregando mediante javascript un "\n"
+		para indicar el salto al final de cada parrafo (ej: "word1\nword2").
+		Al hacer eso, el String automaticamente agrega un caracter de escape
+		(ej: "word1\\nword2").
+		Asi que, para que quede correctamente guardado en la bdd,
+		ahora se necesita sustituir "\\n" por "\n". */
+		String regExpNewParagraph = "(\\\\n)";
+		plainTextCorrection =
+				plainTextCorrection.replaceAll(regExpNewParagraph, "\n");
 	}
 	
 	// // // // // // // // // // // // // // //
@@ -426,8 +468,9 @@ public class BeanCorrection implements Serializable{
 		}
 	}
 	public void setCommentToCorrectById(Long commentToCorrectId) {
-		this.commentToCorrect = (Comment) BeanForumThread.getPostByIdStatic(
-				commentToCorrectId);
+		setCommentToCorrect( (Comment) BeanForumThread.getPostByIdStatic(
+				commentToCorrectId) );
+		//loadSentencesToCorrect();
 	}
 	
 	// // // // // // //
@@ -460,6 +503,7 @@ public class BeanCorrection implements Serializable{
 	}
 	public void setCommentToCorrect(Comment commentToCorrect) {
 		this.commentToCorrect = commentToCorrect;
+		loadSentencesToCorrect();
 	}
 	
 	public String getPlainTextCorrection() {
@@ -470,9 +514,85 @@ public class BeanCorrection implements Serializable{
 	}
 	
 	public String getTextCodeCorrection() {
+		textCodeCorrection = verifyTextCodeSummernote(textCodeCorrection);
 		return textCodeCorrection;
 	}
 	public void setTextCodeCorrection(String textCode) {
-		this.textCodeCorrection = textCode;
+		this.textCodeCorrection = verifyTextCodeSummernote(textCode);
+	}
+	private String verifyTextCodeSummernote(String textCode){
+		if( textCode!=null ){
+			String summernotePreffix = "<p>";
+			String summernoteSuffix = "</p>";
+			if( ! textCode.startsWith(summernotePreffix)
+					&& ! textCode.endsWith(summernoteSuffix)){
+				textCode = summernotePreffix + textCode + summernoteSuffix;
+			}
+		}
+		return textCode;
+	}
+	
+	
+	
+	private List<String> sentencesUnmodifiable = new ArrayList<String>();
+	private List<String> sentencesToCorrect = new ArrayList<String>();
+	public void loadSentencesToCorrect(){
+		if( commentToCorrect==null || commentToCorrect.getText()==null)
+			return;
+		/* El caracter separador entre frases es el punto.
+		Por tanto podria haber dejado la siguiente regexp: "\\. "
+		pero es comun que (especialmente en pantallas estrechas)
+		el usuario tenga errores al querer introducir puntos suspensivos
+		colando espacios o comas entre ellos.
+		Por ello la siguienre expresion es mas segura: "[\\., ]*\\. " */
+		String regExpSinglePoint = "([\\., ]*\\. )";
+		// El salto de linea tambien separa las frases:
+		String regExpNewParagraph = "(\\n)";
+		String regExp = regExpSinglePoint + "|" + regExpNewParagraph;
+		String sentences[] = commentToCorrect.getText().split(regExp);
+		/*sentencesUnmodifiable = new ArrayList<String>(Arrays.asList(sentences));
+		sentencesToCorrect = new ArrayList<String>(Arrays.asList(sentences));*/
+		sentencesUnmodifiable = new ArrayList<String>();
+		sentencesToCorrect = new ArrayList<String>();
+		for( int i=0; i<sentences.length; i++ ){
+			if( ! sentences[i].trim().isEmpty() ){
+				sentencesUnmodifiable.add(sentences[i]);
+				sentencesToCorrect.add(sentences[i]);
+			}
+		}
+	}
+	public List<String> getListSentencesToCorrect(){
+		return sentencesToCorrect;
+	}
+	public void setListSentencesToCorrect(List<String> sentences){
+		sentencesToCorrect = sentences;
+	}
+	
+	private int selectedSentenceToCorrect;
+	public int getSelectedSentenceToCorrect(){
+		return selectedSentenceToCorrect;
+	}
+	public void setSelectedSentenceToCorrect(int sentence){
+		selectedSentenceToCorrect = sentence;
+	}
+	
+	public void resetSentence(){
+		String reset = sentencesUnmodifiable.get(selectedSentenceToCorrect);
+		sentencesToCorrect.set(selectedSentenceToCorrect, reset);
+		
+		/* Si este metodo se llamase desde el action y no desde actionListener,
+		deberia devolver la url de destino con la queryString adecuada
+		para que pase el filtro FilterForumCorrection.
+		De lo contrario pareceria que al pinchar el commandLink no pasa nada.
+		
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		HttpServletRequest req = (HttpServletRequest)
+			facesContext.getExternalContext().getRequest();
+		String uri = req.getRequestURI().toString();
+		String samePage = uri.substring( uri.lastIndexOf("/")+1, uri.length() );
+		String sameQueryString = req.getQueryString();
+		String url = samePage + "?faces-redirect=true" + sameQueryString;
+		return url;
+		*/
 	}
 }

@@ -216,6 +216,28 @@
 	clear:both;
 }
 
+.likeBootstrap_button{
+	/* de 'btn': */
+	padding:6px 12px;
+	margin-bottom:0;
+	font-size:14px;
+	font-weight:400;
+	line-height:1.42857143;
+	text-align:center;
+	white-space:nowrap;
+	vertical-align:middle;
+	background-image:none;
+	border:1px solid transparent;
+	border-radius:4px;
+	/* de 'btn-default': */
+	color:#333;
+	background-color:#fff;
+	border-color:#ccc;
+	/* de 'btn-block': */
+	display:block;
+	width:100%;
+}
+
 #general_space_for_main_navbar{
 	height: 60px;
 }
@@ -762,6 +784,59 @@ textarea[name=general_textareaTranslator]{
 .forum_thread_post_textCorrection_rate{
 	display: inline-block;
 	padding:4px 4px 4px 4px;
+}
+
+[contentEditable=true].forum_correction_sentence_div:empty:before{
+	/* hace que el valor del 'data-text' de un div se muetre en su contenido,
+	simulando la propiedad 'placeholder' disponible en otros elementos html*/
+	content:attr(data-text);
+	text-decoration:line-through;
+	color:grey;
+}
+
+[contenteditable=true].forum_correction_sentence_div br{
+	/* evita que, al cambiar el contenido de un div editable,
+	el usuario introduzca saltos de linea */
+	display: none;
+}
+
+.forum_correction_allSentences_frame{
+	/*
+	- la propiedad 'padding' de 'forum_correction_sentence_wrapper'
+	indica la anchura que ocupa la separacion con el borde (8px).
+	- la propiedad 'font-size' de 'forum_correction_singleSentence_iconReset_glyphicon'
+	indica la anchura que ocupa el icono (14px).
+	Total: 8+14 = unos 22px; */
+	margin-right: 22px !important;
+	padding-right: 22px !important;
+	/*padding-left: 0px;
+	margin-left: 0px;*/
+}
+
+.forum_correction_singleSentence_wrapper{
+	display: inline;
+	line-height: 30px;
+	border: 1px solid #c0c0c0;
+	padding: 2px 4px 2px 4px;
+}
+
+.forum_correction_singleSentence_iconReset_glyphicon{
+	font-size: 14px;
+}
+
+.forum_correction_singleSentence_iconReset{
+	vertical-align: top; /* Por I.Explorer */
+	color: black;
+}
+
+.forum_correction_singleSentence_iconReset_hide{
+	visibility:hidden;
+	width: 0px;
+	height: 0px;
+}
+
+.forum_correction_singleSentence_iconReset_notBreak{
+	white-space: nowrap; /* Por I.Explorer */
 }
 
 .forum_thread_buttonRate{

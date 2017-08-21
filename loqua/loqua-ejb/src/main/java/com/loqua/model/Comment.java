@@ -128,6 +128,41 @@ public class Comment extends ForumPost implements Serializable {
 	}
 	
 	@XmlElement
+	public String getTextHtml() {
+		return textHtml;
+	}
+	public void setTextHtml(String code) {
+		this.textHtml = code;
+	}
+	public Comment setTextHtmlThis(String code) {
+		this.textHtml = code;
+		return this;
+	}
+	
+	/* En la vista de crear/editar comentarios,
+	el usuario esablece el texto del comentario mediante un editor de summernote.
+	No es muy eficaz: une las palabras cuando hay saltos de linea entre ellas
+	(ej: traduce "<p>word1</p><p>word2</p>" por "word1word2"). 
+	En este caso se solvento agregando mediante javascript una indicacion "\n"
+	de salto de linea al final de cada parrafo (ej: "word1\nword2").
+	Y con ese formato queda guardada la propiedad text al crear el Comment en bdd. 
+	Por tanto ahora se necesita un getter que sustituya "\\n" por "\n".
+	Este getter es usado en las listas de publicaciones y notificaciones
+	("profile_list_publiations.xhtml" y "menu_main_registered/_admin.xhtml") */
+	@XmlElement
+	public String getPlainText() {
+		String regExpNewParagraph = "(\\\\n)";
+		return text.replaceAll(regExpNewParagraph, "\n");
+	}
+	public void setPlainText(String plainText) {
+		this.text = plainText;
+	}
+	public Comment setPlainThis(String plainText) {
+		this.text = plainText;
+		return this;
+	}
+	
+	@XmlElement
 	public int getPositionIndex() {
 		return positionIndex;
 	}
@@ -148,18 +183,6 @@ public class Comment extends ForumPost implements Serializable {
 	}
 	public Comment setNumVotesThis(int numVotes) {
 		this.numVotes = numVotes;
-		return this;
-	}
-	
-	@XmlElement
-	public String getTextHtml() {
-		return textHtml;
-	}
-	public void setTextHtml(String code) {
-		this.textHtml = code;
-	}
-	public Comment setTextHtmlThis(String code) {
-		this.textHtml = code;
 		return this;
 	}
 	

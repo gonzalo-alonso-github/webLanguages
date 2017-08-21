@@ -64,12 +64,51 @@
 </div>
 </div>
 </div>
- 
+
+<!-- Ventana 'modal' para confirmar resetear frase -->
+<div id="modalResetSentence" class="modal fade general_modal" tabindex="-1" data-focus-on="input:first" role="dialog">
+<div class="modal-dialog modal-xs">
+<div class="modal-content">
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<div class="general_modal_tittle">#{msgs.titleResetSentence}</div>
+</div>
+<div class="modal-body">
+	<div class="form-horizontal container-fluid">
+		<div>
+			<div class="form-group">
+			<o:form includeViewParams="true" id="form_resetSentenceToCorrect" prependId="false">
+				<div class="form-group general_textCenter">
+					<span class="control-label login_sectionForm_margin">#{msgs.descriptionResetSentence}</span>
+					<div class="login_sectionForm_margin" style="margin-top:6px;">
+						<!-- El ajax, ademas de re-renderizar la vista,
+						evita que el commandButton redirija el navegador -->
+						<h:commandButton id="btnAcceptResetSentence" class="btn btn-default general_input_button"
+								value="#{msgs.titleAccept}"
+								actionListener="#{beanCorrection.resetSentence()}"
+								a:data-dismiss="modal"
+								immediate="true">
+							<f:ajax render="@form :form_correctionCRUD"/>
+						</h:commandButton>
+						<button id="btnCancelResetSentence"
+							class="btn btn-default general_input_button"
+							data-dismiss="modal">#{msgs.titleCancel}</button>
+					</div>
+				</div>
+			</o:form>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
 
 <f:verbatim>
 <!-- Hacer que las ventanas 'modal' se puedan arrastrar -->
 <script>
 	$( "#deleteSuggestedCorrection" ).draggable();
+	$( "#modalResetSentence" ).draggable();
 </script>
 </f:verbatim>
 

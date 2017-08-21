@@ -18,6 +18,40 @@ import com.loqua.persistence.util.JPA;
 
 public class ThreadJPA {
 	
+	/*
+	METODOS PARA OBTENER UNA NOTICIA SEGUN SU UNIQUE KEY 
+		getThreadById
+		getThreadByGuid
+	METODOS PARA LISTAR NOTICIAS EN EL FORO
+	- Para listar todas las noticias:
+		getAllThreads
+		getThreads (con offset y limite maximo)
+		getNumThreads
+	- Para listar todas las noticias segun idiomas practicados:
+		getAllThreadsByLanguages
+		getThreadsByLanguages (con offset y limite maximo)
+		getNumThreadsByLanguages
+	- Para listar todas las noticias segun idiomas practicados y categoria:
+		getAllThreadsByLanguagesAndCategory
+		getThreadsByLanguagesAndCategory (con offset y limite maximo)
+		getNumThreadsByLanguagesAndCategory
+	- Para listar todas las noticias segun categoria:
+		getAllThreadsByCategory
+		getThreadsByCategory (con offset y limite maximo)
+		getNumThreadsByCategory
+	OTROS METODOS PARA LISTAR NOTICIAS
+		getMostValuedThreadsOfTheMonth
+		getMostCommentedThreadsOfTheMonth
+		getLastThreadsByCategory
+		getAllForumThreadGUIDsInLastHour
+		getThreadVoters
+	METODOS DE CREATE/DELETE/UPDATE
+		restCreateForumThread
+		createThreadVoter
+		updateAllDataByThread
+		updateDataByThread
+	*/
+	
 	private static final int MAX_NEWS_TO_RETURN = 1000;
 	private static final String FORUMTHREAD_NOT_PERSISTED_EXCEPTION=
 			"EntityNotPersistedException: 'Thread' entity not found"
@@ -71,7 +105,7 @@ public class ThreadJPA {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<ForumThread> getThreads(){
+	public List<ForumThread> getAllThreads(){
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		try{
 			result = (List<ForumThread>) JPA.getManager()
@@ -138,7 +172,44 @@ public class ThreadJPA {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<ForumThread> getAllThreadsByLanguagesAndCategoryFromDB(
+	public List<ForumThread> getThreadsByLanguages(
+			List<Long> listLanguagesIDs,
+			Integer offsetRows, int numThreadsToReturn){
+		List<ForumThread> result = new ArrayList<ForumThread>();
+		try{
+			result = (List<ForumThread>) JPA.getManager()
+					.createNamedQuery(
+						"Thread.getThreadsByLanguages")
+					.setFirstResult(offsetRows) // offset
+					.setMaxResults(numThreadsToReturn) // limit
+					.setParameter(1, listLanguagesIDs)
+					.getResultList();
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+		return result;
+	}
+	
+	public Integer getNumThreadsByLanguages(List<Long> listLanguagesIDs) {
+		Long result = 0L;
+		try{
+			result = (Long) JPA.getManager()
+					.createNamedQuery(
+						"Thread.getNumThreadsByLanguages",Long.class)
+					.setParameter(1, listLanguagesIDs)
+					.getResultList().stream().findFirst().orElse(null);
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+		return result.intValue();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<ForumThread> getAllThreadsByLanguagesAndCategory(
 			List<Long> listLanguagesIDs, Long category){
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		try{
@@ -177,22 +248,6 @@ public class ThreadJPA {
 					PERSISTENCE_GENERAL_EXCEPTION, ex);
 		}
 		return result;
-	}
-	
-	public Integer getNumThreadsByLanguages(List<Long> listLanguagesIDs) {
-		Long result = 0L;
-		try{
-			result = (Long) JPA.getManager()
-					.createNamedQuery(
-						"Thread.getNumThreadsByLanguagesAndCategory",Long.class)
-					.setParameter(1, listLanguagesIDs)
-					.getResultList().stream().findFirst().orElse(null);
-		}catch( RuntimeException ex ){
-			//HibernateException,IllegalArgumentException,ClassCastException...
-			throw new PersistenceRuntimeException(
-					PERSISTENCE_GENERAL_EXCEPTION, ex);
-		}
-		return result.intValue();
 	}
 	
 	public Integer getNumThreadsByLanguagesAndCategory(
