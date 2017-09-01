@@ -19,6 +19,7 @@ import com.loqua.infrastructure.Factories;
 import com.loqua.model.Language;
 import com.loqua.model.User;
 import com.loqua.presentation.bean.applicationBean.BeanUtils;
+import com.loqua.presentation.logging.LoquaLogger;
 
 /**
  * Administra los datos del usuario que son manejados durante toda la sesion,
@@ -33,6 +34,11 @@ import com.loqua.presentation.bean.applicationBean.BeanUtils;
 public class BeanUserData implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	/**
 	 * Cadena de texto utilizada como parametro en la URL para poder visitar
@@ -151,7 +157,7 @@ public class BeanUserData implements Serializable{
 			result = Factories.getService().getServiceUser()
 					.getNumRegisteredUsersAndAdminFromDB(); // FromCache
 		}catch (Exception e){
-			// TODO Log
+			log.error("Unexpected Exception at 'getNumRegisteredUsers()'");
 		}
 		return result;
 	}
@@ -172,7 +178,7 @@ public class BeanUserData implements Serializable{
 			result = Factories.getService()
 				.getServiceUser().getUserById(userId);
 		} catch (Exception e) {
-			// TODO Log
+			log.error("Unexpected Exception at 'getNumRegisteredUsers()'");
 		}
 		return result;
 	}

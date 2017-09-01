@@ -10,9 +10,15 @@ import javax.faces.validator.ValidatorException;
 import com.loqua.infrastructure.Factories;
 import com.loqua.model.User;
 import com.loqua.presentation.bean.BeanSettingsSession;
+import com.loqua.presentation.logging.LoquaLogger;
 
 @FacesValidator("validatorEmailExists")
 public class ValidatorEmailExists implements Validator {
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	// Se almacena el usuario del email en esta clase,
 	// de forma que podra ser accedido desde los beans (ej. beanRestorePassword)
@@ -79,9 +85,10 @@ public class ValidatorEmailExists implements Validator {
 			userExists = Factories.getService().getServiceUser()
 					.getUserNotRemovedByEmail(email);
 		}catch( Exception e ){
+			log.error("Unexpected Exception at "
+					+ "'verifyEmailExistsForNotRemovedUser()'");
 			throw new ValidatorException(new FacesMessage(
 					BeanSettingsSession.getTranslationStatic("errorUnexpected")));
-			// TODO log
 		}
 		if( userExists==null ){
 			return false;

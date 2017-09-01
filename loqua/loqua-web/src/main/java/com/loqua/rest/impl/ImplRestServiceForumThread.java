@@ -6,10 +6,16 @@ import com.loqua.business.exception.EntityAlreadyFoundException;
 import com.loqua.business.services.ServiceForumThread;
 import com.loqua.infrastructure.Factories;
 import com.loqua.model.ForumThread;
+import com.loqua.presentation.logging.LoquaLogger;
 import com.loqua.rest.RestServiceForumThread;
 
 public class ImplRestServiceForumThread implements RestServiceForumThread{
 
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
+	
 	ServiceForumThread service = Factories.getService().getServiceThread();
 
 	@Override
@@ -22,9 +28,11 @@ public class ImplRestServiceForumThread implements RestServiceForumThread{
 		try{
 			service.restCreateForumThread(forumThread, true);
 		}catch(EntityAlreadyFoundException e){
-			// TODO Log: noticias con Unique key repetido
+			// Noticias con Unique key repetido
+			log.error("EntityAlreadyFoundException at 'createForumThread()'");
 		}catch(Exception e){
-			// TODO Log: excepcion inesperada
+			// Excepcion inesperada
+			log.error("Unexpected Exception at 'createForumThread()'");
 		}
 	}
 	
@@ -43,9 +51,11 @@ public class ImplRestServiceForumThread implements RestServiceForumThread{
 				service.restCreateForumThread(threadToCreate, true);
 			}
 		}catch(EntityAlreadyFoundException e){
-			// TODO Log: noticias con Unique key repetido
+			// Noticias con Unique key repetido
+			log.error("EntityAlreadyFoundException at "
+					+ "'createForumThreadsByList()'");
 		}catch(Exception e){
-			// TODO Log: excepcion inesperada
+			log.error("Exception at 'createForumThreadsByList()'");
 		}
 	}
 }

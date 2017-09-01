@@ -23,6 +23,7 @@ import com.loqua.model.Language;
 import com.loqua.model.User;
 import com.loqua.presentation.bean.BeanUserData;
 import com.loqua.presentation.bean.applicationBean.BeanSettingsForumPage;
+import com.loqua.presentation.logging.LoquaLogger;
 import com.loqua.presentation.util.MapQueryString;
 import com.loqua.presentation.util.VerifierAjaxRequest;
 
@@ -53,6 +54,11 @@ import com.loqua.presentation.util.VerifierAjaxRequest;
 
 public class FilterForum implements Filter {
 
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
+	
 	// Necesitamos acceder a los parametros de inicializacion en
 	// el metodo doFilter, asi que necesitamos la variable
 	// config que se inicializara en init()
@@ -194,7 +200,7 @@ public class FilterForum implements Filter {
 			result = Factories.getService().getServiceFeed()
 					.getAllFeedCategoriesIdsFromDB(); //FromCache();
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Unexpected Exception at 'getAllFeedCategoriesIds()'");
 		}
 		return result;
 	}
@@ -204,7 +210,7 @@ public class FilterForum implements Filter {
 			String requestedPageParam = queryStringMap.get("page");
 			if( requestedPageParam==null ){ return true; }
 			requestedPage = Integer.parseInt( requestedPageParam );
-			// la pagina 0 del 'hilo' es la misma que la 1 (se permite el valor 0)
+			// la pagina 0 del foro es la misma que la 1 (se permite el valor 0)
 			// pero obviamente si ese valor es < 0, no pasa el filtro:
 			if( requestedPage<0 ){ return false; }
 			
@@ -243,7 +249,7 @@ public class FilterForum implements Filter {
 								requestedCategory); //FromCache
 			}
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Unexpected Exception at 'loadTotalNumThreads()'");
 		}
 		return totalNumThreads;
 	}

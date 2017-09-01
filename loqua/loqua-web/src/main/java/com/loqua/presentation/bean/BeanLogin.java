@@ -18,10 +18,17 @@ import com.loqua.infrastructure.Factories;
 import com.loqua.model.User;
 import com.loqua.presentation.bean.applicationBean.BeanSettingsActionLimits;
 import com.loqua.presentation.bean.requestBean.BeanActionResult;
+import com.loqua.presentation.logging.LoquaLogger;
 
 public class BeanLogin implements Serializable {
 	
 	private static final long serialVersionUID = 1;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
+	
 	private String email;
 	private String password;
 	private User loggedUser;
@@ -89,6 +96,7 @@ public class BeanLogin implements Serializable {
 				result = resultVerify();
 			}
 		} catch (Exception e) {
+			log.error("Unexpected Exception at 'verify()'");
 			result = "errorUnexpectedAnonymous";
 		}
 		cleanAllSessionScopedBeansUsedBeforeLogin();

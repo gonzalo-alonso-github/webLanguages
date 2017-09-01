@@ -10,6 +10,8 @@ import java.util.Set;
 
 import javax.annotation.PreDestroy;
 
+import com.loqua.presentation.logging.LoquaLogger;
+
 /**
  * Administra la configuracion de propiedades de la aplicacion,
  * que son iguales para todas las sesiones de usuario,
@@ -23,6 +25,11 @@ public class BeanSettingsForumPage implements Serializable {
 	 * @see Serializable#serialVersionUID
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	/**
 	 * Numero maximo de noticias mostradas en cada pagina del foro.
@@ -83,13 +90,16 @@ public class BeanSettingsForumPage implements Serializable {
 					value = Integer.parseInt(properties.getProperty(key));
 					mapForumProperties.put(key, value);
 				}catch (NumberFormatException e) {
-					// TODO log
 					// No introduce esta propiedad en el Map y continua el bucle
+					log.error("NumberFormatException at "
+							+ "'loadMapForumProperties()'");
 				}
 			}
 		} catch( Exception e) {
 			//throw new RuntimeException("Propeties file can not be loaded", e);
-			// TODO log
+			String msg = "Properties file cannot be loaded";
+			log.error("Unexpected Exception at"
+					+ "'loadMapForumProperties()': " + msg);
 		}
 	}
 	

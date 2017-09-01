@@ -12,11 +12,16 @@ import com.loqua.infrastructure.Factories;
 import com.loqua.model.Country;
 import com.loqua.model.Language;
 import com.loqua.presentation.bean.BeanSettingsSession;
+import com.loqua.presentation.logging.LoquaLogger;
 
 public class BeanCache implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	private Map<Long, Country> allCountries;
 	
 	// // // // // // // // // // // //
@@ -52,7 +57,7 @@ public class BeanCache implements Serializable {
 			allLanguages = new ArrayList<Language>(Factories.getService()
 					.getServiceLanguage().getListAllLanguagesFromDB());
 		}catch (Exception e){
-			// TODO Log
+			log.error("Unexpected Exception at 'getAllLanguagesFromDB()'");
 		}
 		return allLanguages;
 	}
@@ -75,7 +80,7 @@ public class BeanCache implements Serializable {
 			allLanguages = new ArrayList<Language>(Factories.getService()
 					.getServiceLanguage().getAllLanguagesFromCache().values());
 		}catch (Exception e){
-			// TODO Log
+			logger.error("Unexpected Exception at 'getAllLanguagesFromCache()'");
 		}
 		return allLanguages;
 	}

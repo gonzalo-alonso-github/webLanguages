@@ -23,10 +23,16 @@ import com.loqua.model.Correction;
 import com.loqua.model.ForumThread;
 import com.loqua.model.User;
 import com.loqua.presentation.bean.requestBean.BeanActionResult;
+import com.loqua.presentation.logging.LoquaLogger;
 
 public class BeanCorrection implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	private String corrViewParam;
 	private String commViewParam;
@@ -107,7 +113,8 @@ public class BeanCorrection implements Serializable{
 			result = Factories.getService().getServiceCorrection()
 					.getApprovedCorrectionByComment( comment.getId() );
 		}catch( Exception e ){
-			//TODO
+			log.error("Unexpected Exception at "
+					+ "'getApprovedCorrectionByComment()'");
 		}
 		return result;
 	}
@@ -118,7 +125,8 @@ public class BeanCorrection implements Serializable{
 			result = Factories.getService().getServiceCorrection()
 					.getNotApprovedCorrectionsByComment( comment.getId() );
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Unexpected Exception at "
+					+ "'getNotApprovedCorrectionsByComment()'");
 		}
 		return result;
 	}
@@ -145,7 +153,7 @@ public class BeanCorrection implements Serializable{
 				result = listQuotedComments.get(0);
 			}
 		}catch( Exception e ){
-			//TODO Log
+			log.error("Unexpected Exception at 'getCommentQuotedByComment()'");
 		}
 		return result;
 	}
@@ -189,7 +197,7 @@ public class BeanCorrection implements Serializable{
 			result = Factories.getService().getServiceCorrection()
 					.getUserAgreeCorrection(user.getId(), correction.getId());
 		}catch( Exception e ){
-			//TODO Log
+			log.error("Unexpected Exception at 'getUserAgreeCorrection()'");
 		}
 		return result;
 	}
@@ -205,7 +213,7 @@ public class BeanCorrection implements Serializable{
 				result=99;
 			}
 		}catch( Exception e ){
-			//TODO Log
+			log.error("Unexpected Exception at 'getNumCorrectionAgrees()'");
 		}
 		return result;
 	}
@@ -249,7 +257,7 @@ public class BeanCorrection implements Serializable{
 			result = Factories.getService().getServiceCorrection()
 					.getUserDisagreeCorrection(user.getId(), correction.getId());
 		}catch( Exception e ){
-			//TODO Log
+			log.error("Unexpected Exception at 'getUserDisagreeCorrection()'");
 		}
 		return result;
 	}
@@ -265,7 +273,7 @@ public class BeanCorrection implements Serializable{
 				result=99;
 			}
 		}catch( Exception e ){
-			//TODO Log
+			log.error("Unexpected Exception at 'getNumCorrectionDisagrees()'");
 		}
 		return result;
 	}
@@ -316,7 +324,7 @@ public class BeanCorrection implements Serializable{
 			Factories.getService().getServiceCorrection()
 				.recommendCorrection(user.getId(), corr);
 		} catch (Exception e) {
-			// TODO Log
+			log.error("Unexpected Exception at 'recommendCorrection()'");
 		}
 	}
 	
@@ -332,7 +340,7 @@ public class BeanCorrection implements Serializable{
 			Factories.getService().getServiceCorrection()
 				.dissuadeCorrection(user.getId(), corr.getId());
 		} catch (Exception e) {
-			// TODO Log
+			log.error("Unexpected Exception at 'dissuadeCorrection()'");
 		}
 	}
 	

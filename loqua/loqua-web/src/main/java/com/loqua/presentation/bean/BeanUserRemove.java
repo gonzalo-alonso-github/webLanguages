@@ -16,10 +16,16 @@ import com.loqua.infrastructure.Factories;
 import com.loqua.model.User;
 import com.loqua.presentation.bean.applicationBean.BeanSettingsActionLimits;
 import com.loqua.presentation.bean.requestBean.BeanActionResult;
+import com.loqua.presentation.logging.LoquaLogger;
 
 public class BeanUserRemove implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	private String urlConfirm;
 	
@@ -86,7 +92,7 @@ public class BeanUserRemove implements Serializable{
 			beanActionResult.setSuccess(true);
 		} catch (Exception e) {
 			result = "errorUnexpected";
-			// TODO log
+			log.error("Unexpected Exception at 'generateEmailForRemoveUser()'");
 		}
 		beanActionResult.setFinish(true);
 		return result;
@@ -149,7 +155,7 @@ public class BeanUserRemove implements Serializable{
 			}
 		} catch (Exception e) {
 			result = "errorUnexpected";
-			// TODO log
+			log.error("Unexpected Exception at 'confirmRemoveAccount()'");
 		}
 		}
 		beanActionResult.setFinish(true);
@@ -174,7 +180,7 @@ public class BeanUserRemove implements Serializable{
 			Factories.getService().getServiceUser().updateDataByUser(user);
 		} catch (Exception e) {
 			beanActionResult.setMsgActionResult("errorUnknownUrl");
-			// TODO log
+			log.error("Unexpected Exception at 'updateUser()'");
 		}
 	}
 	

@@ -23,11 +23,17 @@ import com.loqua.model.User;
 import com.loqua.presentation.bean.applicationBean.BeanSettingsActionLimits;
 import com.loqua.presentation.bean.applicationBean.BeanUserImages;
 import com.loqua.presentation.bean.requestBean.BeanActionResult;
+import com.loqua.presentation.logging.LoquaLogger;
 
 // Al ser un bean de scope 'request', los campos se resetean ante cada peticion
 public class BeanUserRegister implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	private User userToRegister;
 	private String radioBtnGender = null;
@@ -137,10 +143,11 @@ public class BeanUserRegister implements Serializable{
 		} catch (EntityAlreadyFoundException e) {
 			action = "errorRegister";
 			beanActionResult.setMsgActionResult("errorAlreadyFoundEmail");
-			// TODO log
+			log.error("EntityAlreadyFoundException at "
+					+ "'generateEmailForRegister()'");
 		} catch (Exception e) {
 			action = "errorUnexpectedAnonymous";
-			// TODO log
+			log.error("Unexpected Exception at 'generateEmailForRegister()'");
 		}
 		beanActionResult.setFinish(true);
 		return action;
@@ -226,7 +233,7 @@ public class BeanUserRegister implements Serializable{
 				}
 			} catch (Exception e) {
 				action = "errorUnexpectedAnonymous";
-				// TODO log
+				log.error("Unexpected Exception at 'confirmRegistration()'");
 			}
 		}
 		beanActionResult.setFinish(true);
@@ -250,7 +257,7 @@ public class BeanUserRegister implements Serializable{
 				.updateAllDataByUser(user, true);
 		} catch (EntityNotFoundException e) {
 			beanActionResult.setMsgActionResult("errorUnknownUrl");
-			// TODO log
+			log.error("EntityNotFoundException at 'updateUser()'");
 		}
 	}
 	

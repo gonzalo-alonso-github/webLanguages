@@ -10,9 +10,15 @@ import javax.faces.validator.ValidatorException;
 import com.loqua.infrastructure.Factories;
 import com.loqua.model.User;
 import com.loqua.presentation.bean.BeanSettingsSession;
+import com.loqua.presentation.logging.LoquaLogger;
 
 @FacesValidator("validatorEmailAvailable")
 public class ValidatorEmailAvailable implements Validator {
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	private static final String EMAIL_PATTERN = 
 			"^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
@@ -75,9 +81,10 @@ public class ValidatorEmailAvailable implements Validator {
 			user = Factories.getService().getServiceUser()
 					.getUserNotRemovedByEmail(email);
 		}catch( Exception e ){
+			log.error("Unexpected Exception at "
+					+ "'verifyNotEmailExistsForNotRemovedUser()'");
 			throw new ValidatorException(new FacesMessage(BeanSettingsSession
 					.getTranslationStatic("errorUnexpected")));
-			// TODO log
 		}
 		if( user==null ){
 			return true;

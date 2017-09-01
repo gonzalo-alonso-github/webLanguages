@@ -15,6 +15,7 @@ import com.loqua.model.Publication;
 import com.loqua.model.User;
 import com.loqua.model.types.TypePrivacity;
 import com.loqua.presentation.bean.applicationBean.BeanUtils;
+import com.loqua.presentation.logging.LoquaLogger;
 
 /**
  * Administra los datos del usuario que son manejados en las vistas.
@@ -34,6 +35,11 @@ import com.loqua.presentation.bean.applicationBean.BeanUtils;
 public class BeanUserView implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	/**
 	 * Cadena de texto utilizada como parametro en la URL para poder visitar
@@ -92,7 +98,7 @@ public class BeanUserView implements Serializable{
 			result = Factories.getService().getServiceUser()
 					.getNumRegisteredUsersAndAdminFromDB(); // FromCache
 		}catch (Exception e){
-			// TODO Log
+			log.error("Unexpected Exception at 'getNumRegisteredUsers()'");
 		}
 		return result;
 	}
@@ -112,7 +118,7 @@ public class BeanUserView implements Serializable{
 		try{
 			result=Factories.getService().getServiceUser().getUserById(userId);
 		} catch (Exception e) {
-			// TODO Log
+			log.error("Unexpected Exception at 'getUserById()'");
 		}
 		return result;
 	}
@@ -124,7 +130,8 @@ public class BeanUserView implements Serializable{
 		try{
 			result=Factories.getService().getServiceUser().getUserById(userId);
 		} catch (Exception e) {
-			// TODO Log
+			new BeanUserView().log.error("Unexpected Exception at "
+					+ "'getUserByIdStatic()'");
 		}
 		return result;
 	}
@@ -363,7 +370,7 @@ public class BeanUserView implements Serializable{
 					.getCountryById(countryOriginId);
 			user.getUserInfoPrivacity().setCountryOrigin(country);
 		} catch (EntityNotFoundException e) {
-			// TODO
+			log.error("EntityNotFoundException at 'getUserByIdStatic()'");
 		}
 	}
 	
@@ -384,7 +391,7 @@ public class BeanUserView implements Serializable{
 					.getCountryById(countryLocationId);
 			user.getUserInfoPrivacity().setCountryLocation(country);
 		} catch (EntityNotFoundException e) {
-			// TODO
+			log.error("EntityNotFoundException at 'getUserByIdStatic()'");
 		}
 	}
 	

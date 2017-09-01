@@ -13,12 +13,19 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 import com.loqua.business.services.impl.TranslatorMicrosoftKey;
+import com.loqua.presentation.logging.LoquaLogger;
 import com.memetix.mst.language.Language;
 import com.memetix.mst.translate.Translate;
 
 public class BeanTranslator implements Serializable {
 
 	private static final long serialVersionUID = 1;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
+	
 	private String inputLanguageName;
 	private String outputLanguageName;
 	private String inputText;
@@ -71,8 +78,8 @@ public class BeanTranslator implements Serializable {
 		try {
 			microsoftTranslatorText(inputLanguage, outputLanguage);
 		} catch(Exception e) {
-			// TODO Log
 			setError("errorTranslator");
+			log.error("Unexpected Exception at 'setLocaleLanguage()'");
 		}
 		//return null;
 	}

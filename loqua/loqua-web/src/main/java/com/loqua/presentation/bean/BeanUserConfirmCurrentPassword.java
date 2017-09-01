@@ -10,6 +10,7 @@ import javax.faces.context.FacesContext;
 
 import com.loqua.infrastructure.Factories;
 import com.loqua.model.User;
+import com.loqua.presentation.logging.LoquaLogger;
 
 // Este bean se usa en la vista de /snippets/profile/form_CurrentPassword.xhtml,
 // y tambien en /snippets/profile/modalwindows.xhtml, que incluye a dicho snippet,
@@ -17,6 +18,12 @@ import com.loqua.model.User;
 public class BeanUserConfirmCurrentPassword implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
+	
 	private String password;
 	private boolean currentPasswordConfirmed;
 	private String msgActionResult;
@@ -62,8 +69,8 @@ public class BeanUserConfirmCurrentPassword implements Serializable{
 			userToEdit = Factories.getService().getServiceUser()
 				.getUserToLogin(beanLogin.getLoggedUser().getEmail(), password);
 		} catch (Exception e) {
-			// TODO Log
 			result = "errorUnexpected";
+			log.error("Unexpected Exception at 'confirmCurrentPassword()'");
 		}
 		if( userToEdit==null ){
 			setMsgActionResult("errorConfirmCurrentPassword");

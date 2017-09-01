@@ -10,10 +10,16 @@ import javax.faces.validator.ValidatorException;
 import com.loqua.infrastructure.Factories;
 import com.loqua.model.User;
 import com.loqua.presentation.bean.BeanSettingsSession;
+import com.loqua.presentation.logging.LoquaLogger;
 
 @FacesValidator("validatorNickAvailable")
 public class ValidatorNickAvailable implements Validator {
 
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
+	
 	@Override
 	public void validate(FacesContext arg0, UIComponent arg1, Object arg2)
 			throws ValidatorException {
@@ -60,9 +66,10 @@ public class ValidatorNickAvailable implements Validator {
 			user = Factories.getService().getServiceUser()
 					.getUserNotRemovedByNick(nick);
 		}catch( Exception e ){
+			log.error("Unexpected Exception at "
+					+ "'verifyNotNickExistsForNotRemovedUser()'");
 			throw new ValidatorException(new FacesMessage(BeanSettingsSession
 					.getTranslationStatic("errorUnexpected")));
-			// TODO log
 		}
 		if( user==null ){
 			return true;

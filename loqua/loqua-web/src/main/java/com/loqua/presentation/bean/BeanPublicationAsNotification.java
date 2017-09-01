@@ -12,10 +12,16 @@ import javax.faces.context.FacesContext;
 import com.loqua.infrastructure.Factories;
 import com.loqua.model.Publication;
 import com.loqua.presentation.bean.applicationBean.BeanSettingsProfilePage;
+import com.loqua.presentation.logging.LoquaLogger;
 
 public class BeanPublicationAsNotification implements Serializable {
 	
 	private static final long serialVersionUID = 1;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	private List<Publication> lastNotifications;
 	private Integer limitNotifications;
@@ -88,7 +94,7 @@ public class BeanPublicationAsNotification implements Serializable {
 				.getLastNotificationsByUser(
 						beanLogin.getLoggedUser().getId(),limitNotifications);
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Exception at 'loadLastNotifications()'");
 		}
 	}
 	
@@ -97,7 +103,7 @@ public class BeanPublicationAsNotification implements Serializable {
 			Factories.getService().getServicePublication()
 					.setNotificationsToRead(beanLogin.getLoggedUser().getId());
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Exception at 'setNotificationsToRead()'");
 		}
 	}
 	
@@ -127,7 +133,7 @@ public class BeanPublicationAsNotification implements Serializable {
 					.getNumUnreadNotificationsByUser(
 							beanLogin.getLoggedUser().getId());
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Exception at 'getNumUnreadNotifications()'");
 		}
 		return result;
 	}

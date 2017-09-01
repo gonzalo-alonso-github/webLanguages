@@ -11,6 +11,8 @@ import java.util.Set;
 
 import javax.annotation.PreDestroy;
 
+import com.loqua.presentation.logging.LoquaLogger;
+
 /**
  * Administra la configuracion de propiedades de la aplicacion,
  * que son iguales para todas las sesiones de usuario,
@@ -25,6 +27,11 @@ public class BeanSettingsLocale implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
+	
 	/**
 	 * Mapa de pares clave-valor &lt;String, String&gt; donde cada elemento
 	 * representa un lenguaje especificado en el fichero 'locales.properties'.
@@ -72,13 +79,17 @@ public class BeanSettingsLocale implements Serializable {
 				String value = properties.getProperty(key);
 				if (value == null) {
 					// throw new RuntimeException("Property not found");
-					// TODO
+					String msg = "Property not found";
+					log.info("Unexpected outcome at "
+							+ "'loadMapLanguagesFromProperties()' " + msg);
 				}
 				mapLanguages.put(key, value);
 			}
 		} catch( Exception e) {
 			//throw new RuntimeException("Propeties file can not be loaded", e);
-			// TODO
+			String msg = "Properties file cannot be loaded";
+			log.error("Unexpected Exception at"
+					+ "'loadMapLanguagesFromProperties()': " + msg);
 		}
 	}
 	

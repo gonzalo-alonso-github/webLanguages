@@ -20,10 +20,16 @@ import com.loqua.model.ChangePassword;
 import com.loqua.model.User;
 import com.loqua.presentation.bean.applicationBean.BeanSettingsActionLimits;
 import com.loqua.presentation.bean.requestBean.BeanActionResult;
+import com.loqua.presentation.logging.LoquaLogger;
 
 public class BeanUserEditEmailPassword implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	private String urlConfirm;
 	
@@ -108,7 +114,7 @@ public class BeanUserEditEmailPassword implements Serializable{
 			}
 		} catch (Exception e) {
 			action = "errorUnexpected";
-			// TODO log
+			log.error("Unexpected Exception at 'generateEmailForEditEmail()'");
 		}
 		beanActionResult.setFinish(true);
 		return action;
@@ -176,7 +182,8 @@ public class BeanUserEditEmailPassword implements Serializable{
 			}
 		} catch (Exception e) {
 			action = "errorUnexpected";
-			// TODO log
+			log.error("Unexpected Exception at "
+					+ "'confirmEmailChangeFirstStep()'");
 		}
 		}
 		beanActionResult.setFinish(true);
@@ -248,7 +255,8 @@ public class BeanUserEditEmailPassword implements Serializable{
 			}
 		} catch (Exception e) {
 			action = "errorUnexpected";
-			// TODO log
+			log.error("Unexpected Exception at "
+					+ "'confirmEmailChangeSecondStep()'");
 		}
 		}
 		beanActionResult.setFinish(true);
@@ -270,7 +278,8 @@ public class BeanUserEditEmailPassword implements Serializable{
 				.updateEmailChange(emailChange);
 		} catch (EntityNotFoundException e) {
 			beanActionResult.setMsgActionResult("errorUnknownUrl");
-			// TODO log
+			log.error("EntityNotFoundException at "
+					+ "'setPreviousEmailToConfirmed()'");
 		}
 	}
 	
@@ -282,7 +291,8 @@ public class BeanUserEditEmailPassword implements Serializable{
 				.updateEmailChange(emailChange);
 		} catch (EntityNotFoundException e) {
 			beanActionResult.setMsgActionResult("errorUnknownUrl");
-			// TODO log
+			log.error("EntityNotFoundException at "
+					+ "'setNewEmailToConfirmed()'");
 		}
 	}
 	
@@ -292,7 +302,7 @@ public class BeanUserEditEmailPassword implements Serializable{
 				.updateAllDataByUser(user, false);
 		} catch (EntityNotFoundException e) {
 			beanActionResult.setMsgActionResult("errorUnknownUrl");
-			// TODO log
+			log.error("EntityNotFoundException at 'updateUser()'");
 		}
 	}
 	
@@ -321,7 +331,8 @@ public class BeanUserEditEmailPassword implements Serializable{
 			}
 		} catch (Exception e) {
 			action = "errorUnexpected";
-			// TODO log
+			log.error("Unexpected Exception at "
+					+ "'generateEmailForEditPassword()'");
 		}
 		beanActionResult.setFinish(true);
 		return action;
@@ -388,10 +399,10 @@ public class BeanUserEditEmailPassword implements Serializable{
 			}
 		} catch (EntityNotFoundException e) {
 			beanActionResult.setMsgActionResult("errorUnknownUrl");
-			// TODO log
+			log.error("EntityNotFoundException at 'confirmPasswordChange()'");
 		} catch (Exception e) {
 			action = "errorUnexpected";
-			// TODO log
+			log.error("Unexpected Exception at 'confirmPasswordChange()'");
 		}
 		}
 		beanActionResult.setFinish(true);

@@ -18,13 +18,19 @@ import com.loqua.model.User;
 import com.loqua.presentation.bean.applicationBean.BeanSettingsProfilePage;
 import com.loqua.presentation.bean.applicationBean.BeanUtils;
 import com.loqua.presentation.bean.requestBean.BeanActionResult;
+import com.loqua.presentation.logging.LoquaLogger;
 
 public class BeanPublication implements Serializable {
 	
 	private static final long serialVersionUID = 1;
 	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
+	
 	private Publication publicationToCRUD;
-	List<Publication> visiblePubsByUser;
+	private List<Publication> visiblePubsByUser;
 	private Integer numPublicationsPerPage;
 	private Integer numPublicationsByUser;
 	private boolean includePubsByContacts;
@@ -121,8 +127,8 @@ public class BeanPublication implements Serializable {
 				.createPublication(publicationToCRUD);
 			beanActionResult.setSuccess(true);
 		} catch (Exception e) {
-			// TODO Log
 			beanActionResult.setMsgActionResult("errorPublicationCreate");
+			log.error("Unexpected Exception at 'generatePublication()'");
 		}
 		beanActionResult.setFinish(true);
 		resetStatus(user.getId(), includePubsByContacts);
@@ -146,8 +152,8 @@ public class BeanPublication implements Serializable {
 				.updatePublication(publicationToCRUD);
 			beanActionResult.setSuccess(true);
 		} catch (Exception e) {
-			// TODO Log
 			// beanActionResult.setMsgActionResult("errorPublicationUpdate");
+			log.error("Unexpected Exception at 'updatePublication()'");
 		}
 		beanActionResult.setFinish(true);
 		resetStatus(user.getId(), includePubsByContacts);
@@ -171,8 +177,8 @@ public class BeanPublication implements Serializable {
 				.deletePublication(publicationToCRUD);
 			beanActionResult.setSuccess(true);
 		} catch (Exception e) {
-			// TODO Log
 			// actionDeletePub.setMsgActionResult("errorPublicationDelete");
+			log.error("Unexpected Exception at 'deletePublication()'");
 		}
 		beanActionResult.setFinish(true);
 		resetStatus(user.getId(), includePubsByContacts);
@@ -246,7 +252,7 @@ public class BeanPublication implements Serializable {
 				addPubIfVisible( nextBundlePubs );
 			}
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Unexpected Exception at 'loadListPublicationsByUser()'");
 		}
 	}
 	
@@ -274,7 +280,8 @@ public class BeanPublication implements Serializable {
 				addPubIfVisible( nextBundlePubs );
 			}
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Unexpected Exception at"
+					+ "'loadListPublicationsByUserAndContacts()'");
 		}
 	}
 	
@@ -388,7 +395,7 @@ public class BeanPublication implements Serializable {
 		if( post!=null ) {
 			result = post.getForumThread().getTitle();
 		}else{ 
-			//TODO Log
+			log.info("Unexpected outcome at 'getThreadTitleByPost()'");
 		}
 		return result;
 	}
@@ -401,7 +408,7 @@ public class BeanPublication implements Serializable {
 				.getServiceUser().getUserById(eventValue);
 			result = user.getNick();
 		} catch (EntityNotFoundException e) {
-			// TODO Log
+			log.error("EntityNotFoundException at 'getUserNick()'");
 		}
 		return result;
 	}

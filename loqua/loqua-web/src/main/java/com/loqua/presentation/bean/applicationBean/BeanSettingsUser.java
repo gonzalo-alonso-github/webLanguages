@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.annotation.PreDestroy;
 
 import com.loqua.model.PrivacityData;
+import com.loqua.presentation.logging.LoquaLogger;
 
 /**
  * Administra la configuracion de propiedades de la aplicacion,
@@ -27,6 +28,11 @@ public class BeanSettingsUser implements Serializable {
 	 * @see Serializable#serialVersionUID
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	/**
 	 * Limite maximo del peso de la imagen de perfil de usuario por defecto
@@ -98,7 +104,9 @@ public class BeanSettingsUser implements Serializable {
 			}
 		} catch( Exception e) {
 			//throw new RuntimeException("Propeties file can not be loaded", e);
-			// TODO log
+			String msg = "Properties file cannot be loaded";
+			log.info("Unexpected Exception at "
+					+ "'loadMapUserProperties()' " + msg);
 		}
 	}
 	
@@ -138,7 +146,8 @@ public class BeanSettingsUser implements Serializable {
 			try{
 			result = Integer.parseInt(mapUserProperties.get("profileImageLimitKB"));
 			}catch( NumberFormatException e ){
-				// TODO log
+				new BeanSettingsUser().log.error("NumberFormatException at "
+						+ "'getProfileImageLimitKB()' ");
 				return DEFAULT_AVATAR_SIZE_LIMIT_KB;
 			}
 			if( result<512 || result>2048 ) result = DEFAULT_AVATAR_SIZE_LIMIT_KB;
@@ -163,7 +172,8 @@ public class BeanSettingsUser implements Serializable {
 			result = Integer.parseInt(
 					mapUserProperties.get("profileImageMaxWidthPx"));
 			}catch( NumberFormatException e ){
-				// TODO log
+				new BeanSettingsUser().log.error("NumberFormatException at "
+						+ "'getProfileImageMaxWidth()' ");
 				return DEFAULT_AVATAR_WIDTH;
 			}
 			if( result<1 || result>500 ) result = DEFAULT_AVATAR_WIDTH;
@@ -188,7 +198,8 @@ public class BeanSettingsUser implements Serializable {
 			result = Integer.parseInt(
 					mapUserProperties.get("profileImageMaxHeightPx"));
 			}catch( NumberFormatException e ){
-				// TODO log
+				new BeanSettingsUser().log.error("NumberFormatException at "
+						+ "'getProfileImageMaxHeight()' ");
 				return DEFAULT_AVATAR_HEIGHT;
 			}
 			if( result<1 || result>500 ) result = DEFAULT_AVATAR_HEIGHT;

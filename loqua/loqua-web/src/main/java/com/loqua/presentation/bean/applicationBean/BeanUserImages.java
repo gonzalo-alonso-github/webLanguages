@@ -20,6 +20,7 @@ import com.loqua.business.services.impl.ManagementBlobs;
 import com.loqua.model.Country;
 import com.loqua.model.User;
 import com.loqua.presentation.bean.BeanUserView;
+import com.loqua.presentation.logging.LoquaLogger;
 
 /**
  * Maneja la imagen de perfil de usuario, y tambien los iconos de pais de origen
@@ -38,6 +39,11 @@ public class BeanUserImages implements Serializable {
 	 * @see Serializable#serialVersionUID
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	// // // // // // // // // // // //
 	// CONSTRUCTORES E INICIALIZACIONES
@@ -92,7 +98,8 @@ public class BeanUserImages implements Serializable {
 			}
 			return userImage;
 		}catch( Exception e ){
-			//TODO Log
+			new BeanUserImages().log.error("Unexpected Exception at "
+					+ "'getUserImage()' ");
 			return getDefaultUserImage(user);
 		}
 	}
@@ -167,7 +174,8 @@ public class BeanUserImages implements Serializable {
 			ManagementBlobs.updateImageToAzureStorage(
 					imageCode, imageBytes, containerName);
 		}catch( Exception e ){
-			//TODO Log
+			new BeanUserImages().log.error("Unexpected Exception at "
+					+ "'updateUserImage()' ");
 		}
 		return imageBytes;
     }
@@ -214,7 +222,8 @@ public class BeanUserImages implements Serializable {
 			return ManagementBlobs.getImageFromAzureStorage(
 					country.getCodeIso3166(), containerName, "gif", extensions);
 		}catch( Exception e ){
-			//TODO Log
+			new BeanUserImages().log.error("Unexpected Exception at "
+					+ "'getCountryImage()' ");
 			return null;
 		}
 	}
@@ -258,7 +267,8 @@ public class BeanUserImages implements Serializable {
 			Path path = Paths.get(fileLocation);
 			result = Files.readAllBytes(path);
 		}catch( Exception e ){
-			// TODO Log
+			new BeanUserImages().log.error("Unexpected Exception at "
+					+ "'getDefaultImage()' ");
 		}
 		return result;
 	}
@@ -280,7 +290,8 @@ public class BeanUserImages implements Serializable {
 				return outputStream.toByteArray();
 			}
 		}catch( Exception e ){
-			// TODO Log
+			new BeanUserImages().log.error("Unexpected Exception at "
+					+ "'convertImagePartToBytes()' ");
 		}finally{
 			try {
 				if( partInputStream!=null ){

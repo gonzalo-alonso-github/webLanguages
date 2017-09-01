@@ -15,10 +15,16 @@ import com.loqua.model.ForumPost;
 import com.loqua.model.ForumThread;
 import com.loqua.presentation.bean.applicationBean.BeanSettingsForumPage;
 import com.loqua.presentation.bean.applicationBean.BeanUtils;
+import com.loqua.presentation.logging.LoquaLogger;
 
 public class BeanForumThread implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	private ForumThread currentThread;
 	private Long currentThreadId;
@@ -88,7 +94,8 @@ public class BeanForumThread implements Serializable{
 			Factories.getService().getServiceThread()
 					.incrementCountVisits( thread );
 		}catch( Exception e ){
-			//TODO Log
+			new BeanForumThread().log.error("Unexpected Exception at "
+					+ "'incrementCountVisitsStatic()'");
 		}
 	}
 	
@@ -101,7 +108,8 @@ public class BeanForumThread implements Serializable{
 			numCommentsTotal = Factories.getService().getServiceComment()
 					.getNumCommentsByThread(currentThread.getId());
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Unexpected Exception at "
+					+ "'getListCommentsByThread()'");
 		}
 		return result;
 	}
@@ -114,7 +122,8 @@ public class BeanForumThread implements Serializable{
 					.getCommentsByThreadReverseOrder(
 							currentThread.getId(), 0, numCommentsPerPage);
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Unexpected Exception at "
+					+ "'getListCommentsByThreadReverseOrder()'");
 		}
 		return result;
 	}
@@ -153,7 +162,8 @@ public class BeanForumThread implements Serializable{
 			result = Factories.getService().getServiceThread()
 					.getThreadById(threadId);
 		}catch( Exception e ){
-			//TODO Log
+			new BeanForumThread().log.error("Unexpected Exception at "
+					+ "'getThreadByIdStatic()'");
 		}
 		return result;
 	}
@@ -246,7 +256,7 @@ public class BeanForumThread implements Serializable{
 			currentThread = Factories.getService().getServiceThread().voteThread(
 					loggedUserId, thread);
 		}catch( Exception e ){
-			//TODO Log
+			log.error("Unexpected Exception at 'voteThread()'");
 		}
 	}
 	
@@ -257,7 +267,7 @@ public class BeanForumThread implements Serializable{
 			result = Factories.getService().getServiceThread()
 					.threadAlreadyVotedByUser(loggedUserId, thread.getId());
 		}catch( Exception e ){
-			//TODO Log
+			log.error("Unexpected Exception at 'threadAlreadyVotedByUser()'");
 		}
 		return result;
 	}
@@ -271,7 +281,8 @@ public class BeanForumThread implements Serializable{
 			result = Factories.getService().getServiceForumPost()
 					.getForumPostById(postId);
 		}catch( Exception e ){
-			//TODO Log
+			new BeanForumThread().log.error("Unexpected Exception at "
+					+ "'getPostByIdStatic()'");
 		}
 		return result;
 	}

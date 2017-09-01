@@ -10,10 +10,16 @@ import javax.faces.context.FacesContext;
 import com.loqua.infrastructure.Factories;
 import com.loqua.model.User;
 import com.loqua.presentation.bean.requestBean.BeanActionResult;
+import com.loqua.presentation.logging.LoquaLogger;
 
 public class BeanUserSearch implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	private static final String REGULAR_EXPRESSION_EMAIL = 
 			"[0-9a-zA-Z]+@[0-9a-zA-Z]+\\.[0-9a-zA-Z]+";
@@ -101,8 +107,8 @@ public class BeanUserSearch implements Serializable{
 						"descriptionSearchUserNotFound");
 			}
 		}catch( Exception e ){
-			// TODO Log
 			result = "errorUnexpected";
+			log.error("Unexpected Exception at 'searchUser()'");
 		}
 		beanActionResult.setFinish(true);
 		return result;

@@ -16,12 +16,15 @@ import javax.servlet.http.Part;
 
 import com.loqua.presentation.bean.BeanSettingsSession;
 import com.loqua.presentation.bean.applicationBean.BeanSettingsUser;
+import com.loqua.presentation.logging.LoquaLogger;
 
 @FacesValidator("validatorImageProfile")
 public class ValidatorImageProfie implements Validator {
-
-	// no es necesario llamar al codigo del constructor del BeanSettingsUser
-	// porque en el faces-config dicho bean esta configurado con eager="true"
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	@Override
 	public void validate(FacesContext arg0, UIComponent arg1, Object arg2)
@@ -33,6 +36,8 @@ public class ValidatorImageProfie implements Validator {
 		}
 		Part imagePart = (Part) arg2;
 		// Comprobar peso de la imagen:
+		// no es necesario llamar al constructor del BeanSettingsUser
+		// porque en faces-config dicho bean tiene la propiedad eager="true"
 		Integer weightLimitKB = BeanSettingsUser.getProfileImageLimitKB();
 		if( imagePart.getSize() > weightLimitKB*1024 ){
 			error = BeanSettingsSession.getTranslationStatic("errorImageWeigth");
@@ -80,7 +85,7 @@ public class ValidatorImageProfie implements Validator {
 				return true;
 			}
 		}catch( IOException e ){
-			// TODO Log
+			log.error("IOException at 'verifyWidthHeight()'");
 		}finally{
 			try {
 				if( inputStreamImage!=null ){

@@ -18,6 +18,7 @@ import com.loqua.business.exception.EntityNotFoundException;
 import com.loqua.infrastructure.Factories;
 import com.loqua.model.User;
 import com.loqua.presentation.bean.applicationBean.BeanSettingsLocale;
+import com.loqua.presentation.logging.LoquaLogger;
 
 /**
  * Administra el lenguaje en el que cada usuario desea ver los 
@@ -31,6 +32,11 @@ public class BeanSettingsSession implements Serializable {
 	 * @see Serializable#serialVersionUID
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	/**
 	 * Representa el idioma, al coleccion de caracteres y otras caracteristicas
@@ -151,8 +157,8 @@ public class BeanSettingsSession implements Serializable {
 			try {
 				locale = getLoggedUserLocale();
 			} catch (Exception e) {
-				// TODO
 				locale = getBrowserLocaleIfExistsInProperties();
+				log.error("Unexpected Exception at 'loadLocale()'");
 			}
 		}
 	}
@@ -241,7 +247,7 @@ public class BeanSettingsSession implements Serializable {
 				/*FacesContext.getCurrentInstance().getExternalContext().
 					getSessionMap().put("beanLogin", beanLogin);*/
 			} catch (Exception e) {
-				// TODO log
+				log.error("Unexpected Exception at 'setLocaleLanguage()'");
 			}
 		}
 	}

@@ -20,10 +20,16 @@ import com.loqua.model.Language;
 import com.loqua.model.User;
 import com.loqua.presentation.bean.applicationBean.BeanUserImages;
 import com.loqua.presentation.bean.requestBean.BeanActionResult;
+import com.loqua.presentation.logging.LoquaLogger;
 
 public class BeanUserEditProfile implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	private List<Long> listNativeLanguagesIDs;
 	private List<Long> listPracticingLanguagesIDs;
@@ -110,7 +116,7 @@ public class BeanUserEditProfile implements Serializable{
 				}
 			}
 		}catch( Exception e ){
-			// TODO
+			log.error("Unexpected Exception at 'editProfileLanguages()'");
 			return "errorUnexpected";
 		}
 		beanActionResult.setFinish(true);
@@ -218,7 +224,7 @@ public class BeanUserEditProfile implements Serializable{
 					user, true);
 		} catch (EntityNotFoundException e) {
 			beanActionResult.setMsgActionResult("errorUnknownUrl");
-			// TODO log
+			log.error("Unexpected Exception at 'updateUser()'");
 		}
 	}
 	
@@ -359,8 +365,8 @@ public class BeanUserEditProfile implements Serializable{
 			// Si se activa un usuario se elimina de la lista de desactivados:
 			if( newStatus==true ){deleteUserActivatedFromAppContext(editUser);}
 		} catch (Exception e) {
+			log.error("Unexpected Exception at 'changeUserStatus()'");
 			return "errorUnexpectedAdmin";
-			// TODO log
 		}
 		return "successChangeUserStatus";
 	}

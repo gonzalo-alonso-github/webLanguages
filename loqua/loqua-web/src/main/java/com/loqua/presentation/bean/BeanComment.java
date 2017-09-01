@@ -21,10 +21,15 @@ import com.loqua.model.ForumThread;
 import com.loqua.presentation.bean.applicationBean.BeanSettingsForumPage;
 import com.loqua.presentation.bean.applicationBean.BeanUtils;
 import com.loqua.presentation.bean.requestBean.BeanActionResult;
+import com.loqua.presentation.logging.LoquaLogger;
 
 public class BeanComment implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	private String commViewParam;
 	/**
@@ -107,7 +112,7 @@ public class BeanComment implements Serializable{
 				result = listQuotedComments.get(0);
 			}
 		}catch( Exception e ){
-			//TODO Log
+			log.error("Unexpected Exception at 'getCommentQuotedByComment()'");
 		}
 		return result;
 	}
@@ -164,7 +169,7 @@ public class BeanComment implements Serializable{
 			Factories.getService().getServiceComment().voteComment(
 					loggedUserId, comment);
 		}catch( Exception e ){
-			//TODO Log
+			log.error("Unexpected Exception at 'voteComment()'");
 		}
 	}
 	
@@ -175,7 +180,7 @@ public class BeanComment implements Serializable{
 			result = Factories.getService().getServiceComment()
 					.commentAlreadyVotedByUser(loggedUserId, comment.getId());
 		}catch( Exception e ){
-			//TODO Log
+			log.error("Unexpected Exception at 'commentAlreadyVotedByUser()'");
 		}
 		return result;
 	}

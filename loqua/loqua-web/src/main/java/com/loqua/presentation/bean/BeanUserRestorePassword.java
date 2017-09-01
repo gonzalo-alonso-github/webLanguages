@@ -19,11 +19,17 @@ import com.loqua.model.ChangePassword;
 import com.loqua.model.User;
 import com.loqua.presentation.bean.applicationBean.BeanSettingsActionLimits;
 import com.loqua.presentation.bean.requestBean.BeanActionResult;
+import com.loqua.presentation.logging.LoquaLogger;
 import com.loqua.presentation.validator.ValidatorEmailExists;
 
 public class BeanUserRestorePassword implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	private User userFound;
 	private String email;
@@ -104,7 +110,8 @@ public class BeanUserRestorePassword implements Serializable{
 			}
 		} catch (Exception e) {
 			action = "errorUnexpectedAnonymous";
-			// TODO log
+			log.error("Unexpected Exception at "
+					+ "'generateEmailForPasswordRestore()'");
 		}
 		userFound = null;
 		beanActionResult.setFinish(true);
@@ -176,7 +183,7 @@ public class BeanUserRestorePassword implements Serializable{
 			}
 		} catch (Exception e) {
 			action = "errorUnexpectedAnonymous";
-			// TODO log
+			log.error("Unexpected Exception at 'confirmRestorePassword()'");
 		}
 		}
 		beanActionResult.setFinish(true);
@@ -198,7 +205,8 @@ public class BeanUserRestorePassword implements Serializable{
 				.updatePasswordChange(passwordRestore);
 		} catch (EntityNotFoundException e) {
 			beanActionResult.setMsgActionResult("errorUnknownUrl");
-			// TODO log
+			log.error("EntityNotFoundException at "
+					+ "'setPasswordRestoreToConfirmed()'");
 		}
 	}
 	
@@ -208,7 +216,7 @@ public class BeanUserRestorePassword implements Serializable{
 				.updateAllDataByUser(user, false);
 		} catch (EntityNotFoundException e) {
 			beanActionResult.setMsgActionResult("errorUnknownUrl");
-			// TODO log
+			log.error("EntityNotFoundException at 'updateUser()'");
 		}
 	}
 	

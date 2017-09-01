@@ -11,15 +11,21 @@ import javax.faces.context.FacesContext;
 
 import com.loqua.infrastructure.Factories;
 import com.loqua.model.FeedCategory;
-import com.loqua.model.Language;
 import com.loqua.model.ForumThread;
+import com.loqua.model.Language;
 import com.loqua.model.User;
 import com.loqua.presentation.bean.applicationBean.BeanSettingsForumPage;
 import com.loqua.presentation.bean.applicationBean.BeanUtils;
+import com.loqua.presentation.logging.LoquaLogger;
 
 public class BeanForum implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	private Long category;
 	private Integer offsetPage;
@@ -49,7 +55,7 @@ public class BeanForum implements Serializable{
 	}
 	
 	private void initBeanLogin() {
-		// Buscamos el BeanLogin en la sesion.
+		// Buscamos el BeanLogin en la sesion
 		beanLogin = null;
 		beanLogin = (BeanLogin)FacesContext.getCurrentInstance().
 				getExternalContext().getSessionMap().get("beanLogin");
@@ -112,7 +118,8 @@ public class BeanForum implements Serializable{
 			result = Factories.getService().getServiceFeed()
 					.getAllFeedCategoriesFromDB(); //FromCache()
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Unexpected Exception at "
+					+ "'getAllFeedCategories()'");
 		}
 		return result;
 	}
@@ -123,7 +130,8 @@ public class BeanForum implements Serializable{
 			result = Factories.getService().getServiceThread()
 					.getLastThreadsByCategoryFromDB(categoryID); //FromCache
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Unexpected Exception at "
+					+ "'getLastNewsByCategory()'");
 		}
 		return result;
 	}
@@ -134,7 +142,9 @@ public class BeanForum implements Serializable{
 			result = Factories.getService().getServiceThread()
 					.getMostValuedThreadsOfTheMonthFromDB(); //FromCache
 		}catch( Exception e ){
-			// TODO Log
+			log.debug(
+					"Unexpected Exception at "
+					+ "'getMostValuedNewsOfTheMonth()'");
 		}
 		return result;
 	}
@@ -145,7 +155,8 @@ public class BeanForum implements Serializable{
 			result = Factories.getService().getServiceThread()
 					.getMostCommentedThreadsOfTheMonthFromDB(); //FromCache
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Unexpected Exception at "
+					+ "'getMostCommentedNewsOfTheMonth()'");
 		}
 		return result;
 	}
@@ -156,7 +167,8 @@ public class BeanForum implements Serializable{
 			result = Factories.getService().getServiceUser()
 					.getMostValuedUsersOfTheMonthFromDB(); // FromCache
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Unexpected Exception at "
+					+ "'getMostValuedUsersOfTheMonth()'");
 		}
 		return result;
 	}
@@ -167,7 +179,8 @@ public class BeanForum implements Serializable{
 			result = Factories.getService().getServiceUser()
 					.getMostActiveUsersOfTheMonthFromDB(); // FromCache
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Unexpected Exception at "
+					+ "'getMostActiveUsersOfTheMonth()'");
 		}
 		return result;
 	}
@@ -196,7 +209,7 @@ public class BeanForum implements Serializable{
 						.getNumThreadsByCategoryFromDB(category); //FromCache
 			}
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Unexpected Exception at 'getListNews()'");
 		}
 		return result;
 	}
@@ -218,7 +231,7 @@ public class BeanForum implements Serializable{
 						.getNumThreadsByCategoryFromDB(category); //FromCache
 			}
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Unexpected Exception at 'loadNumNewsTotal()'");
 		}
 		return numNewsTotal;
 	}

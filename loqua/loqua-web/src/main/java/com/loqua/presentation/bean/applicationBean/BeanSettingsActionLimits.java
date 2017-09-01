@@ -10,6 +10,8 @@ import java.util.Set;
 
 import javax.annotation.PreDestroy;
 
+import com.loqua.presentation.logging.LoquaLogger;
+
 /**
  * Administra la configuracion de propiedades de la aplicacion,
  * que son iguales para todas las sesiones de usuario,
@@ -24,6 +26,11 @@ public class BeanSettingsActionLimits implements Serializable {
 	 * @see Serializable#serialVersionUID
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	/**
 	 * Mapa de pares clave-valor &lt;String, Integer&gt; donde cada elemento
@@ -75,13 +82,16 @@ public class BeanSettingsActionLimits implements Serializable {
 					value = Integer.parseInt(properties.getProperty(key));
 					mapActionLimitsProperties.put(key, value);
 				}catch (NumberFormatException e) {
-					// TODO log
 					// No introduce esta propiedad en el Map y continua el bucle
+					log.error("NumberFormatException at"
+							+ "'loadMapActionLimitsProperties()'");
 				}
 			}
 		} catch( Exception e) {
-			//throw new RuntimeException("Properties file can not be loaded", e);
-			// TODO log
+			//throw new RuntimeException("Properties file cannot be loaded", e);
+			String msg = "Properties file cannot be loaded";
+			log.error("Unexpected Exception at"
+					+ "'loadMapActionLimitsProperties()': " + msg);
 		}
 	}
 	

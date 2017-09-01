@@ -8,10 +8,16 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
 
 import com.loqua.infrastructure.Factories;
+import com.loqua.presentation.logging.LoquaLogger;
 
 public class BeanMessage implements Serializable {
 	
 	private static final long serialVersionUID = 1;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	private Integer numUnreadMessages;
 	
@@ -57,7 +63,7 @@ public class BeanMessage implements Serializable {
 			if(numUnreadMessages == null) numUnreadMessages=0;
 			else if(numUnreadMessages > 99) numUnreadMessages=99;
 		}catch( Exception e ){
-			// TODO Log
+			log.error("Unexpected Exception at 'loadNumUnreadMessages()'");
 		}
 	}
 	

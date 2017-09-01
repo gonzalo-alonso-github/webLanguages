@@ -13,10 +13,16 @@ import com.loqua.model.Contact;
 import com.loqua.model.ContactRequest;
 import com.loqua.model.User;
 import com.loqua.presentation.bean.requestBean.BeanActionResult;
+import com.loqua.presentation.logging.LoquaLogger;
 
 public class BeanUserContacts implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	private List<Contact> contactsOfUser;
 	private List<ContactRequest> pendingContactRequests;
@@ -76,8 +82,9 @@ public class BeanUserContacts implements Serializable{
 				.createContactRequest(userSender, userReceiver);
 			actionSendContactRequest.setSuccess(true);
 		} catch (Exception e) {
-			// TODO Log
-			//actionSendContactRequest.setMsgActionResult("errorSendContactRequest");
+			/* actionSendContactRequest
+				.setMsgActionResult("errorSendContactRequest"); */
+			log.error("Unexpected Exception at 'sendContactRequest()'");
 		}
 		actionSendContactRequest.setFinish(true);
 	}
@@ -99,8 +106,8 @@ public class BeanUserContacts implements Serializable{
 				.deleteReciprocalContact(user.getId(), userContact.getId());
 			beanActionResult.setSuccess(true);
 		} catch (Exception e) {
-			// TODO Log
-			//actionDeletePub.setMsgActionResult("errorContactDelete");
+			// actionDeletePub.setMsgActionResult("errorContactDelete");
+			log.error("Unexpected Exception at 'deleteContact()'");
 		}
 		// resetear la lista de contactos del usuario:
 		resetContacts(user.getId());
@@ -132,7 +139,7 @@ public class BeanUserContacts implements Serializable{
 				.deleteRequest(user.getId(), userContact.getId());
 			beanActionResult.setSuccess(true);
 		} catch (Exception e) {
-			// TODO Log
+			log.error("Unexpected Exception at 'rejectRequest()'");
 		}
 		// resetear la lista de solicitudes de contacto del usuario:
 		resetPendingContactRequests(user.getId());
@@ -182,7 +189,7 @@ public class BeanUserContacts implements Serializable{
 			contactsOfUser = Factories.getService().getServiceContact()
 					.getContactsByUser(userId);
 		} catch (Exception e) {
-			// TODO
+			log.error("Unexpected Exception at 'getContactsByUser()'");
 		}
 		return contactsOfUser;
 	}
@@ -192,7 +199,7 @@ public class BeanUserContacts implements Serializable{
 			contactsOfUser = Factories.getService().getServiceContact()
 					.getContactsByUser(userId);
 		} catch (Exception e) {
-			// TODO Log
+			log.error("Unexpected Exception at 'resetContacts()'");
 		}
 	}
 	
@@ -204,7 +211,8 @@ public class BeanUserContacts implements Serializable{
 			pendingContactRequests = Factories.getService().getServiceContact()
 				.getContactRequestsReceivedByUser(userId);
 		} catch (Exception e) {
-			// TODO Log
+			log.error("Unexpected Exception at "
+					+ "'getContactRequestsReceivedByUser()'");
 		}
 		return pendingContactRequests;
 	}
@@ -214,7 +222,8 @@ public class BeanUserContacts implements Serializable{
 			pendingContactRequests = Factories.getService().getServiceContact()
 				.getContactRequestsReceivedByUser(userId);
 		} catch (Exception e) {
-			// TODO Log
+			log.error("Unexpected Exception at "
+					+ "'resetPendingContactRequests()'");
 		}
 	}
 	
