@@ -12,6 +12,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import com.loqua.logging.LoquaLogger;
 import com.loqua.remote.RestTarget;
 import com.loqua.remote.model.Feed;
 import com.loqua.remote.model.ForumThread;
@@ -19,6 +20,11 @@ import com.loqua.remote.services.RestServiceFeed;
 import com.loqua.remote.services.RestServiceForumThread;;
 
 public class Gatherer {
+	
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	// // // // // // //
 	// CONSTRUCTORES
@@ -69,6 +75,7 @@ public class Gatherer {
 				DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		Parser parser = new Parser(threadsParsedInLastJob);
 		for( Feed feed : allFeeds ){
+			int numAllParsedThreads = allThreads.size();
 			URL urlFeed = new URL(feed.getUrl());
 			Document doc = builder.parse(urlFeed.openStream());
 			NodeList newsOfFeed = doc.getElementsByTagName("item");
@@ -76,9 +83,19 @@ public class Gatherer {
 			//parser.setThreadsParsedInCurrentJob(allThreads);
 			parser.parseRawNewsOfFeed( newsOfFeed );
 			allThreads = parser.getThreadsParsedInCurrentJob();
+			int numParsedThreadsOfFeed = allThreads.size()-numAllParsedThreads;
+			// Realmente nunca sera menor que cero, pero si puede ser igual:
+			if( numParsedThreadsOfFeed<=0 ){
+				// Entonces el actual Feed no ha generado noticias esta hora
+				String msg = "The Feed '" + feed.getName() + "' "
+						+ "has not generated any new Thread at this job";
+				log.info("'processRssByListOfFeeds()': " + msg);
+			}
 		}
 		if( allThreads.isEmpty() ){
-			// TODO Log: Ningun Feed ha generado noticias esta hora
+			// Entonces ningun Feed ha generado noticias esta hora
+			String msg="None of the Feeds has generated new Threads at this job";
+			log.warn("'processRssByListOfFeeds()': " + msg);
 		}
 		return allThreads;
 	}

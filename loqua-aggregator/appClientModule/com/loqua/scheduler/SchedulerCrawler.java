@@ -11,8 +11,15 @@ import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 
+import com.loqua.logging.LoquaLogger;
+
 public class SchedulerCrawler {
 
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
+	
 	private static Scheduler scheduler;
 	
 	// // // //
@@ -37,11 +44,13 @@ public class SchedulerCrawler {
 				.withIdentity("nameTriggerCrawler", "groupJobsCrawler")
 				.withSchedule(cronSchedule("0 0 * * * ?"))
 				.build();
+		log.info("'execute()': Schedule job every hour (0 0 * * * ?)");
 		
 		// El objeto Scheduler asocia la tarea (Job) con el lanzador (Trigger)
 		scheduler.scheduleJob(job, trigger);
 		
 		// Se inician las tareas programadas
+		log.info("'execute()': Starting Scheduler...");
 		scheduler.start();
 		
 		/* El scheduler no finalizará hasta que se haga 'scheduler.shutdown'
@@ -50,5 +59,6 @@ public class SchedulerCrawler {
 	
 	public void shutdown() throws SchedulerException{
 		scheduler.shutdown();
+		log.info("'shutdown()': Scheduler terminated");
 	}
 }

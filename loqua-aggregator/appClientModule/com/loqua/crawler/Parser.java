@@ -12,11 +12,17 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.loqua.logging.LoquaLogger;
 import com.loqua.remote.model.Feed;
 import com.loqua.remote.model.ForumThread;
 
 public class Parser {
 
+	/**
+	 * Manejador de logging
+	 */
+	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
+	
 	private List<ForumThread> threadsParsedInLastJob;
 	private List<ForumThread> threadsParsedInCurrentJob;
 	private Feed feedToParse;
@@ -68,7 +74,7 @@ public class Parser {
 		Date verifiedDate = verifyDate(getElementValue(element, "pubDate"));
 		if( verifiedDate==null
 				|| !verifyNotEmptyFields(element, fieldsToParse)
-				|| !verifyNotRepeated(getElementValue(element, "guid")) ){
+				|| !verifyNotRepeated(element) ){
 			return null;
 		}
 		result = generateForumThread(element, verifiedDate);
@@ -88,11 +94,18 @@ public class Parser {
 			}catch( ParseException e ){}
 		}
 		if(	parsedDate==false ){
-			//TODO Log: noticia es descartada por formato de fecha incorrecto
+			// Noticia descartada por formato de fecha incorrecto
+			String msg = "date format not recognized. The news was discarded. "
+					+ "The Feed was '" + feedToParse.getName() + "'";
+			log.debug("'verifyDate()': " + msg);
 			return null;
 		}
 		if( (new Date().getTime()) - result.getTime() >= 3600000 ){
-			//TODO Log: noticia es descartada por fecha anterior a una hora
+			// Noticia descartada por fecha anterior a una hora
+			String msg = "date exceeds the scheduler period, so the news "
+					+ "does not belong to this job. The news was discarded. "
+					+ "The Feed was '" + feedToParse.getName() + "'";
+			log.debug("'verifyDate()': " + msg);
 			return null;
 		}
 		return result;
@@ -105,34 +118,81 @@ public class Parser {
 			String field = fieldsToParse[i];
 			String value = getElementValue(element, field);
 			if( value==null || value.isEmpty() ){
-				//TODO Log: noticia descartada por dato vacio
+				// Noticia descartada por dato vacio
+				String msg = "field " + field + " is null or empty. "
+						+ "The news was discarded. "
+						+ "The Feed was '" + feedToParse.getName() + "'";
+				log.debug("'verifyNotEmptyFields()': " + msg);
 				return false;
 			}
 		}
 		}catch(Exception e){
-			e.printStackTrace();
+			log.error("Unexpected Exception at 'verifyNotEmptyFields()'");
 		}
 		return true;
 	}
 	
-	private boolean verifyNotRepeated(String guid) {
+	private boolean verifyNotRepeated(Element element) {
+		if( verifyNotRepeatedGuid(element) && verifyNotRepeatedTitle(element) ){
+			return true;
+		}
+		return false;
+	}
+
+	private boolean verifyNotRepeatedGuid(Element element) {
+		/* La lista "threadsParsedInLastJob" se ha tomado de la bdd
+		y contiene solo los Threads que se introdujeron en bdd en la ultima hora.
+		No es necesario comprobar repeticiones de Threads mas antiguos que eso,
+		porque el metodo "verifyDate" descarto las noticias de mas de una hora*/
+		
+		String guid = getElementValue(element, "guid");
+		String msg = getMsgForRepeatedField("guid");
 		for(ForumThread threadOfFeedAlreadyParsed : threadsParsedInCurrentJob){
 			if( threadOfFeedAlreadyParsed.getGuid().equals(guid) ){
-				//TODO Log: noticia descartada por repetida
+				// Noticia descartada por repetida
+				log.debug("'verifyNotRepeatedGuid()': " + msg);
 				return false;
 			}
 		}
 		for(ForumThread threadAlreadyParsedLastHour : threadsParsedInLastJob){
 			if( threadAlreadyParsedLastHour.getGuid().equals(guid) ){
-				//TODO Log: noticia descartada por repetida
+				// Noticia descartada por repetida
+				log.debug("'verifyNotRepeatedGuid()': " + msg);
 				return false;
 			}
 		}
+		return true;
+	}
+	
+	private boolean verifyNotRepeatedTitle(Element element) {
 		/* La lista "threadsParsedInLastJob" se ha tomado de la bdd
 		y contiene solo los Threads que se introdujeron en bdd en la ultima hora.
 		No es necesario comprobar repeticiones de Threads mas antiguos que eso,
-		porque el metodo "verifyDate" ya descarta las noticias de mas de una hora */
+		porque el metodo "verifyDate" descarto las noticias de mas de una hora*/
+		
+		String title = getElementValue(element, "title");
+		String msg = getMsgForRepeatedField("title");
+		for(ForumThread threadOfFeedAlreadyParsed : threadsParsedInCurrentJob){
+			if( threadOfFeedAlreadyParsed.getTitle().equals(title) ){
+				// Noticia descartada por repetida
+				log.debug("'verifyNotRepeatedTitle()': " + msg);
+				return false;
+			}
+		}
+		for(ForumThread threadAlreadyParsedLastHour : threadsParsedInLastJob){
+			if( threadAlreadyParsedLastHour.getTitle().equals(title) ){
+				// Noticia descartada por repetida
+				log.debug("'verifyNotRepeatedTitle()': " + msg);
+				return false;
+			}
+		}
 		return true;
+	}
+
+	private String getMsgForRepeatedField(String field) {
+		return "Another Thread with the same '" + field
+				+ "' has already been Parsed. The news was discarded. "
+				+ "The Feed was '" + feedToParse.getName() + "'";
 	}
 
 	private ForumThread generateForumThread(
@@ -151,15 +211,6 @@ public class Parser {
 			.setFeedThis(feedToParse).setFeedNameThis(feedToParse.getName())
 			.setDateThis(date).setDateLastCommentThis(date)
 			.setDateAggregatedThis(new Date());
-		/*thread.setGuid(guid);
-		thread.setTitle(title);
-		thread.setUrl(url);
-		thread.setContent(content);
-		thread.setFeed(feedToParse);
-		thread.setFeedName(feedToParse.getName());
-		thread.setDate(date);
-		thread.setDateLastComment(date);
-		thread.setDateAggregated(new Date());*/
 		return thread;
 	}
 	
