@@ -14,25 +14,39 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * Representa una relacion de contacto entre dos usuarios. <br/><br/>
+ * La relacion de contacto entre dos usuarios es reciproca,
+ * a imitacion de como sucede en Facebook o Linkedin (donde un usuario es
+ * contacto de otro y viceversa), y a diferencia de Twitter (donde un usuario
+ * 'sigue' a otros). 
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "contact")
 @Entity
 @Table(name="Contact")
 public class Contact implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
 	// // // // // // //
 	// ATRIBUTOS
 	// // // // // // //
+	
+	/** Identificador del objeto y clave primaria de la entidad */
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) private Long id;
 	private Date dateJoin;
 	
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
+	
+	/** Usuario al que pertenece el contacto */
 	@ManyToOne
 	@JoinColumn(name="user_id", referencedColumnName="id")
 	private User user;
 	
+	/** Usuario al que referencia el contacto */
 	@ManyToOne
 	@JoinColumn(name="userContact_id", referencedColumnName="id")
 	private User userContact;
@@ -41,13 +55,20 @@ public class Contact implements Serializable {
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public Contact(){}
 	
+	/**
+	 * Constructor que recibe las entidades asociadas a esta
+	 * @param user objeto User al que pertenece el Contact
+	 * @param contactOfUser objeto User al que referencia el Contact
+	 */
 	public Contact(User user, User contactOfUser){
 		this.user = user;
 		this.userContact = contactOfUser;
 	}
-	
+
+	/** Desasigna de esta entidad a las entidades asociadas */
 	public void unlink(){
 		user._getContacts().remove( this );
 		userContact._getContacts().remove( this );
@@ -63,12 +84,13 @@ public class Contact implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/** Relacion entre entidades:<br>
-	 *  * Contact <--> 1 User (Aqui User = primer usuario en relacion de contacto)
+	/* Relacion entre entidades:
+	 *  * Contact <--> 1 User
+	 *  (donde User = primer usuario en relacion de contacto)
 	 */
 	@XmlTransient
 	public User getUser() {
@@ -85,8 +107,9 @@ public class Contact implements Serializable {
 		return this;
 	}
 	
-	/** Relacion entre entidades:<br>
-	 *  * Contact <--> 1 User (Aqui User = el otro usuario en relacion de contacto)
+	/* Relacion entre entidades:
+	 *  * Contact <--> 1 User
+	 *  (donde User = el otro usuario en relacion de contacto)
 	 */
 	@XmlTransient
 	public User getUserContact() {
@@ -110,8 +133,8 @@ public class Contact implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	@XmlElement

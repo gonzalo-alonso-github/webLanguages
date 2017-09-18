@@ -9,6 +9,11 @@ import javax.faces.validator.ValidatorException;
 
 import com.loqua.presentation.bean.BeanSettingsSession;
 
+/**
+ * Define un validador encargado de comprobar si el valor del componente
+ * UIComponent sobre el que se aplica esta vacio.
+ * @author Gonzalo
+ */
 @FacesValidator("validatorEmptyValue")
 public class ValidatorEmptyValue implements Validator {
 
@@ -18,13 +23,15 @@ public class ValidatorEmptyValue implements Validator {
 		String inputLabel = (String) arg1.getAttributes().get("inputLabel");
 		if (arg2 == null) {
 			throw new ValidatorException(new FacesMessage(inputLabel
-					+ ": " + BeanSettingsSession.getTranslationStatic("errorIsRequired")));
+					+ ": " + BeanSettingsSession.getTranslationStatic(
+							"errorIsRequired")));
 		}
 		String inputValue = arg2.toString();
 
 		if (inputValue == null || inputValue.isEmpty()) {
 			throw new ValidatorException(new FacesMessage(inputLabel
-					+ ": " + BeanSettingsSession.getTranslationStatic("errorIsRequired")));
+					+ ": " + BeanSettingsSession.getTranslationStatic(
+							"errorIsRequired")));
 		}
 	}
 }

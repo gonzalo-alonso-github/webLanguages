@@ -15,36 +15,57 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * Representa un pais que puede ser el lugar de origen o de ubicacion
+ * de un usuario
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "country")
 @Entity
 @Table(name="Country")
 public class Country implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+	
 	// // // // // // //
 	// ATRIBUTOS
 	// // // // // // //
+	
+	/** Identificador del objeto y clave primaria de la entidad */
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) private Long id;
+	
+	/** Nombre del pais */
 	private String name;
+	
+	/** Codigo ISO 3166 (de dos letras) del pais */
 	private String codeIso3166;
+	
+	/** Icono de la bandera del pais */
 	private byte[] flagIcon;
 	
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
+	
+	/** Lista de lenguajes del pais */
 	@OneToMany(mappedBy="country")
 	private Set<CountryLanguage> languages = new HashSet<CountryLanguage>();
 	
+	/** Lista usuarios originarios del pais */
 	@OneToMany(mappedBy="countryOrigin")
-	private Set<UserInfoPrivacity> usersOriginary = new HashSet<UserInfoPrivacity>();
+	private Set<UserInfoPrivacity> usersOriginary =
+		new HashSet<UserInfoPrivacity>();
 	
+	/** Lista usuarios localizados en el pais */
 	@OneToMany(mappedBy="countryLocation")
-	private Set<UserInfoPrivacity> usersLocated = new HashSet<UserInfoPrivacity>();
+	private Set<UserInfoPrivacity> usersLocated =
+		new HashSet<UserInfoPrivacity>();
 	
 	// // // // // // //
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public Country(){}
 	
 	// // // // // // // // // // // // // //
@@ -54,11 +75,11 @@ public class Country implements Serializable{
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Country <--> * CountryLanguage <--> 1 Language
 	 */
 	@XmlTransient
@@ -69,7 +90,7 @@ public class Country implements Serializable{
 		return languages;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Country <--> * UserInfoPrivacity (users cuyo origen es este country)
 	 */
 	@XmlTransient
@@ -80,7 +101,7 @@ public class Country implements Serializable{
 		return usersOriginary;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Country <--> * UserInfoPrivacity (users cuya ubicacion es este country)
 	 */
 	@XmlTransient
@@ -98,8 +119,8 @@ public class Country implements Serializable{
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	@XmlElement
@@ -138,40 +159,61 @@ public class Country implements Serializable{
 	// RELACION ENTRE ENTIDADES (METODOS)
 	// // // // // // // // // // // // //
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Country <--> * CountryLanguages <--> Language
 	 */
-	public void addCountryLanguage(CountryLanguage c){
-		languages.add(c);
-		c._setCountry(this);
+	
+	/** Agrega un lenguaje a la lista de ellos que posee el pais
+	 * @param countryLanguage objeto CountryLanguage que se agrega 
+	 */
+	public void addCountryLanguage(CountryLanguage countryLanguage){
+		languages.add(countryLanguage);
+		countryLanguage._setCountry(this);
 	}
-	public void removeCountryLanguage(CountryLanguage c){
-		languages.remove(c);
-		c._setCountry(null);
+	/** Elimina un lenguaje de la lista de ellos que posee el pais
+	 * @param countryLanguage objeto CountryLanguage que se elimina
+	 */
+	public void removeCountryLanguage(CountryLanguage countryLanguage){
+		languages.remove(countryLanguage);
+		countryLanguage._setCountry(null);
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Country <--> * UserInfoPrivacity (users cuyo origen es este country)
 	 */
-	public void addUserOriginary(UserInfoPrivacity uip){
-		usersOriginary.add(uip);
-		uip._setCountryOrigin(this);
+	
+	/** Agrega un usuario a la lista de usuarios originarios del pais
+	 * @param userInfoPrivacity objeto UserInfoPrivacity que se agrega
+	 */
+	public void addUserOriginary(UserInfoPrivacity userInfoPrivacity){
+		usersOriginary.add(userInfoPrivacity);
+		userInfoPrivacity._setCountryOrigin(this);
 	}
-	public void removeUserOriginary(UserInfoPrivacity uip){
-		usersOriginary.remove(uip);
-		uip._setCountryOrigin(this);
+	/** Elimina un usuario de la lista de usuarios originarios del pais
+	 * @param userInfoPrivacity objeto UserInfoPrivacity que se elimina
+	 */
+	public void removeUserOriginary(UserInfoPrivacity userInfoPrivacity){
+		usersOriginary.remove(userInfoPrivacity);
+		userInfoPrivacity._setCountryOrigin(this);
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Country <--> * UserInfoPrivacity (users cuya ubicacion es este country)
 	 */
-	public void addUserLocated(UserInfoPrivacity uip){
-		usersLocated.add(uip);
-		uip._setCountryLocation(this);
+	
+	/** Agrega un usuario a la lista de usuarios localizados en el pais
+	 * @param userInfoPrivacity objeto UserInfoPrivacity que se agrega
+	 */
+	public void addUserLocated(UserInfoPrivacity userInfoPrivacity){
+		usersLocated.add(userInfoPrivacity);
+		userInfoPrivacity._setCountryLocation(this);
 	}
-	public void removeUserLocated(UserInfoPrivacity uip){
-		usersLocated.remove(uip);
-		uip._setCountryLocation(this);
+	/** Elimina un usuario de la lista de usuarios localizados en el pais
+	 * @param userInfoPrivacity objeto UserInfoPrivacity que se elimina
+	 */
+	public void removeUserLocated(UserInfoPrivacity userInfoPrivacity){
+		usersLocated.remove(userInfoPrivacity);
+		userInfoPrivacity._setCountryLocation(this);
 	}
 	
 	// // // // // // // //

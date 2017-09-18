@@ -15,35 +15,75 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Representa la informacion sobre la puntuacion de un usuario
+ * en la aplicacion. <br/><br/>
+ * En lugar de albergar esta informacion en {@link User} esta entidad
+ * corresponde a la tabla UserInfo, que almacena datos
+ * que no son de caracter personal, ni de acceso,
+ * ni referentes al estado del usuario
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "userInfo")
 @Entity
 @Table(name="UserInfo")
 public class UserInfo implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
 	// // // // // // //
 	// ATRIBUTOS
 	// // // // // // //
+	
+	/** Identificador del objeto y clave primaria de la entidad */
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) private Long id;
+	
+	/** Cantidad de comentarios totales publicados por el usuario */
 	private int countComments;
+	/** Cantidad de correcciones totales aprobadas publicadas por el usuario */
 	private int countCorrections;
+	/** Cantidad de votos totales recibidos en los comentarios del usuario */
 	private int countVotesComments;
+	/** Cantidad de puntos totales del usuario */
 	private int points;
+	/** Fecha de la ultima modificacion de puntos del usuario */
 	private Date dateLastModificationPoints;
+	
+	/** Cantidad de comentarios publicados por el usuario 
+	 * en el mes actual */
 	private int countCommentsMonth;
+	/** Cantidad de correcciones aprobadas publicadas por el usuario
+	 * en el mes actual */
 	private int countCorrectionsMonth;
+	/** Cantidad de votos recibidos en los comentarios del usuario
+	 * en el mes actual */
 	private int countVotesCommentsMonth;
+	/** Cantidad de puntos del usuario obtenidos en el mes actual*/
 	private int pointsMonth;
+	/** Fecha de la ultima modificacion de puntos del usuario
+	 * en el mes actual */
 	private Date dateLastModificationPointsMonth;
+	
+	/** Cantidad de comentarios publicados por el usuario
+	 * en el a&ntilde;o actual */
 	private int countCommentsYear;
+	/** Cantidad de correcciones aprobadas publicadas por el usuario
+	 * en el a&ntilde;o actual */
 	private int countCorrectionsYear;
+	/** Cantidad de votos recibidos en los comentarios del usuario
+	 * en el a&ntilde;o actual */
 	private int countVotesCommentsYear;
+	/** Cantidad de puntos del usuario obtenidos en el a&ntilde;o actual */
 	private int pointsYear;
+	/** Fecha de la ultima modificacion de puntos del usuario
+	 * en el a&ntilde;o actual */
 	private Date dateLastModificationPointsYear;
 
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
+	
+	/** Usuario al que se refiere la informacion */
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="user_id", referencedColumnName="id")
 	private User user;
@@ -52,17 +92,23 @@ public class UserInfo implements Serializable {
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public UserInfo(){
 		initData();
 	}
 
+	/**
+	 * Constructor que recibe las entidades asociadas a esta
+	 * @param user objeto User asociado al UserInfo
+	 */
 	public UserInfo(User user){
 		this.user = user;
 		user.setUserInfo(this);
 		
 		initData();
 	}
-	
+
+	/** Desasigna de esta entidad a las entidades asociadas */
 	public void unlink(){
 		user.setUserInfo( null );
 		user = null;
@@ -83,8 +129,8 @@ public class UserInfo implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	/**
@@ -106,6 +152,9 @@ public class UserInfo implements Serializable {
 	// METODOS
 	// // // //
 	
+	/** Incrementa el numero de comentarios publicados por el usuario
+	 * y su puntuacion mensual, anual y total
+	 */
 	public void incrementPointsBySentComment() {
 		countComments += 1;
 		countCommentsMonth += 1;
@@ -113,6 +162,9 @@ public class UserInfo implements Serializable {
 		incrementPoints(1);
 	}
 	
+	/** Incrementa el numero de votos recibidos en los comentarios del usuario
+	 * y su puntuacion mensual, anual y total
+	 */
 	public void incrementVotesComments() {
 		countVotesComments += 1;
 		countVotesCommentsMonth += 1;
@@ -120,6 +172,9 @@ public class UserInfo implements Serializable {
 		incrementPoints(1);
 	}
 	
+	/** Incrementa el numero de votos correcciones aprobadas del usuario
+	 * y su puntuacion mensual, anual y total
+	 */
 	public void incrementPointsByAcceptedCorrection() {
 		countCorrections += 1;
 		countCorrectionsMonth += 1;
@@ -127,6 +182,7 @@ public class UserInfo implements Serializable {
 		incrementPoints(25);
 	}
 	
+	/** Incrementa la puntuacion mensual, anual y total del usuario */
 	public void incrementPoints(int increment){
 		points += increment;
 		dateLastModificationPoints = new Date();
@@ -138,6 +194,16 @@ public class UserInfo implements Serializable {
 		dateLastModificationPointsYear = new Date();
 	}
 	
+	/** Decrementa la puntuacion total del usuario. Previsiblemente este metodo
+	 * deberia utiizarse despues de que una correccion de un comentario
+	 * que haya sido aprobada sea eliminada, o bien sea sustituida
+	 * (al aprobarse otra correccion para el mismo comentario).
+	 * Ademas se comprueba si es necesario decrementar tambien los puntos
+	 * mensuales o anuales del usuario, si la correccion dada habia incrementado
+	 * sy puntuacion mensual o anual
+	 * @param correction objeto Correction que, por ser eliminado o sustituido,
+	 * provoca el decremento de puntuacion del usuario
+	 */
 	public void decrementPointsByDeletedCorrection(Correction correction) {
 		points -= 1;
 		dateLastModificationPoints = new Date();
@@ -174,8 +240,8 @@ public class UserInfo implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	@XmlElement

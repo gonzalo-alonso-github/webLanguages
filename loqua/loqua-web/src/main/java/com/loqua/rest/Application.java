@@ -8,6 +8,9 @@ import javax.ws.rs.ApplicationPath;
 import com.loqua.rest.impl.ImplRestServiceFeed;
 import com.loqua.rest.impl.ImplRestServiceForumThread;
 
+/** Establece cuales son los servicios REST que usuara RESTEasy,
+ * indicandole las clases {@link ImplRestServiceForumThread}
+ * y {@link ImplRestServiceFeed} */
 @ApplicationPath("/rest")
 public class Application extends javax.ws.rs.core.Application {
 	

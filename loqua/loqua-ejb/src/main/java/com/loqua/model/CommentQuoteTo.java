@@ -13,17 +13,33 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * Representa una respuesta (una 'cita') que un comentario publicado
+ * por un usuario realiza sobre otro comentario en el foro
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "commentQuoteTo")
 @Entity
 @Table(name="CommentQuoteTo")
 public class CommentQuoteTo implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
 	// // // // // // //
 	// ATRIBUTOS
 	// // // // // // //
+	
+	/** Identificador del objeto y clave primaria de la entidad */
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) private Long id;
+	
+	/** Texto plano original del comentario citado ({@link #quotedComment}).
+	 * <br/> Este campo se utiliza para que persista ese dato en caso de que
+	 * el comentario citado sea eliminado o editado */
 	private String quotedText;
+	
+	/** Texto HTML original del comentario citado ({@link #quotedComment}).
+	 * Este campo se utiliza para que persista ese dato en caso de que
+	 * el comentario citado sea eliminado o editado */
 	private String quotedTextHtml;
 	
 	
@@ -42,8 +58,14 @@ public class CommentQuoteTo implements Serializable {
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public CommentQuoteTo(){}
 	
+	/**
+	 * Constructor que recibe las entidades asociadas a esta
+	 * @param actorComment objeto Comment asociado al CommentQuoteTo
+	 * @param quotedComment objeto Comment asociado al CommentQuoteTo
+	 */
 	public CommentQuoteTo(Comment actorComment, Comment quotedComment){
 		this.actorComment = actorComment;
 		this.quotedComment = quotedComment;
@@ -56,11 +78,11 @@ public class CommentQuoteTo implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Comment <--> * CommentQuoteTo <--> 1 Comment 
 	 */
 	@XmlTransient
@@ -100,8 +122,8 @@ public class CommentQuoteTo implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	public String getQuotedText() {

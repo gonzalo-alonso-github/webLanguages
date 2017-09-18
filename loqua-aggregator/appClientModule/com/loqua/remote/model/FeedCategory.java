@@ -15,21 +15,33 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * Representa una seccion o tema al cual pertenecen las noticias de un
+ * {@link Feed}. Los objetos FeedCategory ya estan predefinidos (se obtienen de
+ * la base de datos) y nunca se van a crear nuevos objetos FeedCategory
+ * en tiempo de ejecucion.
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "feedCategory")
 @Entity
 @Table(name="FeedCategory")
 public class FeedCategory implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
 	// // // // // // //
 	// ATRIBUTOS
 	// // // // // // //
+	
+	/** Identificador del objeto y clave primaria de la entidad */
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) private Long id;
 	private String name;
 	
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
+	
+	/** Lista de fuentes que emiten noticias de esta categoria o seccion */
 	@OneToMany(mappedBy="feedCategory")
 	private Set<Feed> feeds = new HashSet<Feed>();
 	
@@ -37,6 +49,7 @@ public class FeedCategory implements Serializable {
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public FeedCategory(){}
 	
 	// // // // // // // // // // // // // //
@@ -46,18 +59,17 @@ public class FeedCategory implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 FeedCategory <--> * Feeds
 	 */
 	@XmlTransient
 	public Set<Feed> getFeeds() {
 		return Collections.unmodifiableSet(feeds);
 	}
-	
 	Set<Feed> _getFeeds() {
 		return feeds;
 	}
@@ -69,8 +81,8 @@ public class FeedCategory implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	@XmlElement
@@ -92,13 +104,22 @@ public class FeedCategory implements Serializable {
 	// // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (METODOS)
 	// // // // // // // // // // // // //
-	/** Relacion entre entidades:<br>
+	
+	/* Relacion entre entidades:
 	 *  1 FeedCategory <--> * Feeds
+	 */
+	/** Agrega una fuente de noticias a la lista de ellas que posee
+	 * la categoria (o seccion) de noticias
+	 * @param feed objeto Feed que se agrega
 	 */
 	public void addFeeds(Feed feed){
 		feeds.add(feed);
 		feed._setFeedCategory(this);
 	}
+	/** Elimina una fuente de noticias de la lista de ellas que posee
+	 * la categoria (o seccion) de noticias
+	 * @param feed objeto Feed que se elimina
+	 */
 	public void removeFeedCategory(Feed feed){
 		feeds.remove(feed);
 		feed._setFeedCategory(null);

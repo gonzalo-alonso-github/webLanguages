@@ -14,10 +14,23 @@ import com.loqua.remote.RestTarget;
 import com.loqua.remote.model.ForumThread;
 import com.loqua.remote.services.RestServiceForumThread;
 
+/**
+ * Representa la tarea que es realizada cada vez que el componente
+ * {@link SchedulerCrawler} lo determina. En este caso, la tarea es 
+ * descargar las noticias de las fuentes, procesarlas y enviarlas al
+ * servidor REST para que sean guardadas en la base de datos.
+ * */
 public class JobCrawler implements Job{
 
+	/** Invoca al componente {@link Gatherer} para descargar, procesar
+	 * y guardar las noticias de las fuentes. <br/>
+	 * Implementa el metodo 'execute' de la interfaz Job de la API Quartz.
+	 * @param context contexto de ejecucion del Job programado
+	 * @throws JobExecutionException
+	 */
 	@Override
-	public void execute(JobExecutionContext arg0) throws JobExecutionException {
+	public void execute(JobExecutionContext context)
+			throws JobExecutionException {
 		try{
 			Gatherer gatherer = new Gatherer();
 			List<ForumThread> forumThreads = gatherer.downloadAllNews();
@@ -27,6 +40,14 @@ public class JobCrawler implements Job{
 		}
 	}
 
+	/**
+	 * Invoca al cliente REST para agregar al sistema todos los objetos
+	 * {@link ForumThread} indicados (nuevos hilo del foro).
+	 * @param forumThreads lista de hilos del foro que se desean enviar al
+	 * servidor REST remoto para guardarlos en la base de datos
+	 * @throws RedirectionException
+	 * @throws NotAuthorizedException
+	 */
 	private void createForumThreads(List<ForumThread> forumThreads)
 			throws RedirectionException, NotAuthorizedException{
 		RestServiceForumThread serviceThread =

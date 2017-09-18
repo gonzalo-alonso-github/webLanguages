@@ -15,21 +15,15 @@ import com.loqua.presentation.logging.LoquaLogger;
 /**
  * Administra la configuracion de propiedades de la aplicacion,
  * que son iguales para todas las sesiones de usuario,
- * relativas a la limitacion del numero de acciones que pueden llevarse a cabo
+ * relativas a limitar la cantidad de acciones que pueden llevarse a cabo
  * por los usuarios del sitio web.
  * @author Gonzalo
  */
 public class BeanSettingsActionLimits implements Serializable {
 	
-	/**
-	 * Numero de version de la clase serializable.
-	 * @see Serializable#serialVersionUID
-	 */
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	/**
@@ -43,16 +37,13 @@ public class BeanSettingsActionLimits implements Serializable {
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
-	/**
-	 * Construccion del bean.
-	 */
+	/** Constructor del bean. Inicializa el atributo
+	 * {@link #mapActionLimitsProperties} */
 	public BeanSettingsActionLimits() {
 		loadMapActionLimitsProperties();
 	}
 
-	/**
-	 * Destruccion del bean
-	 */
+	/** Destructor del bean */
 	@PreDestroy
 	public void end(){}
 	
@@ -95,15 +86,14 @@ public class BeanSettingsActionLimits implements Serializable {
 		}
 	}
 	
-	// // // // // // //
-	// GETTERS & SETTERS
-	// // // // // // //
-	
 	/**
-	 * Comprueba que la propiedad 'numberOfNewThreadsPerPage'
-	 * del fichero 'phorum.properties' esta inicializada con un valor aceptable,
+	 * Comprueba que la propiedad indicada del fichero
+	 * 'numActionsAtPeriod.properties' esta inicializada con un valor aceptable,
 	 * y si es asi devuelve su valor.<br/>
 	 * Si no es asi, devuelve el valor por defecto: 0.
+	 * @param action nombre de la propiedad que describe una accion que,
+	 * en el fichero 'numActionsAtPeriod.properties',
+	 * indica el limite de veces que puede ser realizada
 	 * @return
 	 * numero maximo de noticias mostradas en cada pagina del foro.
 	 */

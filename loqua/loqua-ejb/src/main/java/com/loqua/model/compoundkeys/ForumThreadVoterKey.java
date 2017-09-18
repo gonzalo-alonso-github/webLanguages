@@ -1,10 +1,26 @@
 package com.loqua.model.compoundkeys;
 
+import com.loqua.model.ForumThread;
+import com.loqua.model.ForumThreadVoter;
+import com.loqua.model.User;
+
 import java.io.Serializable;
 
-@SuppressWarnings("serial")
+/**
+ * Representa la clave primaria de la entidad {@link ForumThreadVoter}
+ * @author Gonzalo
+ */
 public class ForumThreadVoterKey implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
+	
+	/** Clave primaria de la entidad {@link ForumThread}
+	 * a la que esta asociado el objeto ForumThreadVoter
+	 */
 	Long forumThread;
+	/** Clave primaria de la entidad {@link User}
+	 * a la que esta asociado el objeto ForumThreadVoter
+	 */
 	Long user;
 	
 	@Override

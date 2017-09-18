@@ -18,26 +18,37 @@ import com.loqua.infrastructure.Factories;
 import com.loqua.model.Country;
 import com.loqua.model.Language;
 import com.loqua.model.User;
+import com.loqua.model.UserNativeLanguage;
+import com.loqua.model.UserPracticingLanguage;
 import com.loqua.presentation.bean.applicationBean.BeanUserImages;
 import com.loqua.presentation.bean.requestBean.BeanActionResult;
 import com.loqua.presentation.logging.LoquaLogger;
 
+/**
+ * Bean encargado de realizar todas las operaciones
+ * relativas al manejo de la pagina de edicion de perfil del usuario.
+ * @author Gonzalo
+ */
 public class BeanUserEditProfile implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
+	/** Lista de identificadores de los lenguajes utilizados por el usuario
+	 * a nivel nativo */
 	private List<Long> listNativeLanguagesIDs;
+	
+	/** Lista de identificadores de los lenguajes utilizados por el usuario
+	 * a nivel de practicante */
 	private List<Long> listPracticingLanguagesIDs;
 	
-	// Inyeccion de dependencia
+	/** Inyeccion de dependencia del {@link BeanLogin} */
 	@ManagedProperty(value="#{beanLogin}")
 	private BeanLogin beanLogin;
-	// Inyeccion de dependencia
+	
+	/** Inyeccion de dependencia del {@link BeanUserData} */
 	@ManagedProperty(value="#{beanUserData}") 
 	private BeanUserData beanUserData;
 	
@@ -45,12 +56,16 @@ public class BeanUserEditProfile implements Serializable{
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
+	/** Constructor del bean. Inicializa los beans inyectados:
+	 * {@link BeanLogin} y {@link BeanUserData}
+	 */
 	@PostConstruct
 	public void init() {
 		initBeanLogin();
 		initBeanUser();
 	}
 	
+	/** Inicializa el objeto {@link BeanLogin} inyectado */
 	private void initBeanLogin() {
 		// Buscamos el BeanLogin en la sesion.
 		beanLogin = null;
@@ -64,6 +79,7 @@ public class BeanUserEditProfile implements Serializable{
 		}
 	}
 	
+	/** Inicializa el objeto {@link BeanUserData} inyectado */
 	private void initBeanUser() {
 		// Buscamos el beanUserData en la sesion.
 		beanUserData = null;
@@ -78,6 +94,7 @@ public class BeanUserEditProfile implements Serializable{
 		}
 	}
 	
+	/** Destructor del bean. */
 	@PreDestroy
 	public void end(){}
 	
@@ -85,6 +102,18 @@ public class BeanUserEditProfile implements Serializable{
 	// METODOS PARA QUE EL USUARIO EDITE SUS LISTAS DE LENGUAGES
 	// // // // // // // // // // // // // // // // // // // // //
 	
+	/**
+	 * Comprueba si los lenguajes a nivel nativo y de practicante seleccionados
+	 * por el usuario en la vista de edicion de perfil son adecuados (se impide
+	 * que un idioma aparezca a la vez en ambas categorias), tras lo cual se
+	 * efectua la actualizacion de ambas listas.
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 * @return
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si se produce alguna excepcion, devuelve la regla de navegacion
+	 * que redirige a la pagina de error desconocido ('errorUnexpected').
+	 */
 	public String editProfileLanguages(BeanActionResult beanActionResult){
 		// Los formularios de las vistas solo llaman a los setters
 		// tras pinchar el boton 'submit'. Es decir, en este instante
@@ -124,6 +153,16 @@ public class BeanUserEditProfile implements Serializable{
 		return null;
 	}
 	
+	/**
+	 * Comprueba que la lista de lenguajes maternos
+	 * ({@link #listNativeLanguagesIDs}) no contiene ningun elemento de
+	 * la lista de lenguajes pacticados ({@link #listPracticingLanguagesIDs})
+	 * @return
+	 * 'true' si la lista de lenguajes maternos no contiene ningun elemento
+	 * de la lista de lenguajes pacticados <br/>
+	 * 'false' si la lista de lenguajes maternos ya contiene algun elemento
+	 * de la lista de lenguajes pacticados
+	 */
 	private boolean verifyLanguagesSelected(){
 		for( Long practicedLanguageID : listPracticingLanguagesIDs ){
 			if( listNativeLanguagesIDs.contains(practicedLanguageID) ){
@@ -133,37 +172,54 @@ public class BeanUserEditProfile implements Serializable{
 		return true;
 	}
 	
+	/**
+	 * Actualiza las asociaciones (objetos {@link UserPracticingLanguage})
+	 * entre el usuario logueado y los lenguajes indicados.
+	 * @param practicedLanguagesIDs lista de lenguajes a nivel de practicante
+	 * seleccionados por el usuario
+	 * @throws EntityAlreadyFoundException
+	 * @throws EntityNotFoundException
+	 */
 	private void saveUserPracticedLanguages(
-			List<Long> beanUserPracticedLanguagesIDs) throws
+			List<Long> practicedLanguagesIDs) throws
 			EntityAlreadyFoundException, EntityNotFoundException {
 		User user = beanLogin.getLoggedUser();
 		// Crear los UserPracticedLanguages pertinentes en bdd:
 		Factories.getService().getServiceLanguage().createUserPracticedLanguage(
-				user, beanUserPracticedLanguagesIDs,listPracticingLanguagesIDs);
+				user, practicedLanguagesIDs,listPracticingLanguagesIDs);
 		// Eliminar los UserPracticedLanguages pertinentes en bdd:
 		Factories.getService().getServiceLanguage().deleteUserPracticedLanguage(
-				user, beanUserPracticedLanguagesIDs,listPracticingLanguagesIDs);
+				user, practicedLanguagesIDs,listPracticingLanguagesIDs);
 		// Actualizar el mapPracticingLanguages de beanUserData
 		updatePracticingLanguagesInSession();
 	}
 	
+	/**
+	 * Actualiza las asociaciones (objetos {@link UserNativeLanguage})
+	 * entre el usuario logueado y los lenguajes indicados.
+	 * @param nativeLanguagesIDs lista de lenguajes a nivel nativo
+	 * seleccionados por el usuario
+	 * @throws EntityAlreadyFoundException
+	 * @throws EntityNotFoundException
+	 */
 	private void saveUserNativeLanguages(
-			List<Long> beanUserNativeLanguagesIDs) throws
+			List<Long> nativeLanguagesIDs) throws
 			EntityAlreadyFoundException, EntityNotFoundException {
 		User user = beanLogin.getLoggedUser();
 		// Crear los UserNativeLanguages pertinentes en bdd:
 		Factories.getService().getServiceLanguage().createUserNativeLanguage(
-				user, beanUserNativeLanguagesIDs,listNativeLanguagesIDs);
+				user, nativeLanguagesIDs,listNativeLanguagesIDs);
 		// Eliminar los UserNativeLanguages pertinentes en bdd:
 		Factories.getService().getServiceLanguage().deleteUserNativeLanguage(
-				user, beanUserNativeLanguagesIDs,listNativeLanguagesIDs);
+				user, nativeLanguagesIDs,listNativeLanguagesIDs);
 		// Actualizar el mapNativeLanguages de beanUserData
 		updateNativeLanguagesInSession();
 	}
 	
 	/**
-	 * Actualiza el Map<Long,Languages> mapPracticingLanguages de beanUserData,
-	 * sobreescribiendolo con los valores de la lista listPracticingLanguagesIDs
+	 * Actualiza el Map&lt;Long,Languages&gt; mapPracticingLanguages
+	 * de {@link BeanUserData}, sobreescribiendolo con los valores
+	 * de la lista {@link #listPracticingLanguagesIDs}
 	 */
 	private void updatePracticingLanguagesInSession() {
 		Map<Long,Language> mapPracticedLanguages=new HashMap<Long,Language>();
@@ -174,8 +230,9 @@ public class BeanUserEditProfile implements Serializable{
 	}
 	
 	/**
-	 * Actualiza el Map<Long,Languages> mapNativeLanguages de beanUserData,
-	 * sobreescribiendolo con los valores de la lista listNativeLanguagesIDs
+	 * Actualiza el Map&lt;Long,Languages&gt; mapNativeLanguages
+	 * de {@link BeanUserData}, sobreescribiendolo con los valores
+	 * de la lista {@link #listNativeLanguagesIDs}
 	 */
 	private void updateNativeLanguagesInSession() {
 		Map<Long,Language> mapNativeLanguages=new HashMap<Long,Language>();
@@ -189,25 +246,34 @@ public class BeanUserEditProfile implements Serializable{
 	// METODOS PARA QUE EL USUARIO EDITE SU PRIVACIDAD
 	// // // // // // // // // // // // // // // // // //
 	
+	/**
+	 * Actualiza los niveles de privacidad establecidos en la pagina visitada
+	 * de edicion de perfil.
+	 * @param user usuario cuyos datos se actualizan
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 * @return devuelve el valor 'null' para evitar que el CommandLink 
+	 * que invoca a este metodo redirija la navegacion a otra pagina
+	 */
 	public String editProfilePrivacity(
-			User userView, BeanActionResult beanActionResult){
+			User user, BeanActionResult beanActionResult){
 		beanActionResult.setFinish(false);
 		beanActionResult.setSuccess(false);
 		// Obtener los datos originales del usuario desde el beanLogin:
 		User updatedUser = beanLogin.getLoggedUser();
 		// Actualizar los datos originales con los datos editados en la vista:
 		updatedUser.getPrivacityData().setPublications(
-				userView.getPrivacityData().getPublications());
+				user.getPrivacityData().getPublications());
 		updatedUser.getPrivacityData().setContactsList(
-				userView.getPrivacityData().getContactsList());
+				user.getPrivacityData().getContactsList());
 		updatedUser.getPrivacityData().setAppearingInSearcher(
-				userView.getPrivacityData()
+				user.getPrivacityData()
 				.getAppearingInSearcher());
 		updatedUser.getPrivacityData().setReceivingCorrectionRequests(
-				userView.getPrivacityData()
+				user.getPrivacityData()
 				.getReceivingCorrectionRequests());
 		updatedUser.getPrivacityData().setReceivingMessages(
-				userView.getPrivacityData().getReceivingMessages());
+				user.getPrivacityData().getReceivingMessages());
 		// Actualizar base de datos:
 		updateUser( updatedUser, beanActionResult );
 		// Actualizar el beanLogin:
@@ -218,10 +284,15 @@ public class BeanUserEditProfile implements Serializable{
 		return null;
 	}
 	
+	/**
+	 * Actualiza en el sistema los datos del usuario indicado.
+	 * @param user usuario que se actualiza
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 */
 	private void updateUser(User user, BeanActionResult beanActionResult) {
 		try{
-			Factories.getService().getServiceUser().updateAllDataByUser(
-					user, true);
+			Factories.getService().getServiceUser().updateAllDataByUser(user);
 		} catch (EntityNotFoundException e) {
 			beanActionResult.setMsgActionResult("errorUnknownUrl");
 			log.error("Unexpected Exception at 'updateUser()'");
@@ -232,6 +303,18 @@ public class BeanUserEditProfile implements Serializable{
 	// METODOS PARA QUE EL USUARIO EDITE SU IMAGEN
 	// // // // // // // // // // // // // // // // // //
 	
+	/**
+	 * Actualiza la imagen del perfil del usuario con sesion iniciada. <br/>
+	 * Este metodo permite que un usuario dado pueda cambiar
+	 * su propia imagen en su pagina del perfil.
+	 * @param beanUserView objeto {@link BeanUserView} cuyo atributo
+	 * {@link BeanUserView#imageProfile} indica la nueva imagen introducida
+	 * por el usuario en la vista
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 * @return devuelve el valor 'null' para evitar que el CommandLink 
+	 * que invoca a este metodo redirija la navegacion a otra pagina
+	 */
 	public String editLoggedUserAvatar(
 			BeanUserView beanUserView, BeanActionResult beanActionResult){
 		beanActionResult.setFinish(false);
@@ -259,6 +342,18 @@ public class BeanUserEditProfile implements Serializable{
 		return null;
 	}
 	
+	/**
+	 * Actualiza la imagen del perfil del usuario cuyo perfil se visita. <br/>
+	 * Este metodo permite que un usuario dado (previsiblemente un
+	 * administrador) pueda cambiar la imagen del perfil ajeno que consulta.
+	 * @param beanUserView objeto {@link BeanUserView} cuyo atributo
+	 * {@link BeanUserView#imageProfile} indica la nueva imagen introducida
+	 * por el usuario en la vista
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 * @return devuelve el valor 'null' para evitar que el CommandLink 
+	 * que invoca a este metodo redirija la navegacion a otra pagina
+	 */
 	public String editUserAvatar(
 			BeanUserView beanUserView, BeanActionResult beanActionResult){
 		beanActionResult.setFinish(false);
@@ -285,6 +380,15 @@ public class BeanUserEditProfile implements Serializable{
 	// METODOS PARA QUE EL USUARIO EDITE SU GENERO
 	// // // // // // // // // // // // // // // //
 	
+	/**
+	 * Actualiza el genero del usuario que ha iniciado la sesion.
+	 * @param userView objeto {@link User} que almacena, entre otros datos,
+	 * el genero actualizado por el usuario en la vista.
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 * @return devuelve el valor 'null' para evitar que el CommandLink 
+	 * que invoca a este metodo redirija la navegacion a otra pagina
+	 */
 	public String editProfileGender(
 			User userView, BeanActionResult beanActionResult){
 		beanActionResult.setFinish(false);
@@ -316,6 +420,17 @@ public class BeanUserEditProfile implements Serializable{
 	// METODOS PARA QUE EL USUARIO EDITE SU PAIS DE ORIGEN Y DE UBICACION
 	// // // // // // // // // // // // // // // // // // // // // // // //
 	
+	/**
+	 * Actualiza los paises de origen y de ubicacion del usuario
+	 * que ha iniciado la sesion.
+	 * @param userView objeto {@link User} que almacena, entre otros datos,
+	 * los paises de origen y de ubicacion actualizados por el usuario
+	 * en la vista.
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 * @return devuelve el valor 'null' para evitar que el CommandLink 
+	 * que invoca a este metodo redirija la navegacion a otra pagina
+	 */
 	public String editProfileCountries(
 			User userView, BeanActionResult beanActionResult){
 		beanActionResult.setFinish(false);
@@ -354,16 +469,24 @@ public class BeanUserEditProfile implements Serializable{
 	// METODOS PARA QUE EL ADMINISTRADOR CAMBIE EL ESTADO DE UN USUARIO
 	// // // // // // // // // // // // // // // // // // // // // // //
 	
-	public String changeUserStatus(User editUser){
-		boolean newStatus = !editUser.getActive();
-		editUser.setActive(newStatus);
+	/**
+	 * Cambia el estado de activacion de un usuario dado
+	 * @param user usuario que se actualiza
+	 * @return Si la actualizacion se produce con existo, devuelve la regla
+	 * de navegacion que redirige a la pagina de inicio
+	 * ('successChangeUserStatus'). <br/>
+	 * Si se produce alguna excepcion, devuelve la regla de navegacion
+	 * que redirige a la pagina de error desconocido ('errorUnexpected').
+	 */
+	public String changeUserStatus(User user){
+		boolean newStatus = !user.getActive();
+		user.setActive(newStatus);
 		try {
-			Factories.getService().getServiceUser().updateAllDataByUser(
-					editUser, true);
+			Factories.getService().getServiceUser().updateAllDataByUser(user);
 			// Si se desactiva un usuario se agrega a la lista de desactivados:
-			if( newStatus==false ){ putUserDeactivatedInAppContext(editUser); }
+			if( newStatus==false ){ putUserDeactivatedInAppContext(user); }
 			// Si se activa un usuario se elimina de la lista de desactivados:
-			if( newStatus==true ){deleteUserActivatedFromAppContext(editUser);}
+			if( newStatus==true ){deleteUserActivatedFromAppContext(user);}
 		} catch (Exception e) {
 			log.error("Unexpected Exception at 'changeUserStatus()'");
 			return "errorUnexpectedAdmin";
@@ -371,6 +494,11 @@ public class BeanUserEditProfile implements Serializable{
 		return "successChangeUserStatus";
 	}
 	
+	/**
+	 * Agrega el identificador del usuario dado a la lista de usuarios
+	 * desactivados guardada en el contexto de aplicacion ('DEACTIVATED_USERS').
+	 * @param user usuario que se desactiva
+	 */
 	private void putUserDeactivatedInAppContext(User user) {
 		Map<String, Object> application = FacesContext.getCurrentInstance()
 				.getExternalContext().getApplicationMap();
@@ -387,7 +515,12 @@ public class BeanUserEditProfile implements Serializable{
 		// Guardar, en el contexto Aplicacion, la lista "DEACTIVATED_USERS":
 		application.put("DEACTIVATED_USERS", deactivatedUsersIDs);
 	}
-
+	
+	/**
+	 * Elimina el identificador del usuario dado de la lista de usuarios
+	 * desactivados guardada en el contexto de aplicacion ('DEACTIVATED_USERS').
+	 * @param user usuario que se desactiva
+	 */
 	private void deleteUserActivatedFromAppContext(User user) {
 		Map<String, Object> application = FacesContext.getCurrentInstance()
 				.getExternalContext().getApplicationMap();
@@ -412,11 +545,12 @@ public class BeanUserEditProfile implements Serializable{
 	// // // // // // //
 	
 	/**
-	 * Es el bean beanUserData quien almacena en un Map&lt;Long,Language&gt; los
-	 * lenguages practicados por el usuario.
+	 * Es el bean {@link BeanUserData} quien almacena en un
+	 * Map&lt;Long,Language&gt; los lenguages practicados por el usuario.
 	 * Este metodo obtiene las claves (Long) de dicho Map.
 	 * @return
-	 * la lista de los IDs de los idiomas (Languages) practicados por el usuario.
+	 * la lista de los IDs de los idiomas (Languages) practicados
+	 * por el usuario.
 	 */
 	public List<Long> getListPracticingLanguagesIDs(){
 		Map<Long, Language> mapPracticingLanguages = 
@@ -426,15 +560,17 @@ public class BeanUserEditProfile implements Serializable{
 	public void setListPracticingLanguagesIDs(List<Long> languagesIDs){
 		listPracticingLanguagesIDs = languagesIDs;
 	}
+	
 	/**
-	 * Es el bean beanUserData quien almacena en un Map&lt;Long,Language&gt; los
-	 * lenguages maternos del usuario.
+	 * Es el bean {@link BeanUserData} quien almacena en un
+	 * Map&lt;Long,Language&gt; los lenguages practicados por el usuario.
 	 * Este metodo obtiene las claves (Long) de dicho Map.
 	 * @return
 	 * la lista de los IDs de los idiomas (Languages) maternos del usuario.
 	 */
 	public List<Long> getListNativeLanguagesIDs(){
-		Map<Long, Language> mapNativeLanguages = beanUserData.getMapNativeLanguages();
+		Map<Long, Language> mapNativeLanguages = 
+				beanUserData.getMapNativeLanguages();
 		return new ArrayList<Long>( mapNativeLanguages.keySet() );
 	}
 	public void setListNativeLanguagesIDs(List<Long> languagesIDs){

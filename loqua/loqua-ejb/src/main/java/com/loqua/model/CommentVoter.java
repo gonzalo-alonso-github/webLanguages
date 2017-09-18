@@ -12,33 +12,50 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.loqua.model.compoundkeys.CommentVoterKey;
 
-@SuppressWarnings("serial")
+/**
+ * Representa la votacion de un comentario por parte de un usuario.
+ * Es una clase asociativa entre {@link Commet} y {@link User}
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "commentVoter")
 @Entity
 @Table(name="CommentVoter")
 @IdClass(CommentVoterKey.class)
 public class CommentVoter implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
+	
+	/** Comentario votado por el usuario */
 	@Id @GeneratedValue @ManyToOne private ForumPost comment;
+	
+	/** Usuario que vota el comentario */
 	@Id @GeneratedValue @ManyToOne private User user;
 	
 	// // // // // // //
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public CommentVoter(){}
 	
-	public CommentVoter(User u, Comment c){
-		user = u;
-		u._getCommentVoters().add( this );
+	/**
+	 * Constructor que recibe las entidades asociadas a esta
+	 * @param user objeto User asociado al CommentVoter
+	 * @param comment objeto Comment asociado al CommentVoter
+	 */
+	public CommentVoter(User user, Comment comment){
+		this.user = user;
+		user._getCommentVoters().add( this );
 		
-		comment = c;
-		c._getCommentVoters().add( this );
+		this.comment = comment;
+		comment._getCommentVoters().add( this );
 	}
 	
+	/** Desasigna de esta entidad a las entidades asociadas */
 	public void unlink(){
 		user._getCommentVoters().remove( this );
 		((Comment)comment)._getCommentVoters().remove( this );
@@ -54,11 +71,11 @@ public class CommentVoter implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * CorrectionAgrees <--> 1 Correction 
 	 */
 	public User getUser() {

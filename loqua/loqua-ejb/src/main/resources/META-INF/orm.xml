@@ -740,15 +740,14 @@
 	<named-query name="User.getMostValuedUsersOfTheMonth">
 		<query>
 			select distinct u,
-			(u.userInfo.countCommentsMonth+u.userInfo.countCorrectionsMonth) AS valoration
+			u.userInfo.pointsMonth
 			from ForumPost p
 			join p.user u
 			where p.date = 
 				(select max(p2.date) from ForumPost p2 where p2.user.id=u.id)
 			order by
 			u.userInfo.pointsMonth desc,
-			p.date asc,
-			valoration desc
+			p.date asc
 		</query>
 		<!-- con ese 'where' conseguimos que 'p.date' (que es uno de los criterios del order by)
 		sea la fecha del ultimo comentario del usuario.

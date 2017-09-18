@@ -21,11 +21,17 @@ import com.loqua.presentation.util.MapQueryString;
 import com.loqua.presentation.util.VerifierAjaxRequest;
 
 /**
- * Este filtro se aplica a la pagina de 'profile_user.xhtml'
- * (tanto para usuarios anonimos como para registrados y administradores).
- * Por tanto existen dos filtros para dicha pagina: el 'FilterAuthorization...'
- * y este. Y el orden en que se aplican esta definido en el fichero de despliegue
- * web.xml.
+ * Define el filtro, que se aplica sobre la pagina de
+ * 'profile_user.xhtml',
+ * y que comprueba si son correctos los parametros enviados en la URL
+ * (la 'query string'). <br/>
+ * El ciclo de JSF es interceptado por el Filtro antes de que el navegador
+ * muestre la pagina sobre la que este se aplica, y se ejecuta inmediatamene
+ * despues de los manejadores de navegacion (NavigationHandler) y de vista
+ * (ViewHandler). <br/>
+ * Puesto que se definen varios filtros sobre esta misma pagina, es coveniente
+ * indicar, en el fichero web.xml, el orden en que se aplican.
+ * @author Gonzalo
  */
 @WebFilter(
 		dispatcherTypes = { DispatcherType.REQUEST },
@@ -48,13 +54,10 @@ import com.loqua.presentation.util.VerifierAjaxRequest;
 				name="adminIndex",
 				value="/pages/admin_user/profile_me.xhtml")
 		})
-
-
 public class FilterProfileUser implements Filter {
 
-	// Necesitamos acceder a los parametros de inicializacion en
-	// el metodo doFilter, asi que necesitamos la variable
-	// config que se inicializara en init()
+	/** Se utliza para acceder a los parametros de inicializacion
+	 * definidos en las anotaciones de esta clase */
 	FilterConfig config = null;
 	
 	Long requestedUserId = 0L;
@@ -62,11 +65,8 @@ public class FilterProfileUser implements Filter {
 	
 	MapQueryString queryStringMap;
 
-	/**
-	 * Default constructor.
-	 */
-	public FilterProfileUser() {
-	}
+	/** Constructor sin parametros de la clase */
+	public FilterProfileUser() {}
 
 	/**
 	 * @see Filter#destroy()
@@ -87,10 +87,10 @@ public class FilterProfileUser implements Filter {
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		// Si el metodo termina despues de hacer 'chain.doFilter',
-		// se permite el acceso a la pagina requerida (no se redirige a otra)
-		// Si el metodo termina despues de hacer 'res.sendRedirect',
-		// no se permite el acceso a la pagina requerida (se redirige a otra)
+		/* Si el metodo termina despues de hacer 'chain.doFilter',
+		se permite el acceso a la pagina requerida (no se redirige a otra)
+		Si el metodo termina despues de hacer 'res.sendRedirect',
+		no se permite el acceso a la pagina requerida (se redirige a otra) */
 		
 		// Si no es peticion HTTP no se filtra
 		if (!(request instanceof HttpServletRequest)){
@@ -152,10 +152,17 @@ public class FilterProfileUser implements Filter {
 	}
 	
 	/**
-	 * Comprueba que la url de la peticion a la pagina 'profile_user.xhtml'
-	 * contiene el parametro 'user' (usuario que se va a consultar
-	 * en la vista).
-	 * @return 'true' si el parametro de la url es correcto
+	 * Comprueba que la URL de la peticion a la pagina
+	 * 'profile_user.xhtml' contiene el parametro 'user'
+	 * (usuario que se va a consultar en la vista), y que corresponde
+	 * a un usuario no eliminado.
+	 * @param req la peticion HTTP
+	 * @param loggedUser el usuario que accede a la pagina
+	 * @return
+	 * 'true' si el parametro 'user' de la URL corresponde a un usuario
+	 * no eliminado <br/>
+	 * 'false' si el parametro 'user' de la URL no corresponde a un usuario
+	 * no eliminado
 	 */
 	private boolean verifyParameters(HttpServletRequest req, User loggedUser){
 		try{

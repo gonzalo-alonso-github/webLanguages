@@ -9,9 +9,21 @@ import javax.ws.rs.core.MediaType;
 
 import com.loqua.remote.model.Feed;
 
+/** Proxy REST a traves del cual esta aplicacion cliente envia peticiones
+ * a la interfaz remota RestServiceFeed
+ * (implementada en el proyecto 'loqua-web'). <br/>
+ * Mediante las anotaciones de JAX-RS de cada metodo, la especificacion
+ * RESTEasy podra convertir las llamadas a ellos en peticiones HTTP
+ * dirigidas a la URL que se haya especificado.
+ */
 @Path("/RestServiceFeed")
 public interface RestServiceFeed {
 	
+	/**
+	 * Realiza una peticion HTTP al metodo 'getAllFeeds' del servicio remoto
+	 * 'RestServiceFeed' (implementado en el proyecto 'loqua-web').
+	 * @return todos los objetos Feed disponibles (fuentes de noticias)
+	 */
 	@GET
 	@Path("getAllFeeds")
 	@Produces({ 

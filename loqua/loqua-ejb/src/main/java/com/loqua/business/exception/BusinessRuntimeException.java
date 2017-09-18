@@ -1,12 +1,16 @@
 package com.loqua.business.exception;
 
-@SuppressWarnings("serial")
 /**
- * Se lanza cuando sucede cualquier excepcion
- * de indole general en la capa de negocio
+ * Representa la RuntimeException que se lanza desde la capa de negocio
+ * cuando sucede fallo interno de la aplicacion en las capas de negocio
+ * o de persistencia.
+ * Puede ser causada por algun error en el codigo y no es preciso relanzarla
+ * en cada capa de abstraccion
  */
 public class BusinessRuntimeException extends RuntimeException {
 
+	private static final long serialVersionUID = 1L;
+	
 	public BusinessRuntimeException() {
 		super();
 	}

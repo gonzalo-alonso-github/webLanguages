@@ -14,30 +14,40 @@ import com.loqua.model.Language;
 import com.loqua.presentation.bean.BeanSettingsSession;
 import com.loqua.presentation.logging.LoquaLogger;
 
+/**
+ * Bean encargado de recoger una sola vez los datos menos cambiantes
+ * de la persistencia (ej: los lenguajes guardados, o los paises)
+ * y mantenerlos accesibles desde las vistas .xhtml, sin que haya necesidad
+ * de repetir mas veces las consultas de tales datos a la persistencia. 
+ * @author Gonzalo
+ */
 public class BeanCache implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
+	
+	/** Lista de todos los lenguajes disponibles */
+	private List<Language> allLanguages;
+	
+	/** Objeto Map&lt;Long, Country&gt;, que almacena todos los paises
+	 * disponibles, donde la clave es el atributo 'id' del Country,
+	 * y el valor es el propio Country */
 	private Map<Long, Country> allCountries;
 	
 	// // // // // // // // // // // //
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
-	/**
-	 * Construccion del bean
-	 */
+	/** Constructor del bean. Inicializa la lista de lenguajes
+	 * y los paises disponibles. */
 	public BeanCache() {
+		loadAllLanguages();
 		loadAllCountries();
 	}
 	
-	/**
-	 * Destruccion del bean
-	 */
+	/** Destructor del bean */
 	@PreDestroy
 	public void end(){}
 	
@@ -45,58 +55,52 @@ public class BeanCache implements Serializable {
 	// METODOS
 	// // // //
 	
-	public List<Language> getAllLanguagesFromDB(){
+	/**
+	 * Carga la lista de todos los lenguajes disponibles (atributo
+	 * {@link #allLanguages} de la clase).
+	 */
+	public void loadAllLanguages(){
 		// se usa desde snippets/profile/profile_edit.xhtml
 		// no confundir con beanSettingsSession.getAllLanguagesFromProperties()
 		// aquel metodo obtiene, del fichero .properties,
-		// los idiomas de las vistas del sitio web; mientras que aqui obtenemos,
+		// los idiomas de las vistas del sitio web; mientras que aqui obtiene,
 		// de la tabla Language, los idiomas que manejan los usuarios en el foro
-		
-		List<Language> allLanguages = new ArrayList<Language>();
+		allLanguages = new ArrayList<Language>();
 		try{
 			allLanguages = new ArrayList<Language>(Factories.getService()
-					.getServiceLanguage().getListAllLanguagesFromDB());
+					.getServiceLanguage().getAllLanguagesFromDB());
 		}catch (Exception e){
 			log.error("Unexpected Exception at 'getAllLanguagesFromDB()'");
 		}
-		return allLanguages;
 	}
-	/*
-	public List<Language> getAllLanguagesFromCache(){
-		// se usa desde snippets/profile/profile_edit.xhtml
-		// no confundir con beanSettingsSession.getAllLanguagesFromProperties()
-		// aquel metodo obtiene, del fichero .properties,
-		// los idiomas de las vistas del sitio web; mientras que aqui obtenemos,
-		// de la tabla Language, los idiomas que manejan los usuarios en el foro
-		
-		List<Language> allLanguages = new ArrayList<Language>();
-		// podriamos almacenar la lista de lenguages en una variable
-		// de este bean de application
-		// pero ya que en el negocio tambien se necesita manejar la misma lista,
-		// entonces la obtenemos del negocio, concretamente de la clase
-		// business.services.impl.memory.MemoryListsLanguages,
-		// mediante la siguiente llamada a ServiceLanguage:
-		try{
-			allLanguages = new ArrayList<Language>(Factories.getService()
-					.getServiceLanguage().getAllLanguagesFromCache().values());
-		}catch (Exception e){
-			logger.error("Unexpected Exception at 'getAllLanguagesFromCache()'");
-		}
-		return allLanguages;
-	}
-	*/
 	
+	/**
+	 * Metodo 'get' del atributo {@link #allLanguages}.
+	 * @return atributo {@link #allLanguages}
+	 */
+	public List<Language> getAllLanguages(){
+		return allLanguages;
+	}
+	
+	/**
+	 * Carga el Map de todos los paises disponibles (atributo
+	 * {@link #allCountries} de la clase).
+	 */
 	public void loadAllCountries(){
-		allCountries = 
+		try{
+			allCountries = 
 				Factories.getService().getServiceCountry().getAllCountries();
+		}catch (Exception e){
+			log.error("Unexpected Exception at 'getAllLanguagesFromDB()'");
+		}
 	}
 	
 	/**
 	 * Proporciona a las vistas .xhtml una lista de elementos para los
 	 * controles 'h:selectOneMenu' de JSF. Dichos elementos son objetos
-	 * SelectItem creados a partir de las claves del Map allCountries 
+	 * SelectItem creados a partir de las claves del Map {@link #allCountries}.
 	 * @return
-	 * Una lista de objetos SelectItem
+	 * lista de objetos SelectItem
 	 */
 	public List<SelectItem> getAllCountriesForSelect() {
 		List<SelectItem> listSelectItemCountries = new ArrayList<SelectItem>();

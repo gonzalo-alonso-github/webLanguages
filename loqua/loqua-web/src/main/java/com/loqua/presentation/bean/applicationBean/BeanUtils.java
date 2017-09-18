@@ -10,30 +10,24 @@ import javax.servlet.http.HttpServletRequest;
 import com.loqua.model.User;
 
 /**
- * Contiene metodos pueden ser accedidos desde cualquier pagina de Loqua,
- * generalmente son metodos necesarios para facilitar el diseno de las vistas
+ * Bean de ambito de aplicacion que contiene metodos pueden ser accedidos
+ * desde cualquier pagina del sitio en cualquier sesion de usuario.
+ * Generalmente son metodos necesarios para facilitar el codigo xhtml
+ * de las vistas.
  * @author Gonzalo
  */
 public class BeanUtils implements Serializable {
 	
-	/**
-	 * Numero de version de la clase serializable.
-	 * @see Serializable#serialVersionUID
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	// // // // // // // // // // // //
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
-	/**
-	 * Construccion del bean.
-	 */
+	/** Constructor del bean. */
 	public BeanUtils() {}
 
-	/**
-	 * Destruccion del bean
-	 */
+	/** Destructor del bean. */
 	@PreDestroy
 	public void end(){}
 	
@@ -42,6 +36,8 @@ public class BeanUtils implements Serializable {
 	// // // //
 	
 	/**
+	 * Recorta una cadena de texto limitando su longitud al numero de
+	 * caracteres indicado.<br/>
 	 * El efecto generado por este metodo sobre una cadena de texto en HTML
 	 * equivale a aplicar sobre ella el siguiente estilo CSS:
 	 * style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;".
@@ -121,7 +117,7 @@ public class BeanUtils implements Serializable {
 	 * @param limit limite maximo
 	 * @param value valor que se comprueba
 	 * @return Si value <= limit, devuelve el 'value' en formato String.<br/>
-	 * Si value > limit, devuelve el 'limit' precedido del signo '&gt;' <br/>
+	 * Si value > limit, devuelve el 'limit' precedido del signo '&gt;'
 	 */
 	public String limitNumericValue(int limit, int value){
 		if( value<=limit ){
@@ -131,17 +127,25 @@ public class BeanUtils implements Serializable {
 		}
 	}
 	
+	/**
+	 * Halla la URL del directorio donde se ubican todas las paginas
+	 * correspondientes al tipo de usuario de aquel que maneja esta sesion,
+	 * sea anonimo, registrado, o administrador.
+	 * @return la URL obtenida
+	 */
 	public static String getUrlUserPages(){
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		HttpServletRequest req = (HttpServletRequest)
 				facesContext.getExternalContext().getRequest();
 		User loggedUser = getLoggedUser();
 		String pages= getPathForUserRole(loggedUser);
-		String uri = req.getRequestURL().toString();
-		String url = uri.substring(0,uri.length()-req.getRequestURI().length())
+		String currentUrl = req.getRequestURL().toString();
+		String url = currentUrl.substring(
+					0,currentUrl.length()-req.getRequestURI().length())
 				+ req.getContextPath() + "/pages/" + pages + "/";
 		return url;
 	}
+	
 	/*
 	public static String getUrnUserPages(){
 		FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -152,6 +156,14 @@ public class BeanUtils implements Serializable {
 		String url = req.getContextPath() + "/pages/" + pages + "/";
 		return url;
 	}
+	*/
+	
+	/**
+	 * Halla el nombre del directorio en el que se ubican las paginas
+	 * correspondientes al tipo del usuario dado,
+	 * sea anonimo, registrado, o administrador
+	 * @param loggedUser usuario que se comprueba
+	 * @return el nombre obtenido
 	 */
 	private static String getPathForUserRole(User loggedUser) {
 		String pages;
@@ -166,10 +178,10 @@ public class BeanUtils implements Serializable {
 	}
 	
 	/**
-	 * Busca en el Map<String,Object> de la sesion el usuario logueado.
-	 * Dado que este BeanUtils es de ambito de aplicacion evita utilizar
-	 * el BeanLogin (que es de ambito de sesion) y, de lo contrario,
-	 * persistiria durante el tiempo de vida de este BeanUtils.
+	 * Busca en el Map&lt;String,Object&gt; de la sesion el usuario logueado.
+	 * <br/>Para obtener el usuario logueado evita utilizar a {@link BeanLogin},
+	 * que es de ambito de sesion y por tanto no conviente invocarlo desde
+	 * este BeanUtils, que es de ambito de aplicacion.
 	 * @return
 	 * el usuario que ha iniciado esta sesion.
 	 * Si no la ha iniciado, devuelve null.
@@ -179,5 +191,20 @@ public class BeanUtils implements Serializable {
 				.getExternalContext().getSessionMap();
 		User loggedUser = (User) session.get("LOGGED_USER");
 		return loggedUser;
+	}
+	
+	/**
+	 * Halla el valor de la variable 'NUM_LOGGED_USERS' guardada en el
+	 * contexto de aplicacion.
+	 * @return el numero de usuarios con sesion iniciada
+	 */
+	public int getNumOnlineUsers(){
+		Map<String, Object> application = FacesContext.getCurrentInstance()
+				.getExternalContext().getApplicationMap();
+		int result = 0;
+		if( application.containsKey("NUM_LOGGED_USERS") ){
+			result = (Integer)application.get("NUM_LOGGED_USERS");
+		}
+		return result;
 	}
 }

@@ -23,8 +23,8 @@ import com.loqua.presentation.bean.BeanUserView;
 import com.loqua.presentation.logging.LoquaLogger;
 
 /**
- * Maneja la imagen de perfil de usuario, y tambien los iconos de pais de origen
- * y de ubicacion del usuario, permitiendo leer dichas imagenes
+ * Maneja la imagen de perfil de usuario, y tambien los iconos de
+ * pais de origen y de ubicacion del usuario, permitiendo leer dichas imagenes
  * desde los componentes Omnifaces de la vista.
  * El componente graphicImage de Omnifaces solo puede acceder a beans
  * que tengan la anotacion @ApplicationScoped
@@ -40,23 +40,17 @@ public class BeanUserImages implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	// // // // // // // // // // // //
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
-	/**
-	 * Construccion del bean
-	 */
+	/** Constructor del bean. */
 	public BeanUserImages() {}
 	
-	/**
-	 * Destruccion del bean
-	 */
+	/** Destructor del bean. */
 	@PreDestroy
 	public void end(){}
 	
@@ -64,12 +58,17 @@ public class BeanUserImages implements Serializable {
 	// METODOS PARA OBTENER LA IMAGEN DE PERFIL DE USUARIO
 	// // // // // // // // // // // // // // // // // // //
 	
+	/**
+     * Halla la imagen del perfil propia del usuario logueado.
+     * @return la imagen hallada
+     */
 	public byte[] getLoggedUserImage() {
     	// si hicieramos User loggedUser = beanLogin.getLoggedUser();
     	// obtendriamos igualmente el usuario 'logueado', pero necesitariamos
     	// inyectar en esta clase el beanLogin, lo cual no debe hacerse
     	// porque este es un bean de Application (por requisito de OmniFaces).
-    	// De hacer eso el beanLogin persistiria durante todo el ambito de aplicacion
+    	// De hacer eso el beanLogin persistiria
+		// durante todo el ambito de aplicacion
     	Map<String, Object> session = FacesContext.getCurrentInstance()
 				.getExternalContext().getSessionMap();
 		User loggedUser = BeanUtils.getLoggedUser();
@@ -83,13 +82,20 @@ public class BeanUserImages implements Serializable {
     	return loggedUser.getUserInfoPrivacity().getImage();
     }
 	
+	/**
+     * Halla la imagen del perfil del usuario dado.
+     * @param user usuario cuya imagen se consulta
+     * @return la imagen hallada
+     */
     public byte[] getUserImage(User user) {
     	// Este metodo es publico porque tambien se invoca desde los .xhtml
+    	
     	byte[] userImage = avoidGettingImageFromDB(user);
     	if( userImage!=null ){ return userImage; }
 		try{
 			String containerName = "data-user-image";
-			List<String> extensions=BeanSettingsUser.getProfileImageExtensions();
+			List<String> extensions =
+					BeanSettingsUser.getProfileImageExtensions();
 			String imageCode = getUserImageCode(user.getId());
 			userImage = ManagementBlobs.getImageFromAzureStorage(
 					imageCode, containerName, extensions);
@@ -104,18 +110,27 @@ public class BeanUserImages implements Serializable {
 		}
 	}
 
+    /**
+     * Comprueba si la imagen del perfil del usuario dado,
+     * segun su nivel de privacidad, no es visible para el usuario
+     * que la consulta. En tal caso no hay que hacer una acceso a base de datos
+     * (repositorio remoto de Azure)
+     * para hallar la imagen, sino que se devuelve la imagen por defecto.<br/>
+     * En caso contrario, no quedaria mas remedio que hallar la imagen adecuada
+     * accediendo a la base de datos; entonces de ello se encargara otro metodo
+     * y aqui se devuelve null.
+     * @param user usuario cuya imagen se consulta
+     * @return
+     * <ul><li>imagen por defecto, si su nivel de privacidad establecido
+     * no permite su visibilidad por parte del usuario que la consulta.
+     * </li><li>valor 'null', si su nivel de privacidad establecido si permite
+     * su visibilidad por parte del usuario que la consulta,
+     * y por tanto hubiera que mostrarla, teniendo entonces que descargarla
+     * de la base de datos
+     * </li></ul>
+     */
 	private byte[] avoidGettingImageFromDB(User user) {
 		if( user==null ) return getDefaultUserImage(user);
-    	/*
-    	// Si la entidad User mapeada en memoria ya tiene guardada la imagen,
-    	// devuelve esta en lugar de hacer un acceso a base de datos...
-    	// Lo dejo comentado, porque el mapeo ORM no es del todo fiable.
-    	// Si se descomenta, al cambiar de avatar no se actualizan bien
-    	// los avatares de la lista de publicaciones
-		if( user.getUserInfoPrivacity().getImage()!=null ){
-    		return user.getUserInfoPrivacity().getImage();
-    	}
-    	*/
 		// Si, por privacidad, la imagen no es visible al visitante,
 		// se devuelve la imagen por defecto:
     	User loggedUser = BeanUtils.getLoggedUser();
@@ -126,6 +141,12 @@ public class BeanUserImages implements Serializable {
     	return null;
 	}
     
+	/**
+	 * Halla el identificador (el nombre) de la imagen de perfil del usuario
+	 * dado. Se calcula mediante el atributo 'id' del User indicado.
+	 * @param userID usuario de quien se consulta el nombre de imagen
+	 * @return el nombre, sin la extension, de la imagen de perfil del usuario
+	 */
     private static String getUserImageCode(Long userID) {
 		String result = "";
 		int numZerosToAdd = 7 - userID.toString().length();
@@ -136,6 +157,11 @@ public class BeanUserImages implements Serializable {
 		return result;
 	}
 
+    /** Obtiene del directorio de la aplicacion (no de la base de datos)
+	 * la imagen por defecto adecuada para el usuario dado.
+	 * @param user usuario para quien se devueve la imagen
+	 * @return la imagen hallada
+	 */
 	private byte[] getDefaultUserImage(User user) {
 		if( user.getUserInfoPrivacity().getGender()==true ){
 			return getDefaultWomanImage();
@@ -144,6 +170,11 @@ public class BeanUserImages implements Serializable {
 		}
 	}
 	
+	/**
+	 * Obtiene del directorio de la aplicacion (no del repositorio remoto)
+	 * la imagen por defecto de los usuarios de sexo femenino.
+	 * @return la imagen hallada
+	 */
 	private byte[] getDefaultWomanImage() {
 		String fileLocation = FacesContext.getCurrentInstance()
 				.getExternalContext().getRealPath("/")
@@ -151,6 +182,11 @@ public class BeanUserImages implements Serializable {
 		return getDefaultImage(fileLocation);
 	}
 	
+	/**
+	 * Obtiene del directorio de la aplicacion (no del repositorio remoto)
+	 * la imagen por defecto de los usuarios de sexo masculino.
+	 * @return la imagen hallada
+	 */
 	private byte[] getDefaultManImage() {
 		String fileLocation = FacesContext.getCurrentInstance()
 				.getExternalContext().getRealPath("/")
@@ -162,6 +198,17 @@ public class BeanUserImages implements Serializable {
 	// METODOS PARA ACTUALIZAR LA IMAGEN DE PERFIL DE USUARIO
 	// // // // // // // // // // // // // // // // // // // //
 	
+	/**
+	 * Actualiza la imagen de perfil de usuario en el repositorio remoto
+	 * de Azure
+	 * @param userID atributo 'id' del User cuya imagen se actualiza
+	 * @param imagePart imagen que sobreescribe a la imagen actual del usuario
+	 * @return
+	 * <ul><li>la nueva imagen actualizada (es decir, el parametro 'imagePart'
+	 * convertido al tipo byte[]), si no se produce ninguna excepcion
+     * </li><li>valor 'null', si se produce cualquier excepcion
+     * </li></ul>
+	 */
 	public static byte[] updateUserImage(Long userID, Part imagePart) {
 		byte[] imageBytes = null;
 		try{
@@ -184,14 +231,29 @@ public class BeanUserImages implements Serializable {
 	// METODOS PARA OBTENER LOS ICONOS DE PAIS DE ORIGEN Y UBICACION
 	// // // // // // // // // // // // // // // // // // // // // //
 	
+	/**
+	 * Halla el icono de la bandera del pais de origen del usuario logueado.
+	 * @return la imagen hallada
+	 */
 	public byte[] getLoggedUserOriginImage() {
 		return getUserOriginImage( BeanUtils.getLoggedUser() );
     }
 	
+	/**
+	 * Halla el icono de la bandera del pais de ubicacion del usuario logueado.
+	 * @return la imagen hallada
+	 */
 	public byte[] getLoggedUserLocationImage() {
 		return getUserLocationImage( BeanUtils.getLoggedUser() );
     }
 	
+	/**
+	 * Halla el icono de la bandera del pais de origen del usuario dado.
+	 * Si el usuario no tiene establecido un pais de origen, se devuelve
+	 * el icono por defecto, que es una bandera blanca.
+	 * @param user usuario cuya imagen se consulta
+	 * @return la imagen hallada
+	 */
 	public byte[] getUserOriginImage(User user) {
 		// Este metodo se usa en el snippet "profile_header_userData.xhtml"
 		// y en las listas de contactos
@@ -203,6 +265,13 @@ public class BeanUserImages implements Serializable {
     	return originImage;
 	}
 	
+	/**
+	 * Halla el icono de la bandera del pais de ubicacion del usuario dado.
+	 * Si el usuario no tiene establecido un pais de origen, se devuelve
+	 * el icono por defecto, que es una bandera blanca.
+	 * @param user usuario cuya imagen se consulta
+	 * @return la imagen hallada
+	 */
 	public byte[] getUserLocationImage(User user) {
 		// Este metodo se usa en el snippet "profile_header_userData.xhtml"
 		// y en las listas de contactos
@@ -214,11 +283,19 @@ public class BeanUserImages implements Serializable {
     	return locationImage;
 	}
 	
+	/**
+	 * Halla el icono de la bandera correspondiente a un pais,
+	 * guardado en el repositorio remoto de Azure.
+	 * @param country objeto Country que representa al pais cuya bandera se
+	 * consulta
+	 * @return la imagen hallada
+	 */
 	private byte[] getCountryImage(Country country) {
 		if( country==null ) return null;
 		try{
 			String containerName = "data-country-flagicon";
-			List<String> extensions=BeanSettingsUser.getProfileImageExtensions();
+			List<String> extensions =
+					BeanSettingsUser.getProfileImageExtensions();
 			return ManagementBlobs.getImageFromAzureStorage(
 					country.getCodeIso3166(), containerName, "gif", extensions);
 		}catch( Exception e ){
@@ -228,6 +305,11 @@ public class BeanUserImages implements Serializable {
 		}
 	}
 	
+	/**
+	 * Obtiene del directorio de la aplicacion (no del repositorio remoto)
+	 * el icono por defecto de un pais, que es una bandera blanca.
+	 * @return la imagen hallada
+	 */
 	private byte[] getDefaultFlag() {
 		String fileLocation = FacesContext.getCurrentInstance()
 				.getExternalContext().getRealPath("/")
@@ -239,10 +321,19 @@ public class BeanUserImages implements Serializable {
 	// METODOS PARA OBTENER LOS ICONOS DEL GENERO
 	// // // // // // // // // // // // // // // //
 	
+	/**
+	 * Halla el icono del genero del usuario logueado.
+	 * @return la imagen hallada
+	 */
 	public byte[] getLoggedUserGenderImage() {
 		return getUserGenderImage( BeanUtils.getLoggedUser() );
     }
 	
+	/**
+	 * Halla el icono del genero del usuario dado.
+	 * @param user usuario cuyo icono se consulta
+	 * @return la imagen hallada
+	 */
 	public byte[] getUserGenderImage(User user) {
 		// Este metodo se usa en el snippet "profile_hader_userData.xhtml"
 		boolean gender = user.getUserInfoPrivacity().getGender();
@@ -261,6 +352,12 @@ public class BeanUserImages implements Serializable {
 	// OTROS METODOS
 	// // // // // //
 	
+	/**
+	 * Lee un fichero de imagen ubicado en un directorio del sistema
+	 * (previsiblemente, en el directorio del proyecto).
+	 * @param fileLocation directorio donde esta ubicado el fichero de imagen
+	 * @return la imagen hallada
+	 */
 	private byte[] getDefaultImage(String fileLocation) {
 		byte[] result = null;
 		try{
@@ -273,6 +370,11 @@ public class BeanUserImages implements Serializable {
 		return result;
 	}
 	
+	/**
+	 * Convierte un fichero de tipo Part a tipo byte[].
+	 * @param imagePart fichero que se desea convertir
+	 * @return la imagen que se recibe, convertida al tipo byte[]
+	 */
 	public static byte[] convertImagePartToBytes(Part imagePart) {
 		InputStream partInputStream = null;
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

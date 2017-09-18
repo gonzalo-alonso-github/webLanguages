@@ -16,25 +16,41 @@ import com.loqua.logging.LoquaLogger;
 import com.loqua.remote.model.Feed;
 import com.loqua.remote.model.ForumThread;
 
+/** Convierte las noticias descargadas por el componente {@link Gatherer}
+ * en objetos {@link ForumThread} y los agrupa en una lista
+ */
 public class Parser {
 
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
+	/** Lista de hilos del foro creados en la ultima hora (es decir,
+	 * en la anterior ejecucion programada por el {@link SchedulerCrawler}).
+	 * Se utiliza para comprobar que no se procesan noticias repetidas */
 	private List<ForumThread> threadsParsedInLastJob;
+	
+	/** Lista de hilos del foro que se van creando en la actual
+	 * ejecucion programada por el {@link SchedulerCrawler}. Se utiliza para
+	 * comprobar que no se procesan noticias repetidas, y tambien para devolver
+	 * a la vez todos los hilos obtenidos durante esta ejecucion */
 	private List<ForumThread> threadsParsedInCurrentJob;
+	
+	/** Fuente de la que se descargan las noticias */
 	private Feed feedToParse;
+	
+	/** Campos de la noticia original que deben verificarse y procesarse */
 	private String[] fieldsToParse = {
 			"title","guid","link","pubDate","description" };
 	
-	/* En general todos los Feeds utilizan el mismo patron para la fecha:
-	"EEE, dd MMM yyyy HH:mm:ss Z". Ejemplo: "Wed, 4 Jul 2001 12:08:56 -0700"
-	Pero algunos usan "d" en lugar de "dd",
-	y otros (el de "Pour La Science") usan "yy" en vez de "yyyy".
-	Por tanto se ha elegido un patron al que todos se suelen adaptar.
-	Aun asi, por si acaso, se agregan otros patrones de fecha */
+	/** Array que contiene los patrones de fecha con los que se verifica si
+	 * la fecha de las noticias esta bien formada. <br/> 
+	 * En general todos los Feeds utilizan el mismo patron para la fecha:
+	 * "EEE, dd MMM yyyy HH:mm:ss Z". <br/>
+	 * Ejemplo: "Wed, 4 Jul 2001 12:08:56 -0700".<br/>
+	 * Pero algunos usan "d" en lugar de "dd",
+	 * y otros (el de "Pour La Science") usan "yy" en vez de "yyyy".
+	 * Por tanto se ha elegido un patron al que todos se suelen adaptar.
+	 * Aun asi, por si acaso, se agregan otros patrones de fecha. */
 	private static final String[] datePatterns = { 
 		 "EEE, d MMM yy HH:mm:ss Z", //Wed, 4 Jul 2001 12:08:56 -0700
 		 "yyyy.MM.dd G 'at' HH:mm:ss z", //2001.07.04 AD at 12:08:56 PDT
@@ -49,6 +65,11 @@ public class Parser {
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/**
+	 * Constructor que inicializa los atributos de la clase
+	 * @param threadsLastJob lista de objetos {@link ForumThread}
+	 * con la que se inicializa el atributo {@link #threadsParsedInLastJob}
+	 */
 	public Parser(List<ForumThread> threadsLastJob){
 		threadsParsedInLastJob = threadsLastJob;
 		threadsParsedInCurrentJob = new ArrayList<ForumThread>();
@@ -58,6 +79,13 @@ public class Parser {
 	// METODOS
 	// // // //
 	
+	/**
+	 * Genera una lista de objetos {@link ForumThread} a partir de todas
+	 * las noticias dadas de una fuente
+	 * @param newsOfFeed objeto NodeList, extraido de la respuesta xml de la
+	 * fuente de noticias, que contiene todas las noticias de la fuente
+	 * @throws Exception
+	 */
 	public void parseRawNewsOfFeed( NodeList newsOfFeed )
 			throws Exception{
 		for( int i = 0; i < newsOfFeed.getLength(); i++ ){
@@ -69,6 +97,14 @@ public class Parser {
 		}
 	}
 
+	/** Comprueba que todos los campos de la noticia dada son considerados
+	 * aceptables; en tal caso genera un objeto {@link ForumThread} a partir
+	 * de ellos.
+	 * @param element objeto Element, extraido de la respuesta xml de la
+	 * fuente de noticias, que contiene los datos de una noticia
+	 * @return Si se verifican los datos, devuelve el objeto ForumThread
+	 * generado.<br> Si los datos no son aceptables, devuelve null.
+	 */
 	private ForumThread verifiedForumThread(Element element){
 		ForumThread result = null;
 		Date verifiedDate = verifyDate(getElementValue(element, "pubDate"));
@@ -81,7 +117,19 @@ public class Parser {
 		return result;
 	}
 	
-	
+	/**
+	 * Comprueba que la fecha dada de una noticia se considera aceptable.
+	 * No se considera aceptable en los siguientes casos: <ul>
+	 * <li>La cadena de texto que se recibe como fecha de la noticia, es null
+	 * o esta vacia</li>
+	 * <li>La fecha dada no cumple el formato de los patrones indicados en 
+	 * el atributo {@link #datePatterns}</li>
+	 * <li>La fecha dada de la noticia tiene una antiguedad superior a
+	 * una hora (es decir, es mas antigua que la anterior ejecucion
+	 * programada por el {@link SchedulerCrawler})</li></ul>
+	 * @param dateString fecha que se verifica, perteneciente a una noticia
+	 * @return fecha de la noticia, o null si esta no se considera aceptable
+	 */
 	private Date verifyDate(String dateString){
 		Date result = null;
 		if( dateString==null || dateString.isEmpty() ) return null;
@@ -111,6 +159,16 @@ public class Parser {
 		return result;
 	}
 	
+	/**
+	 * Comprueba que los campos indicados de la noticia dada no son null
+	 * ni estan vacios
+	 * @param element objeto Element, extraido de la respuesta xml de la
+	 * fuente de noticias, que contiene los datos de una noticia
+	 * @param fieldsToParse lista de campos de la noticia que se comprueban
+	 * @return
+	 * 'true' si ninguno de los campos indicados es null o esta vacio <br/>
+	 * 'false' si alguno de los campos indicados es null o esta vacio
+	 */
 	private boolean verifyNotEmptyFields(Element element,
 			String[] fieldsToParse) {
 		try{
@@ -132,6 +190,15 @@ public class Parser {
 		return true;
 	}
 	
+	/**
+	 * 
+	 * @param element objeto Element, extraido de la respuesta xml de la
+	 * fuente de noticias, que contiene los datos de una noticia
+	 * @return
+	 * 'true' si el campo 'guid' no coincide con el de ninguna noticia anterior
+	 * <br/>
+	 * 'false' si el campo 'guid' coincide con el de alguna noticia anterior
+	 */
 	private boolean verifyNotRepeated(Element element) {
 		if( verifyNotRepeatedGuid(element) && verifyNotRepeatedTitle(element) ){
 			return true;
@@ -139,6 +206,17 @@ public class Parser {
 		return false;
 	}
 
+	/**
+	 * Halla si se considera que la noticia esta repetida, comprobando si
+	 * los campos 'guid' y 'title' de la noticia dada no coinciden con
+	 * el de ninguna de las noticias ya procesadas en esta ejecucion
+	 * ni en la ejecucion anterior.
+	 * @param element objeto Element, extraido de la respuesta xml de la
+	 * fuente de noticias, que contiene los datos de una noticia
+	 * @return
+	 * 'true' si la noticia no esta repetida <br/>
+	 * 'false' si la noticia esta repetida
+	 */
 	private boolean verifyNotRepeatedGuid(Element element) {
 		/* La lista "threadsParsedInLastJob" se ha tomado de la bdd
 		y contiene solo los Threads que se introdujeron en bdd en la ultima hora.
@@ -164,6 +242,17 @@ public class Parser {
 		return true;
 	}
 	
+	/**
+	 * Comprueba que el campo 'title' de la noticia dada no coincide con
+	 * el de ninguna de las noticias ya procesadas en esta ejecucion
+	 * ni en la ejecucion anterior
+	 * @param element objeto Element, extraido de la respuesta xml de la
+	 * fuente de noticias, que contiene los datos de una noticia
+	 * @return
+	 * 'true' si el campo 'title' no coincide con el de ninguna noticia anterior
+	 * <br/>
+	 * 'false' si el campo 'title' coincide con el de alguna noticia anterior
+	 */
 	private boolean verifyNotRepeatedTitle(Element element) {
 		/* La lista "threadsParsedInLastJob" se ha tomado de la bdd
 		y contiene solo los Threads que se introdujeron en bdd en la ultima hora.
@@ -189,12 +278,28 @@ public class Parser {
 		return true;
 	}
 
+	/**
+	 * Crea un mensaje de log que indica que una noticia se descarta debido a
+	 * que el campo dado coincide con el de otra noticia ya procesada.
+	 * @param field campo de la noticia que causa que esta se descarte,
+	 * por coincidir con otra noticia. Predeciblemente deberia ser un campo
+	 * clave, como el 'guid' o el 'title' de la noticia.
+	 * @return mensaje de log generado
+	 */
 	private String getMsgForRepeatedField(String field) {
 		return "Another Thread with the same '" + field
 				+ "' has already been Parsed. The news was discarded. "
 				+ "The Feed was '" + feedToParse.getName() + "'";
 	}
 
+	/**
+	 * Genera un objeto {@link ForumThread} a partir de los datos
+	 * de la noticia dada
+	 * @param element objeto Element, extraido de la respuesta xml de la
+	 * fuente de noticias, que contiene los datos de una noticia
+	 * @param date fecha, ya verificada, de la noticia
+	 * @return el objeto ForumThread generado
+	 */
 	private ForumThread generateForumThread(
 			Element element, Date date) {
 		ForumThread thread = new ForumThread();
@@ -214,6 +319,14 @@ public class Parser {
 		return thread;
 	}
 	
+	/**
+	 * Halla el valor del campo dado de la noticia indicada
+	 * @param parent element objeto Element, extraido de la respuesta xml de la
+	 * fuente de noticias, que contiene los datos de la noticia
+	 * @param field campo de la noticia del cual se obtiene el valor
+	 * @return valor de la etiqueta indicda por el parametro 'field' del
+	 * elemennto indicado por el parametro 'parent'
+	 */
 	private String getElementValue(Element parent, String field) {
 		NodeList label = parent.getElementsByTagName(field);
 		if( label==null ) return null;
@@ -222,6 +335,12 @@ public class Parser {
 		return getCharacterDataFromElement(element);
 	}
 
+	/**
+	 * Convierte a una cadena de texto el valor del elemento dado.
+	 * @param element objeto Element, extraido de la respuesta xml de la
+	 * fuente de noticias, que contiene los datos de un campo de la noticia
+	 * @return cadena de texto extraida a partir del valr del elemento dado
+	 */
 	private String getCharacterDataFromElement(Element element){
 		Node child = element.getFirstChild();
 		if (child instanceof CharacterData) {
@@ -233,6 +352,8 @@ public class Parser {
 	}
 	
 	/**
+	 * Recorta una cadena de texto limitando su longitud al numero de
+	 * caracteres indicado.
 	 * @param limit limite maximo de caracteres permitidos en el texto dado,
 	 * contando espacios en blanco
 	 * @param text texto que se va a recortar
@@ -254,10 +375,7 @@ public class Parser {
 	public List<ForumThread> getThreadsParsedInCurrentJob() {
 		return threadsParsedInCurrentJob;
 	}
-	/*public void setThreadsParsedInCurrentJob(List<ForumThread> threads) {
-		threadsParsedInCurrentJob = threads;
-	}*/
-
+	
 	public void setFeed(Feed feed) {
 		this.feedToParse = feed;
 	}

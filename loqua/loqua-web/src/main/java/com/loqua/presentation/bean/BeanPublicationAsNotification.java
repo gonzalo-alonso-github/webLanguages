@@ -14,22 +14,33 @@ import com.loqua.model.Publication;
 import com.loqua.presentation.bean.applicationBean.BeanSettingsProfilePage;
 import com.loqua.presentation.logging.LoquaLogger;
 
+/**
+ * Bean encargado de realizar todas las operaciones
+ * relativas al manejo publicaciones que se muestran como notificaciones
+ * (estas se muestran en el menu horizontal superior de la pagina,
+ * o bien en la pagina 'notifications' para pantallas peque&ntilde;as).
+ * @author Gonzalo
+ */
 public class BeanPublicationAsNotification implements Serializable {
 	
 	private static final long serialVersionUID = 1;
 	
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
+	/** Lista de notificaciones recibidas por un usuario,
+	 * ordenadas por fecha descendientemente. El numero de ellas esta
+	 * limitado segun el valor del atributo {@link limitNotifications}. */
 	private List<Publication> lastNotifications;
+	
+	/** Numero maximo de notificaciones que se mostraran en la vista */
 	private Integer limitNotifications;
 
-	// Inyeccion de dependencia
+	/** Inyeccion de dependencia del {@link BeanLogin} */
 	@ManagedProperty(value="#{beanLogin}")
 	private BeanLogin beanLogin;
-	// Inyeccion de dependencia
+	
+	/** Inyeccion de dependencia del {@link BeanSettingsProfilePage} */
 	@ManagedProperty(value="#{beanSettingsProfilePage}")
 	private BeanSettingsProfilePage beanSettingsProfilePage;
 	
@@ -37,6 +48,9 @@ public class BeanPublicationAsNotification implements Serializable {
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
+	/** Constructor del bean. Inicializa los beans inyectados:
+	 * {@link BeanLogin} y {@link BeanSettingsProfilePage}
+	 */
 	@PostConstruct
 	public void init() {
 		initBeanLogin();
@@ -46,6 +60,7 @@ public class BeanPublicationAsNotification implements Serializable {
 		loadLastNotifications();
 	}
 	
+	/** Inicializa el objeto {@link BeanLogin} inyectado */
 	private void initBeanLogin() {
 		// Buscamos el BeanLogin en la sesion.
 		beanLogin = null;
@@ -59,13 +74,7 @@ public class BeanPublicationAsNotification implements Serializable {
 		}
 	}
 	
-	/**
-	 * Inicializa el BeanSettingsProfile perteneciente a esta clase.</br>
-	 * Si el BeanSettingsProfile ya fue inicializado,
-	 * simplemente se obtiene del contexto de aplicacion.</br>
-	 * Si el BeanSettingsProfile no existe en el contexto de aplicacion,
-	 * se crea y se guarda en sesion bajo la clave 'beanSettingsProfile'.
-	 */
+	/** Inicializa el objeto {@link BeanSettingsProfilePage} inyectado */
 	private void initBeanSettingsProfile() {
 		// Buscamos el BeanSettings en la sesion.
 		beanSettingsProfilePage = null;
@@ -81,6 +90,7 @@ public class BeanPublicationAsNotification implements Serializable {
 		}
 	}
 
+	/** Destructor del bean. */
 	@PreDestroy
 	public void end(){}
 	
@@ -88,6 +98,10 @@ public class BeanPublicationAsNotification implements Serializable {
 	// METODOS
 	// // // //
 	
+	/**
+	 * Inicializa el atributo {@link #lastNotifications}, consultando la lista
+	 * de notificaciones del usuario
+	 */
 	private void loadLastNotifications(){
 		try{
 			lastNotifications = Factories.getService().getServicePublication()

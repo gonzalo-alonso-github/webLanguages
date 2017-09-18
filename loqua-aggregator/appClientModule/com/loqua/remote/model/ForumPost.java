@@ -19,6 +19,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * Representa una participacion (un 'post') de un usuario en el foro, la cual
+ * puede ser un objeto {@link Comment} o {@link Correction}, clases que
+ * heredan de ForumPost
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "forumPost")
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
@@ -27,9 +33,12 @@ import javax.xml.bind.annotation.XmlTransient;
 public class ForumPost implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
 	// // // // // // //
 	// ATRIBUTOS
 	// // // // // // //
+	
+	/** Identificador del objeto y clave primaria de la entidad */
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) protected Long id;
 	protected Date date;
 	//@Transient protected String postType;
@@ -37,6 +46,8 @@ public class ForumPost implements Serializable {
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
+	
+	/** Usuario autor de la participacion ('post') en el foro */
 	@ManyToOne
 	@JoinColumn(name="user_id", referencedColumnName="id")
 	protected User user;
@@ -49,8 +60,14 @@ public class ForumPost implements Serializable {
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public ForumPost(){}
-		
+	
+	/**
+	 * Constructor que recibe las entidades asociadas a esta
+	 * @param user objeto User asociado al ForumPost
+	 * @param thread objeto ForumThread asociado al ForumPost
+	 */
 	public ForumPost(User user, ForumThread thread){
 		this.user = user;
 		this.forumThread = thread;
@@ -63,11 +80,11 @@ public class ForumPost implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  * ForumPosts <--> 1 User
 	 */
 	@XmlTransient
@@ -85,7 +102,7 @@ public class ForumPost implements Serializable {
 		return this;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  * ForumPosts <--> 1 Thread
 	 */
 	@XmlTransient
@@ -110,8 +127,8 @@ public class ForumPost implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	@XmlElement

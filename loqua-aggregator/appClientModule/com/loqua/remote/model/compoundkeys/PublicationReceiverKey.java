@@ -1,10 +1,26 @@
 package com.loqua.remote.model.compoundkeys;
 
+import com.loqua.remote.model.Publication;
+import com.loqua.remote.model.PublicationReceiver;
+import com.loqua.remote.model.User;
+
 import java.io.Serializable;
 
-@SuppressWarnings("serial")
+/**
+ * Representa la clave primaria de la entidad {@link PublicationReceiver}
+ * @author Gonzalo
+ */
 public class PublicationReceiverKey implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
+	
+	/** Clave primaria de la entidad {@link Publication}
+	 * a la que esta asociado el objeto PubicationReceiver
+	 */
 	Long publication;
+	/** Clave primaria de la entidad {@link User}
+	 * a la que esta asociado el objeto PubicationReceiver
+	 */
 	Long user;
 	
 	@Override

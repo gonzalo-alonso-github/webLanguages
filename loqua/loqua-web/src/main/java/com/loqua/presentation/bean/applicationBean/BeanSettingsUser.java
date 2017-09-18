@@ -18,45 +18,35 @@ import com.loqua.presentation.logging.LoquaLogger;
 /**
  * Administra la configuracion de propiedades de la aplicacion,
  * que son iguales para todas las sesiones de usuario,
- * que afectan en general a la interaccion de los mismos con las interfaces
+ * que afectan a la interaccion de los mismos con los formularios
+ * de las paginas en general.
  * @author Gonzalo
  */
 public class BeanSettingsUser implements Serializable {
 	
-	/**
-	 * Numero de version de la clase serializable.
-	 * @see Serializable#serialVersionUID
-	 */
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
-	/**
-	 * Limite maximo del peso de la imagen de perfil de usuario por defecto
-	 */
+	/** Limite maximo del peso de la imagen de perfil de usuario por defecto */
 	private static final int DEFAULT_AVATAR_SIZE_LIMIT_KB = 512;
 	
-	/**
-	 * Extensiones de imagen de perfil permitidas por defecto
-	 */
+	/** Extensiones de imagen de perfil permitidas por defecto */
 	private static final List<String> DEFAULT_AVATAR_EXTENSIONS = 
 			Arrays.asList("image/jpeg", "image/jpg", "image/png", "image/bmp");
 	
-	/**
-	 * Limite maximo del ancho de la imagen de perfil de usuario por defecto
+	/** Limite maximo del ancho de la imagen de perfil de usuario
+	 * por defecto
 	 */
 	private static final int DEFAULT_AVATAR_WIDTH = 500;
 	
-	/**
-	 * Limite maximo de la altura de la imagen de perfil de usuario por defecto
+	/** Limite maximo de la altura de la imagen de perfil de usuario
+	 * por defecto
 	 */
 	private static final int DEFAULT_AVATAR_HEIGHT = 500;
 	
-	/**
-	 * Mapa de pares clave-valor &lt;String, String&gt; donde cada elemento
+	/** Mapa de pares clave-valor &lt;String, String&gt; donde cada elemento
 	 * representa una propiedad especificada
 	 * en el fichero 'users.properties'.
 	 */
@@ -66,16 +56,13 @@ public class BeanSettingsUser implements Serializable {
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
-	/**
-	 * Construccion del bean.
-	 */
+	/** Constructor del bean. Inicializa el atributo
+	 * {@link #mapUserProperties} */
 	public BeanSettingsUser() {
 		loadMapUserProperties();
 	}
 
-	/**
-	 * Destruccion del bean
-	 */
+	/** Destructor del bean */
 	@PreDestroy
 	public void end(){}
 	
@@ -115,15 +102,15 @@ public class BeanSettingsUser implements Serializable {
 	// // // // // // //
 	
 	/**
-	 * Lee de la clase PrivacityData el listado de niveles de privacidad de los
-	 * datos de los usuarios, o de las acciones que llevan a cabo.
+	 * Lee de la clase {@link PrivacityData} el listado de niveles
+	 * de privacidad de los datos de los usuarios, o de las acciones
+	 * que llevan a cabo.
 	 * La lista devuelta puede ser utilizada en las vistas .xhtml para
-	 * presentar componentes selectOneMenu con los que editar la privacidad
+	 * presentar componentes SelectOneMenu con los que editar la privacidad
 	 * de algun dato personal, publicacion, o participacion en el foro.
-	 * 
 	 * @return
-	 * lista de los niveles de privacidad definidos en la clase PrivacityData
-	 * (PUBLIC, CONTACTS y PRIVATE)
+	 * lista de los niveles de privacidad definidos en la clase
+	 * {@link PrivacityData} ('PUBLIC', 'CONTACTS' y 'PRIVATE')
 	 */
 	public List<String> getListPrivacityLevels() {
 		List<String> result = PrivacityData.getPrivacityLevels();
@@ -134,7 +121,8 @@ public class BeanSettingsUser implements Serializable {
 	 * Comprueba que la propiedad 'profileImageLimitKB'
 	 * del fichero 'users.properties' esta inicializada con un valor aceptable,
 	 * y si es asi devuelve su valor.<br/>
-	 * Si no es asi, devuelve el valor por defecto: DEFAULT_AVATAR_SIZE_LIMIT_KB.
+	 * Si no es asi, devuelve el valor por defecto
+	 * {@link #DEFAULT_AVATAR_SIZE_LIMIT_KB}.
 	 * @return
 	 * limite maximo del peso de la imagen de perfil de usuario
 	 */
@@ -159,7 +147,8 @@ public class BeanSettingsUser implements Serializable {
 	 * Comprueba que la propiedad 'profileImageMaxWidthPx'
 	 * del fichero 'users.properties' esta inicializada con un valor aceptable,
 	 * y si es asi devuelve su valor.<br/>
-	 * Si no es asi, devuelve el valor por defecto: DEFAULT_AVATAR_WIDTH.
+	 * Si no es asi, devuelve el valor por defecto:.
+	 * {@link #DEFAULT_AVATAR_WIDTH}.
 	 * @return
 	 * limite maximo de la anchura de la imagen de perfil de usuario
 	 */
@@ -185,7 +174,8 @@ public class BeanSettingsUser implements Serializable {
 	 * Comprueba que la propiedad 'profileImageMaxHeightPx'
 	 * del fichero 'users.properties' esta inicializada con un valor aceptable,
 	 * y si es asi devuelve su valor.<br/>
-	 * Si no es asi, devuelve el valor por defecto: DEFAULT_AVATAR_WIDTH.
+	 * Si no es asi, devuelve el valor por defecto:
+	 * {@link #DEFAULT_AVATAR_HEIGHT}.
 	 * @return
 	 * limite maximo de la altura de la imagen de perfil de usuario
 	 */
@@ -211,9 +201,11 @@ public class BeanSettingsUser implements Serializable {
 	 * Comprueba que la propiedad 'profileImageExtensions'
 	 * del fichero 'users.properties' esta inicializada con un valor aceptable,
 	 * y si es asi devuelve su valor.<br/>
-	 * Si no es asi, devuelve el valor por defecto: DEFAULT_AVATAR_EXTENSIONS.
+	 * Si no es asi, devuelve el valor por defecto:
+	 * {@link #DEFAULT_AVATAR_EXTENSIONS}.
 	 * @return
-	 * extensiones de imagen permitidas por defecto
+	 * lista de extensiones de imagen permitidas por defecto.<br/>
+	 * Unos ejemplos: 'image/jpeg', 'image/jpg', 'image/png', 'image/bmp'.
 	 */
 	public static List<String> getProfileImageExtensions() {
 		List<String> result = DEFAULT_AVATAR_EXTENSIONS;

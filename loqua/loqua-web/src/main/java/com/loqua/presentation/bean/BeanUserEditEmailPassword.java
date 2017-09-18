@@ -22,21 +22,34 @@ import com.loqua.presentation.bean.applicationBean.BeanSettingsActionLimits;
 import com.loqua.presentation.bean.requestBean.BeanActionResult;
 import com.loqua.presentation.logging.LoquaLogger;
 
+/**
+ * Bean encargado de realizar todas las operaciones
+ * relativas a la edicion de email o de contrase&ntilde;a del usuario,
+ * incluyendo la verificacion de dichas acciones mediante el envio de un email
+ * de confirmacion.
+ * @author Gonzalo
+ */
 public class BeanUserEditEmailPassword implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
+	/** Parametro 'confirm' recibido en la URL. Es una cadena aleatoria
+	 * (de 26 caracteres) que permite identificar
+	 * al usuario que accede a la URL de confirmacion de su cambio
+	 * de email o contrase&ntilde;a. <br/>
+	 * Se utiliza en las vistas .xhtml ubicadas en la ruta
+	 * 'pages/confirmationPages/', y en ellas se inicializa
+	 * mediante el &lt;f:viewParam&gt; que invoca al metodo set del atributo. */
 	private String urlConfirm;
 	
-	// Inyeccion de dependencia
+	/** Inyeccion de dependencia del {@link BeanLogin} */
 	@ManagedProperty(value="#{beanLogin}")
 	private BeanLogin beanLogin;
-	// Inyeccion de dependencia
+	
+	/** Inyeccion de dependencia del {@link BeanSettingsActionLimits} */
 	@ManagedProperty(value="#{beanSettingsActionLimits}")
 	private BeanSettingsActionLimits beanSettingsActionLimits;
 	
@@ -44,12 +57,16 @@ public class BeanUserEditEmailPassword implements Serializable{
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
+	/** Constructor del bean. Inicializa los beans inyectados:
+	 * {@link BeanLogin} y {@link BeanSettingsActionLimits}
+	 */
 	@PostConstruct
 	public void init() {
 		initBeanLogin();
 		initBeanSettingsActionLimits();
 	}
 	
+	/** Inicializa el objeto {@link BeanLogin} inyectado */
 	private void initBeanLogin() {
 		// Buscamos el BeanLogin en la sesion.
 		beanLogin = null;
@@ -63,6 +80,7 @@ public class BeanUserEditEmailPassword implements Serializable{
 		}
 	}
 	
+	/** Inicializa el objeto {@link BeanSettingsActionLimits} inyectado */
 	private void initBeanSettingsActionLimits() {
 		// Buscamos el BeanSettingsActionLimits en la sesion.
 		beanSettingsActionLimits = null;
@@ -78,6 +96,7 @@ public class BeanUserEditEmailPassword implements Serializable{
 		}
 	}
 
+	/** Destructor del bean. */
 	@PreDestroy
 	public void end(){}
 	
@@ -87,6 +106,20 @@ public class BeanUserEditEmailPassword implements Serializable{
 	
 	// METODOS PARA ENVIAR EL EMAIL DE CONFIMACION AL EMAIL ORIGINAL
 	
+	/**
+	 * Genera un nuevo objeto {@link ChangeEmail} invocando al metodo
+	 * {@link #sendEmailForEditEmail}.
+	 * @param beanUserView objeto {@link BeanUserView} cuyo atributo
+	 * {@link BeanUserView#user} almacena, entre otros datos, el nuevo email
+	 * introducido por el usuario en la vista
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 * @return
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si se produce alguna excepcion, devuelve la regla de navegacion
+	 * que redirige a la pagina de error desconocido ('errorUnexpected').
+	 * @see #sendEmailForEditEmail
+	 */
 	public String generateEmailForEditEmail(
 			BeanUserView beanUserView, BeanActionResult beanActionResult){
 		beanActionResult.setFinish(false);
@@ -96,7 +129,8 @@ public class BeanUserEditEmailPassword implements Serializable{
 		// (porque el email original sera guardado en la tabla ChangeEmail)
 		User updatedUser = beanLogin.getLoggedUser();
 		// Ahora 'updatedUser.getEmail()' almacena el email previo al cambio,
-		// mientras que 'beanUserView.getUser().getEmail()' almacena el nuevo email.
+		// mientras que 'beanUserView.getUser().getEmail()' almacena
+		// el nuevo email.
 		// Ambos valores seran utilizados en la logica de negocio,
 		// para guardar el nuevo ChangeEmail en la tabla
 		try {
@@ -120,9 +154,21 @@ public class BeanUserEditEmailPassword implements Serializable{
 		return action;
 	}
 	
+	/**
+	 * Envia al email original del usuario un correo que muestra un enlace
+	 * para que el usuario confirme su cambio de email.
+	 * @param updatedUser usuario que actualiza su email
+	 * @param newEmail la nueva direccion de email que desea establecer
+	 * el usuario
+	 * @return
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si se produce alguna excepcion, devuelve la regla de navegacion
+	 * que redirige a la pagina de error desconocido ('errorUnexpected').
+	 * @throws EntityAlreadyFoundException
+	 */
 	private String sendEmailForEditEmail(User updatedUser, String newEmail)
 			throws EntityAlreadyFoundException {
-		List<String> content = new ArrayList<String>();
+		String content = "";
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ResourceBundle bundle = facesContext.getApplication().getResourceBundle(
 				facesContext, "msgs");
@@ -135,16 +181,14 @@ public class BeanUserEditEmailPassword implements Serializable{
 		String uri = req.getRequestURL().toString();
 		String url = uri.substring(0, uri.length()-req.getRequestURI().length())
 				+ req.getContextPath() + "/";
-		// Aqui bastaria que 'content' sea un simple String y no List<String>,
-		// pero para facilitar la uniformidad del codigo, queria que este metodo
-		// se parezca al de BeanRestorePassword.sendEmailForPasswordRestore
-		content.add(0, bundle.getString("mailContentEditEmail01")
+		content = bundle.getString("mailContentEditEmail01")
 				+ "\n\n" + bundle.getString("mailContentAdviceRemove")
 				+ "\n\n" + bundle.getString("mailContentEditEmail02")
 				+ ":" +"\n\t" + newEmail
 				+ "\n\n" + bundle.getString("mailContentEditEmail03")
 				+ ":" +"\n\t" + url
-				+ "pages/confirmationPages/emailChange_first_confirm.xhtml?confirm=");
+				+ "pages/confirmationPages/"
+				+ "emailChange_first_confirm.xhtml?confirm=";
 		// Enviar el correo:
 		String result = Factories.getService().getServiceUserAccessDataChange()
 				.sendEmailForEditEmail(updatedUser, newEmail, content, subject,
@@ -154,7 +198,22 @@ public class BeanUserEditEmailPassword implements Serializable{
 	
 	// METODOS PARA CONFIRMAR EL EMAIL ORIGINAL EDITADO
 	
-	public String confirmEmailChangeFirstStep(BeanActionResult beanActionResult){
+	/**
+	 * Cambia el estado del objeto {@link ChangeEmail} (cuyo atributo
+	 * {@link ChangeEmail#urlConfirm} coincide con el parametro
+	 * 'confirm' de la URL de la vista) estableciendo a 'true' el valor de
+	 * su propiedad {@link ChangeEmail#confirmedPreviousEmail}. <br/>
+	 * Despues de eso invoca al metodo {@link #sendEmailForEditEmailSecondStep}.
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 * @return
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si se produce alguna excepcion, devuelve la regla de navegacion
+	 * que redirige a la pagina de error desconocido ('errorUnexpected').
+	 * @see #sendEmailForEditEmailSecondStep
+	 */
+	public String confirmEmailChangeFirstStep(
+			BeanActionResult beanActionResult){
 		beanActionResult.setFinish(false);
 		beanActionResult.setSuccess(false);
 		String action = null;
@@ -190,9 +249,20 @@ public class BeanUserEditEmailPassword implements Serializable{
 		return action;
 	}
 	
+	/**
+	 * Envia al email original del usuario un correo que muestra un enlace
+	 * para que el usuario confirme su cambio de email por segunda vez.
+	 * @param emailChange el objeto {@link ChangeEmail} que se confirma por
+	 * segunda vez
+	 * @return
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si se produce alguna excepcion, devuelve la regla de navegacion
+	 * que redirige a la pagina de error desconocido ('errorUnexpected').
+	 * @throws EntityNotFoundException
+	 */
 	private void sendEmailForEditEmailSecondStep(ChangeEmail emailChange)
 			throws EntityNotFoundException {
-		List<String> content = new ArrayList<String>();
+		String content = "";
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ResourceBundle bundle = facesContext.getApplication().getResourceBundle(
 				facesContext, "msgs");
@@ -206,16 +276,14 @@ public class BeanUserEditEmailPassword implements Serializable{
 		String uri = req.getRequestURL().toString();
 		String url = uri.substring(0, uri.length()-req.getRequestURI().length())
 				+ req.getContextPath() + "/";
-		// Aqui bastaria que 'content' sea un simple String y no List<String>,
-		// pero para facilitar la uniformidad del codigo, queria que este metodo
-		// se parezca al de BeanRestorePassword.sendEmailForPasswordRestore
-		content.add(0, bundle.getString("mailContentEditEmailSecondStep01")
+		content= bundle.getString("mailContentEditEmailSecondStep01")
 			+ "\n\n" + bundle.getString("mailContentAdviceRemove")
 			+ "\n\n" + bundle.getString("mailContentEditEmailSecondStep02")
 					.replaceFirst("\\?1", emailChange.getPreviousEmail())
 			+ "\n\n" + bundle.getString("mailContentEditEmailSecondStep03")
 			+ ":" +"\n\t" + url
-			+ "pages/confirmationPages/emailChange_second_confirm.xhtml?confirm=");
+			+ "pages/confirmationPages/"
+			+ "emailChange_second_confirm.xhtml?confirm=";
 		
 		// Enviar el correo:
 		Factories.getService().getServiceUserAccessDataChange()
@@ -224,7 +292,21 @@ public class BeanUserEditEmailPassword implements Serializable{
 	
 	// METODOS PARA CONFIRMAR EL EMAIL NUEVO EDITADO
 	
-	public String confirmEmailChangeSecondStep(BeanActionResult beanActionResult){
+	/**
+	 * Cambia el estado del objeto {@link ChangeEmail} (cuyo atributo
+	 * {@link ChangeEmail#urlConfirm} coincide con el parametro
+	 * 'confirm' de la URL de la vista) estableciendo a 'true' el valor de
+	 * su propiedad {@link ChangeEmail#confirmedNewEmail}. <br/>
+	 * Despues de eso actualiza finalmente el email del usuario.
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 * @return
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si se produce alguna excepcion, devuelve la regla de navegacion
+	 * que redirige a la pagina de error desconocido ('errorUnexpected').
+	 */
+	public String confirmEmailChangeSecondStep(
+			BeanActionResult beanActionResult){
 		beanActionResult.setFinish(false);
 		beanActionResult.setSuccess(false);
 		String action = null;
@@ -263,13 +345,28 @@ public class BeanUserEditEmailPassword implements Serializable{
 		return action;
 	}
 	
+	/**
+	 * Halla el objeto {@link ChangeEmail} segun el atributo
+	 * {@link ChangeEmail#urlConfirm}
+	 * @return el objeto ChangeEmail obtenido, o valor 'null' si no se
+	 * encuentra
+	 */
 	private ChangeEmail getEmailChangeByUrlConfirm() {
 		ChangeEmail objectChangeEmail = null;
-		objectChangeEmail = Factories.getService().getServiceUserAccessDataChange()
+		objectChangeEmail = 
+				Factories.getService().getServiceUserAccessDataChange()
 				.getEmailChangeByUrlConfirm(urlConfirm);
 		return objectChangeEmail;
 	}
 	
+	/**
+	 * Cambia el estado del objeto {@link ChangeEmail} indicado
+	 * estableciendo a 'true' el valor de
+	 * su propiedad {@link ChangeEmail#confirmedPreviousEmail}
+	 * @param emailChange objeto {@link ChangeEmail} que se actualiza
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 */
 	private void setPreviousEmailToConfirmed(
 			ChangeEmail emailChange, BeanActionResult beanActionResult){
 		emailChange.setConfirmedPreviousEmail(true);
@@ -283,6 +380,14 @@ public class BeanUserEditEmailPassword implements Serializable{
 		}
 	}
 	
+	/**
+	 * Cambia el estado del objeto {@link ChangeEmail} indicado
+	 * estableciendo a 'true' el valor de
+	 * su propiedad {@link ChangeEmail#confirmedNewEmail}
+	 * @param emailChange objeto {@link ChangeEmail} que se actualiza
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 */
 	private void setNewEmailToConfirmed(
 			ChangeEmail emailChange, BeanActionResult beanActionResult){
 		emailChange.setConfirmedNewEmail(true);
@@ -296,10 +401,15 @@ public class BeanUserEditEmailPassword implements Serializable{
 		}
 	}
 	
+	/**
+	 * Actualiza en el sistema los datos del usuario indicado.
+	 * @param user usuario que se actualiza
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 */
 	private void updateUser(User user, BeanActionResult beanActionResult) {
 		try{
-			Factories.getService().getServiceUser()
-				.updateAllDataByUser(user, false);
+			Factories.getService().getServiceUser().updateAllDataByUser(user);
 		} catch (EntityNotFoundException e) {
 			beanActionResult.setMsgActionResult("errorUnknownUrl");
 			log.error("EntityNotFoundException at 'updateUser()'");
@@ -310,6 +420,20 @@ public class BeanUserEditEmailPassword implements Serializable{
 	// METODOS PARA QUE EL USUARIO EDITE SU CONTRASENA
 	// // // // // // // // // // // // // // // // // //
 	
+	/**
+	 * Genera un nuevo objeto {@link ChangePassword} invocando al metodo
+	 * {@link #sendEmailForEditPassword}.
+	 * @param beanUserView objeto {@link BeanUserView} cuyo atributo
+	 * {@link BeanUserView#user} almacena, entre otros datos, la
+	 * nueva contrase&ntilde;a introducida por el usuario en la vista.
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 * @return
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si se produce alguna excepcion, devuelve la regla de navegacion
+	 * que redirige a la pagina de error desconocido ('errorUnexpected').
+	 * @see #sendEmailForEditPassword
+	 */
 	public String generateEmailForEditPassword(
 			BeanUserView beanUserView, BeanActionResult beanActionResult) {
 		beanActionResult.setFinish(false);
@@ -338,6 +462,18 @@ public class BeanUserEditEmailPassword implements Serializable{
 		return action;
 	}
 	
+	/**
+	 * Envia al email del usuario un correo que muestra un enlace para que 
+	 * confirme su cambio de contrase&ntilde;a.
+	 * @param updatedUser usuario que actualiza su contrase&ntilde;a
+	 * @param newEmail la nueva contrase&ntilde;a que desea establecer
+	 * el usuario
+	 * @return
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si se produce alguna excepcion, devuelve la regla de navegacion
+	 * que redirige a la pagina de error desconocido ('errorUnexpected').
+	 * @throws EntityAlreadyFoundException
+	 */
 	private String sendEmailForEditPassword(User updatedUser, String newPass) 
 			throws EntityAlreadyFoundException {
 		List<String> content = new ArrayList<String>();
@@ -352,25 +488,38 @@ public class BeanUserEditEmailPassword implements Serializable{
 		HttpServletRequest req = (HttpServletRequest)
 				facesContext.getExternalContext().getRequest();
 		String uri = req.getRequestURL().toString();
-		String url = uri.substring(0, uri.length()-req.getRequestURI().length())
+		String url=uri.substring(0, uri.length()-req.getRequestURI().length())
 				+ req.getContextPath() + "/";
 		content.add(0, bundle.getString("mailContentEditPassword01")
 				+ "\n\n" + bundle.getString("mailContentAdviceRemove")
 				+ "\n\n" + bundle.getString("mailContentEditPassword02")
-				+ ":" +"\n\t" + url
-				+ "pages/confirmationPages/passwordChange_confirm.xhtml?confirm=");
+				+ ":" +"\n\t" + url + "pages/confirmationPages/"
+				+ "passwordChange_confirm.xhtml?confirm=");
 		content.add(1, "\n\n" + bundle.getString("mailContentEditPassword03")
 				+ ":" + "\n\t");
 		// Enviar el correo:
 		String result = Factories.getService()
 				.getServiceUserAccessDataChange()
-				.sendEmailForEditPassword(updatedUser, newPass, content, subject,
-						beanSettingsActionLimits.getMapActionLimitsProperties());
+				.sendEmailForEditPassword(updatedUser,newPass,content,subject,
+					beanSettingsActionLimits.getMapActionLimitsProperties());
 		return result;
 	}
 	
 	// METODOS PARA CONFIRMAR LA CONTRASENA NUEVA EDITADA
 	
+	/**
+	 * Cambia el estado del objeto {@link ChangePassword} (cuyo atributo
+	 * {@link ChangePassword#urlConfirm} coincide con el parametro
+	 * 'confirm' de la URL de la vista) estableciendo a 'true' el valor de
+	 * su propiedad {@link ChangePassword#confirmed}.
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 * @return
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si se produce alguna excepcion, devuelve la regla de navegacion
+	 * que redirige a la pagina de error desconocido ('errorUnexpected').
+	 * @see #sendEmailForEditEmailSecondStep
+	 */
 	public String confirmPasswordChange(BeanActionResult beanActionResult){
 		beanActionResult.setFinish(false);
 		beanActionResult.setSuccess(false);
@@ -387,7 +536,8 @@ public class BeanUserEditEmailPassword implements Serializable{
 				}else{
 					setNewPasswordToConfirmed(passwordChange);
 					User updatedUser = passwordChange.getUser();
-					updatedUser.setPassword(passwordChange.getPasswordGenerated());
+					updatedUser.setPassword(
+							passwordChange.getPasswordGenerated());
 					updateUser( updatedUser, beanActionResult );
 					beanLogin.setLoggedUser( updatedUser );
 					beanActionResult.setMsgActionResult(
@@ -409,18 +559,32 @@ public class BeanUserEditEmailPassword implements Serializable{
 		return action;
 	}
 	
+	/**
+	 * Halla el objeto {@link ChangePassword} segun el atributo
+	 * {@link ChangePassword#urlConfirm}
+	 * @return el objeto ChangePassword obtenido, o valor 'null' si no se
+	 * encuentra
+	 */
 	private ChangePassword getPasswordChangeByUrlConfirm() {
 		ChangePassword passwordRestore = null;
-		passwordRestore = Factories.getService().getServiceUserAccessDataChange()
-				.getPasswordChangeByUrlConfirm(urlConfirm, ChangePassword.EDIT);
+		passwordRestore = Factories.getService()
+				.getServiceUserAccessDataChange().getPasswordChangeByUrlConfirm(
+						urlConfirm, ChangePassword.EDIT);
 		return passwordRestore;
 	}
 	
-	private void setNewPasswordToConfirmed(ChangePassword passwordRestore)
+	/**
+	 * Cambia el estado del objeto {@link ChangePassword} indicado
+	 * estableciendo a 'true' el valor de
+	 * su propiedad {@link ChangePassword#confirmed}
+	 * @param passwordChange objeto {@link ChangePassword} que se actualiza
+	 * @throws EntityNotFoundException
+	 */
+	private void setNewPasswordToConfirmed(ChangePassword passwordChange)
 			throws EntityNotFoundException {
-		passwordRestore.setConfirmed(true);
+		passwordChange.setConfirmed(true);
 		Factories.getService().getServiceUserAccessDataChange()
-			.updatePasswordChange(passwordRestore);
+			.updatePasswordChange(passwordChange);
 	}
 
 	// // // // // // //

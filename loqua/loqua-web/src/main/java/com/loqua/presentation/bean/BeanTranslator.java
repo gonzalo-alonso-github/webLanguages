@@ -17,22 +17,44 @@ import com.loqua.presentation.logging.LoquaLogger;
 import com.memetix.mst.language.Language;
 import com.memetix.mst.translate.Translate;
 
+/**
+ * Bean encargado de realizar todas las operaciones
+ * relativas al manejo del componente traductor de las vistas.
+ * @author Gonzalo
+ */
 public class BeanTranslator implements Serializable {
 
 	private static final long serialVersionUID = 1;
 	
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
+	/** Nombre del idioma, elegido por el usuario en el componente SelectItem
+	 * de la vista, que indica el idioma original del texto
+	 * que se desea traducir.<br/>
+	 * Los idiomas de dicho SelectItem no tienen nada que ver con la entidad
+	 * {@link com.loqua.model.Language}, sino que vienen dados por la API
+	 * de Microsoft Translator. */
 	private String inputLanguageName;
+	
+	/** Nombre del idioma, elegido por el usuario en el componente SelectItem
+	 * de la vista, que indica el idioma al cual se desea traducir el texto
+	 * introducido.<br/>
+	 * Los idiomas de dicho SelectItem no tienen nada que ver con la entidad
+	 * {@link com.loqua.model.Language}, sino que vienen dados por la API
+	 * de Microsoft Translator. */
 	private String outputLanguageName;
+	
+	/** Texto, introducido por el usuario, que se desea traducir. */
 	private String inputText;
+	/** Texto ya traducido del atributo {@link #inputText}. */
 	private String outputText;
+	/** Mensaje de error tras intentar hacer uso del traductor. Si un usuario
+	 * que no ha iniciado sesion trata de usar el traductor, se impedira
+	 * la accion y este atributo mostrara un mensaje de aviso. */
 	private String error;
 
-	// Inyeccion de dependencia
+	/** Inyeccion de dependencia del {@link BeanLogin} */
 	@ManagedProperty(value="#{beanLogin}") 
 	private BeanLogin beanLogin;
 	
@@ -40,11 +62,13 @@ public class BeanTranslator implements Serializable {
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
+	/** Constructor del bean. Inicializa el bean inyectado {@link BeanLogin} */
 	@PostConstruct
 	public void init() {
 		initBeanLogin();
 	}
 	
+	/** Inicializa el objeto {@link BeanLogin} inyectado */
 	private void initBeanLogin() {
 		// Buscamos el BeanLogin en la sesion.
 		beanLogin = null;
@@ -58,6 +82,7 @@ public class BeanTranslator implements Serializable {
 		}
 	}
 	
+	/** Destructor del bean. */
 	@PreDestroy
 	public void end(){}
 	
@@ -65,10 +90,12 @@ public class BeanTranslator implements Serializable {
 	// METODOS
 	// // // //
 	
+	/**
+	 * Inicializa los valores necesarios para el lenguaje de origen y de
+	 * destino de la frase que se traducira en el traductor, e invoca
+	 * al metodo {@link #microsoftTranslatorText} para efectuar la traduccion.
+	 */
 	public void translate() {
-		// En este bean no es necesario utilizar las variables finish y success
-		// como se hace en otros, dado que es de ambito request.
-		// 
 		if( beanLogin.getLoggedUser()==null ){
 			setError("errorLoginRequired");
 			return;
@@ -81,9 +108,16 @@ public class BeanTranslator implements Serializable {
 			setError("errorTranslator");
 			log.error("Unexpected Exception at 'setLocaleLanguage()'");
 		}
-		//return null;
 	}
 	
+	/**
+	 * Traduce el texto de {#inputText} guardando el resultado en {#outputText}.
+	 * Para ello emplea la API de Text Translator de Microsoft
+	 * Cognitive Services.
+	 * @param inputLanguage indica el idioma original del texto que se desea 
+	 * @param outputLanguage indica el idioma al cual se desea traducir
+	 * el texto de {#inputText}
+	 */
 	private void microsoftTranslatorText(
 			Language inputLanguage, Language outputLanguage) throws Exception {
 		String appId = TranslatorMicrosoftKey.getAppId();
@@ -104,6 +138,34 @@ public class BeanTranslator implements Serializable {
 		}
 	}
 
+	/**
+	 * Metodo 'get' del atributo {@link #error}. No solo obtiene el valor
+	 * del atributo, sino que ademas lo inicializa a su valor por defecto,
+	 * con el fin de evitar que el mensaje de error se siga mostrando
+	 * durante mas peticiones Ajax.
+	 * @return el atributo {@link #error}
+	 */
+	public String getError() {
+		String message = error;
+		error = null;
+		return message;
+	}
+	/**
+	 * Metodo 'set' del atributo {@link #error}. No solo sobrescribe el valor
+	 * del atributo, sino que lo traduce al lenguaje indicado por el Locale
+	 * de {@link BeanSettingsSession#locale}.
+	 * @param errorName nombre de la propiedad, en el fichero
+	 * 'bundle.properties' de internacionalizacion, cuyo valor sobrescribe al
+	 * atributo {@link #error}
+	 * 
+	 */
+	public void setError(String errorName) {
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ResourceBundle bundle = facesContext.getApplication()
+				.getResourceBundle(facesContext, "msgs");
+		this.error = bundle.getString(errorName);
+	}
+	
 	// // // // // // //
 	// GETTERS & SETTERS
 	// // // // // // //
@@ -154,17 +216,5 @@ public class BeanTranslator implements Serializable {
 			}
 		}
 		return listSelectLanguages;
-	}
-	
-	public String getError() {
-		String message = error;
-		error = null;
-		return message;
-	}
-	public void setError(String errorName) {
-		FacesContext facesContext = FacesContext.getCurrentInstance();
-		ResourceBundle bundle = facesContext.getApplication()
-				.getResourceBundle(facesContext, "msgs");
-		this.error = bundle.getString(errorName);
 	}
 }

@@ -14,23 +14,41 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * Representa la informacion sobre la relevancia y la puntuacion de un hilo
+ * del foro. <br/><br/>
+ * En lugar de albergar esta informacion en {@link ForumThread} esta entidad
+ * corresponde a la tabla ForumThreadInfo, que debido al previsible
+ * alto ritmo de operaciones que van a soportar sus campos, esta separada
+ * de la tabla ForumThread
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "forumThreadInfo")
 @Entity
 @Table(name="ForumThreadInfo")
 public class ForumThreadInfo implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
 	// // // // // // //
 	// ATRIBUTOS
 	// // // // // // //
+	
+	/** Identificador del objeto y clave primaria de la entidad */
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) private Long id;
+	
+	/** Cantidad de visitas que ha recibido el hilo del foro */
 	private int countVisits;
+	/** Cantidad de comentarios que ha recibido el hilo del foro */
 	private int countComments;
+	/** Cantidad de puntos (o 'votos') que ha recibido el hilo del foro */
 	private int countVotes;
 	
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
+	
+	/** Hilo del foro al que pertenece la informacion de esta entidad */
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="forumThread_id", referencedColumnName="id")
 	private ForumThread forumThread;
@@ -39,13 +57,19 @@ public class ForumThreadInfo implements Serializable {
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public ForumThreadInfo(){}
 	
+	/**
+	 * Constructor que recibe las entidades asociadas a esta
+	 * @param thread objeto ForumThread asociado al ForumThreadInfo
+	 */
 	public ForumThreadInfo( ForumThread thread ){
 		this.forumThread = thread;
 		thread.setForumThreadInfo(this);
 	}
-	
+
+	/** Desasigna de esta entidad a las entidades asociadas */
 	public void unlink(){
 		forumThread.setForumThreadInfo( null );
 		forumThread = null;
@@ -58,8 +82,8 @@ public class ForumThreadInfo implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	/**
@@ -81,10 +105,12 @@ public class ForumThreadInfo implements Serializable {
 	// METODOS
 	// // // //	
 	
+	/** Incrementa el numero de visitas del hilo */
 	public void incrementCountVisits() {
 		countVisits += 1;
 	}
 	
+	/** Incrementa el numero de comentarios del hilo */
 	public void incrementCountComments() {
 		countComments += 1;
 	}
@@ -96,8 +122,8 @@ public class ForumThreadInfo implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	@XmlElement

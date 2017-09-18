@@ -33,7 +33,7 @@
 							<h:selectManyListbox class="btn-sm" id="selectNativeLanguage"
 									value="#{beanUserEditProfile.listNativeLanguagesIDs}">
 								<f:selectItems var="lang"
-									value = "#{beanCache.allLanguagesFromDB}"
+									value = "#{beanCache.allLanguages}"
 									itemLabel="#{beanSettingsSession.getTranslationCountries(lang.getLocale())}"
 									itemValue="#{lang.getId()}"/>
 								<f:converter converterId="converterSelectItemToLong" />
@@ -64,7 +64,7 @@
 								<h:selectManyListbox class="btn-sm" id="selectPracticeLanguage"
 										value="#{beanUserEditProfile.listPracticingLanguagesIDs}">	
 									<f:selectItems var="lang"
-										value="#{beanCache.allLanguagesFromDB}"
+										value="#{beanCache.allLanguages}"
 										itemLabel="#{beanSettingsSession.getTranslationCountries(lang.getLocale())}"
 										itemValue="#{lang.getId()}"/>
 									<f:converter converterId="converterSelectItemToLong" />

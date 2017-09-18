@@ -28,11 +28,16 @@ import com.loqua.presentation.util.MapQueryString;
 import com.loqua.presentation.util.VerifierAjaxRequest;
 
 /**
- * Este filtro se aplica a la pagina de 'forum.xhtml'
- * (tanto para usuarios anonimos como para registrados y administradores).
- * Por tanto existen dos filtros para dicha pagina: el 'FilterAuthorization...'
- * y este. Y el orden en que se aplican esta definido en el fichero de despliegue
- * web.xml.
+ * Define el filtro, que se aplica sobre la pagina de 'forum.xhtml',
+ * y que comprueba si son correctos los parametros enviados en la URL
+ * (la 'query string'). <br/>
+ * El ciclo de JSF es interceptado por el Filtro antes de que el navegador
+ * muestre la pagina sobre la que este se aplica, y se ejecuta inmediatamene
+ * despues de los manejadores de navegacion (NavigationHandler) y de vista
+ * (ViewHandler). <br/>
+ * Puesto que se definen varios filtros sobre esta misma pagina, es coveniente
+ * indicar, en el fichero web.xml, el orden en que se aplican.
+ * @author Gonzalo
  */
 @WebFilter(
 		dispatcherTypes = { DispatcherType.REQUEST },
@@ -54,14 +59,11 @@ import com.loqua.presentation.util.VerifierAjaxRequest;
 
 public class FilterForum implements Filter {
 
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
-	// Necesitamos acceder a los parametros de inicializacion en
-	// el metodo doFilter, asi que necesitamos la variable
-	// config que se inicializara en init()
+	/** Se utliza para acceder a los parametros de inicializacion
+	 * definidos en las anotaciones de esta clase */
 	FilterConfig config = null;
 	
 	Long requestedCategory = 0L;
@@ -72,11 +74,8 @@ public class FilterForum implements Filter {
 	@ManagedProperty(value="#{beanUserData}")
 	private BeanUserData beanUserData;
 
-	/**
-	 * Default constructor.
-	 */
-	public FilterForum() {
-	}
+	/** Constructor sin parametros de la clase */
+	public FilterForum() {}
 
 	/**
 	 * @see Filter#destroy()
@@ -103,10 +102,10 @@ public class FilterForum implements Filter {
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		// Si el metodo termina despues de hacer 'chain.doFilter',
-		// se permite el acceso a la pagina requerida (no se redirige a otra)
-		// Si el metodo termina despues de hacer 'res.sendRedirect',
-		// no se permite el acceso a la pagina requerida (se redirige a otra)
+		/* Si el metodo termina despues de hacer 'chain.doFilter',
+		se permite el acceso a la pagina requerida (no se redirige a otra)
+		Si el metodo termina despues de hacer 'res.sendRedirect',
+		no se permite el acceso a la pagina requerida (se redirige a otra) */
 		
 		// Si no es peticion HTTP no se filtra
 		if (!(request instanceof HttpServletRequest)){
@@ -162,8 +161,11 @@ public class FilterForum implements Filter {
 	
 	/**
 	 * Comprueba que la url de la peticion a la pagina 'forum.xhtml'
-	 * contiene el parametro 'page' (pagina del 'hilo' que se va a consultar).
-	 * @return 'true' si el parametro de la url es correcto
+	 * contiene los parametros correctos.
+	 * @param la req peticion HTTP
+	 * @return
+	 * 'true' si el parametro 'page' de la url es correcto <br/>
+	 * 'false' si el parametro 'page' de la url no es correcto
 	 */
 	private boolean verifyParameters(HttpServletRequest req){
 		try{
@@ -174,6 +176,15 @@ public class FilterForum implements Filter {
 		}
 	}
 	
+	/**
+	 * Comprueba que la url de la peticion a la pagina 'forum.xhtml'
+	 * contiene el parametro 'category' y es correcto 
+	 * (categoria de las noticias que se muestran en el foro).
+	 * @param la req peticion HTTP
+	 * @return
+	 * 'true' si el parametro 'category' de la url es correcto <br/>
+	 * 'false' si el parametro 'category' de la url no es correcto
+	 */
 	private boolean verifyRequestedCategory(HttpServletRequest req){
 		try{
 			String requestedCategoryParam = queryStringMap.get("category");
@@ -194,6 +205,11 @@ public class FilterForum implements Filter {
 		}
 	}
 	
+	/**
+	 * Consulta todas las categorias de noticias (Feed) disponibles
+	 * @return lista de todos los atributos 'id'
+	 * de los FeedCategories disponibles
+	 */
 	private List<Long> getAllFeedCategoriesIds(){
 		List<Long> result = new ArrayList<Long>();
 		try{
@@ -205,6 +221,15 @@ public class FilterForum implements Filter {
 		return result;
 	}
 	
+	/**
+	 * Comprueba que la url de la peticion a la pagina 'forum.xhtml'
+	 * contiene el parametro 'page' y es correcto (pagina que se va a consultar
+	 * en la lista de noticias del foro).
+	 * @param la req peticion HTTP
+	 * @return
+	 * 'true' si el parametro 'page' de la url es correcto <br/>
+	 * 'false' si el parametro 'page' de la url no es correcto
+	 */
 	private boolean verifyRequestedPage(HttpServletRequest req){
 		try{
 			String requestedPageParam = queryStringMap.get("page");
@@ -228,6 +253,11 @@ public class FilterForum implements Filter {
 		}
 	}
 	
+	/**
+	 * Halla el numero de hilos del foro que pertenecen a la categoria dada
+	 * @return
+	 * cantidad de ForumThread que pertenecen al FeedCategory dado
+	 */
 	private int loadTotalNumThreads() {
 		int totalNumThreads = 0;
 		try{

@@ -13,19 +13,30 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import com.loqua.logging.LoquaLogger;
 
+/**
+ * Inicia o termina la tarea de {@link JobCrawler}, estableciendo
+ * una periodicidad de ejecucion de una vez cada hora en punto.
+ * @author Gonzalo
+ */
 public class SchedulerCrawler {
 
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
+	/** Objeto Scheduler de la API Quartz que asocia una tarea (objeto 'Job',
+	 * en este caso {@link JobCrawler}) con el lanzador que indica
+	 * la periodicidad de su ejecucion (objeto 'Trigger') */
 	private static Scheduler scheduler;
 	
 	// // // //
 	// METODOS
 	// // // //
 	
+	/**
+	 * Crea la programacion de la tarea {@link JobCrawler} estableciendo
+	 * una periodicidad de ejecucion de una vez cada hora en punto.
+	 * @throws SchedulerException
+	 */
 	public void execute() throws SchedulerException{
 		// Se crea una instancia de Scheduler
 		SchedulerFactory sf = new StdSchedulerFactory();
@@ -57,6 +68,10 @@ public class SchedulerCrawler {
 		La clase Main se encarga de eso */
 	}
 	
+	/** Finaliza la programacion de la tarea. La tarea no volvera a ejecutarse
+	 * hasta que el programador sea iniciado de nuevo.
+	 * @throws SchedulerException
+	 */
 	public void shutdown() throws SchedulerException{
 		scheduler.shutdown();
 		log.info("'shutdown()': Scheduler terminated");

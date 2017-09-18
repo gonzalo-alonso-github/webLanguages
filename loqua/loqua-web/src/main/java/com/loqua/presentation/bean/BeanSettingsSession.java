@@ -21,38 +21,30 @@ import com.loqua.presentation.bean.applicationBean.BeanSettingsLocale;
 import com.loqua.presentation.logging.LoquaLogger;
 
 /**
- * Administra el lenguaje en el que cada usuario desea ver los 
- * formularios, menus y textos propios del sitio web
+ * Administra la informacion relativa a la configuracion de la
+ * sesion de cada usuario, que indica los idiomas en los que puede visualizarse
+ * el sitio web. Hace uso de las propiedades manejadas en el
+ * {@link BeanSettingsLocale}.
  * @author Gonzalo
  */
 public class BeanSettingsSession implements Serializable {
 	
-	/**
-	 * Numero de version de la clase serializable.
-	 * @see Serializable#serialVersionUID
-	 */
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
-	/**
-	 * Representa el idioma, al coleccion de caracteres y otras caracteristicas
-	 * propias de una region determinada.
+	/** Objeto Locale que representa el idioma, la coleccion de caracteres
+	 * y otras caracteristicas propias de una region determinada.
 	 * @see Locale
 	 */
 	private static Locale locale;
 	
-	/**
-	 * Inyeccion de dependencia del BeanLogin en esta clase.
-	 */
+	/** Inyeccion de dependencia del {@link BeanLogin} */
 	@ManagedProperty(value="#{beanLogin}") 
 	private BeanLogin beanLogin;
-	/**
-	 * Inyeccion de dependencia del BeanSettingsLocale en esta clase.
-	 */
+	
+	/** Inyeccion de dependencia del {@link BeanSettingsLocale} */
 	@ManagedProperty(value="#{beanSettingsLocale}") 
 	private BeanSettingsLocale beanSettingsLocale;
 	
@@ -60,9 +52,8 @@ public class BeanSettingsSession implements Serializable {
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
-	/**
-	 * Construccion del bean. Aqui se inicializa el BeanLogin,
-	 * presente en esta clase por inyeccion de dependencia.
+	/** Constructor del bean. Inicializa los beans inyectados:
+	 * {@link BeanLogin} y {@link BeanSettingsLocale}
 	 */
 	@PostConstruct
 	public void init() {
@@ -71,13 +62,7 @@ public class BeanSettingsSession implements Serializable {
 		loadLocale();
 	}
 	
-	/**
-	 * Inicializa el BeanLogin perteneciente a esta clase.</br>
-	 * Si el BeanLogin ya fue inicializado,
-	 * simplemente se obtiene de la sesion.</br>
-	 * Si el BeanLogin no existe en la sesion,
-	 * se crea y se guarda en sesion bajo la clave 'beanLogin'.
-	 */
+	/** Inicializa el objeto {@link BeanLogin} inyectado */
 	private void initBeanLogin() {
 		// Buscamos el BeanLogin en la sesion.
 		beanLogin = null;
@@ -92,13 +77,7 @@ public class BeanSettingsSession implements Serializable {
 		}
 	}
 	
-	/**
-	 * Inicializa el BeanSettingsLocale perteneciente a esta clase.</br>
-	 * Si el BeanSettingsLocale ya fue inicializado,
-	 * simplemente se obtiene del contexto de aplicacion.</br>
-	 * Si el BeanSettingsLocale no existe en el contexto de aplicacion,
-	 * se crea y se guarda en sesion bajo la clave 'beanSettingsLocale'.
-	 */
+	/** Inicializa el objeto {@link BeanSettingsLocale} inyectado */
 	private void initBeanSettingsLocale() {
 		// Buscamos el BeanLogin en la sesion.
 		beanSettingsLocale = null;
@@ -113,9 +92,7 @@ public class BeanSettingsSession implements Serializable {
 		}
 	}
 
-	/**
-	 * Destruccion del bean
-	 */
+	/** Destructor del bean. */
 	@PreDestroy
 	public void end(){}
 	
@@ -125,7 +102,7 @@ public class BeanSettingsSession implements Serializable {
 	
 	/**
 	 * Proporciona a las vistas .xhtml una lista de elementos para los
-	 * controles 'h:selectOneMenu' de JSF. Dichos elementos son objetos
+	 * controles SelectOneMenu de JSF. Dichos elementos son objetos
 	 * SelectItem creados a partir de las claves del Map mapLanguages 
 	 * @return
 	 * Una lista de objetos SelectItem
@@ -140,13 +117,13 @@ public class BeanSettingsSession implements Serializable {
 	}
 	
 	/**
-	 * Guarda en el Bean el objeto Locale que utiliza el sitio web.</br>
+	 * Halla el objeto Locale que utiliza el sitio web.</br>
 	 * Si el usuario de la sesion es anonimo, el Locale se obtiene a partir
 	 * de la informacion del navegador.</br>
 	 * Si el usuario de la sesion esta registrado, el Locale se obtiene a partir
 	 * de su informacion asociada en la base de datos.
 	 * @return
-	 * Objeto Locale para el sitio web
+	 * objeto Locale del sitio web
 	 */
 	private void loadLocale() {
 		if( beanLogin.getLoggedUser() == null ){
@@ -166,7 +143,7 @@ public class BeanSettingsSession implements Serializable {
 	/**
 	 * Obtiene, a partir de la informacion del navegador, el objeto Locale.
 	 * Si el locale del navegador no coincide con los del fichero
-	 * locales.properties, se establece por defecto a ingles.
+	 * 'locales.properties', se establece por defecto e Locale ingles.
 	 * @return
 	 * Objeto Locale del navegador
 	 */
@@ -189,7 +166,8 @@ public class BeanSettingsSession implements Serializable {
 	
 	/**
 	 * Obtiene, a partir de la informacion guardada en la base de datos, el
-	 * objeto Locale correspondiente al usuario registrado del BeanLogin.
+	 * objeto Locale correspondiente al usuario logueado
+	 * ({@link BeanLogin#loggedUser}).
 	 * @return
 	 * Objeto Locale del usuario registrado
 	 * @throws EntityNotFoundException
@@ -230,8 +208,8 @@ public class BeanSettingsSession implements Serializable {
 	 * Cambia el lenguage de las paginas del sitio web
 	 * por el lenguaje seleccionado.
 	 * Si el usuario esta registrado actualiza su locale en la base de datos.
-	 * @param localeLanguage
-	 * clave ISO 639 del lenguage seleccionado
+	 * @param localeLanguage clave ISO 639 del lenguage seleccionado
+	 * @see {@link #getTranslation}
 	 */
 	public void setLocaleLanguage(String localeLanguage){
 		locale = new Locale(localeLanguage);
@@ -241,8 +219,8 @@ public class BeanSettingsSession implements Serializable {
 		if( loggedUser!=null ){
 			try {
 				loggedUser.setLocale(localeLanguage);
-				Factories.getService().getServiceUser()
-					.updateAllDataByUser(loggedUser,false);
+				Factories.getService().getServiceUser().updateAllDataByUser(
+						loggedUser);
 				beanLogin.setLoggedUser(loggedUser);
 				/*FacesContext.getCurrentInstance().getExternalContext().
 					getSessionMap().put("beanLogin", beanLogin);*/
@@ -256,38 +234,65 @@ public class BeanSettingsSession implements Serializable {
 	 * Obtiene la cadena de texto perteneciente a la clave dada, a partir
 	 * de los datos presentes en el fichero 'bundle'
 	 * del lenguage correspondiente.
-	 * @param key
-	 * clave, en el fichero 'bundle', de la cadena de texto solicitada
-	 * @return
-	 * Texto perteneciente a la clave dada
+	 * @param key clave, en el fichero 'bundle.properties',
+	 * de la cadena de texto solicitada
+	 * @return texto perteneciente a la clave dada
 	 */
 	public String getTranslation(String key) {
-		ResourceBundle resourceBundle = 
-				ResourceBundle.getBundle("i18n/bundle", locale);
-		return resourceBundle.getString(key);
+		return getTranslationStatic(key);
 	}
+	/** Version estatica del metodo {@link #getTranslation}.
+	 * @param key clave, en el fichero 'bundle.properties',
+	 * de la cadena de texto solicitada
+	 * @return texto perteneciente a la clave dada
+	 * @see {@link #getTranslation}
+	 */
 	public static String getTranslationStatic(String key) {
 		ResourceBundle resourceBundle = 
 				ResourceBundle.getBundle("i18n/bundle", locale);
 		return resourceBundle.getString(key);
 	}
 	
+	/**
+	 * Obtiene la cadena de texto perteneciente a la clave dada, a partir
+	 * de los datos presentes en el fichero 'bundle.properties'
+	 * del lenguage correspondiente.
+	 * @param key clave, en el fichero 'countriesAndLocales.properties',
+	 * de la cadena de texto solicitada
+	 * @return texto perteneciente a la clave dada
+	 */
 	public String getTranslationCountries(String key) {
-		ResourceBundle resourceBundle = 
-				ResourceBundle.getBundle("i18n/countriesAndLocales", locale);
-		return resourceBundle.getString(key);
+		return getTranslationCountriesStatic(key);
 	}
+	/**
+	 * Version estatica del metodo {@link #getTranslationCountries}.
+	 * @param key clave, en el fichero 'countriesAndLocales.properties',
+	 * de la cadena de texto del lenguage correspondiente.
+	 * @return texto perteneciente a la clave dada
+	 */
 	public static String getTranslationCountriesStatic(String key) {
 		ResourceBundle resourceBundle = 
 				ResourceBundle.getBundle("i18n/countriesAndLocales", locale);
 		return resourceBundle.getString(key);
 	}
 	
+	/**
+	 * Obtiene la cadena de texto perteneciente a la clave dada, a partir
+	 * de los datos presentes en el fichero 'events.properties'
+	 * del lenguage correspondiente.
+	 * @param key clave, en el fichero 'events.properties',
+	 * de la cadena de texto solicitada
+	 * @return texto perteneciente a la clave dada
+	 */
 	public String getTranslationEvents(String key) {
-		ResourceBundle resourceBundle = 
-				ResourceBundle.getBundle("i18n/events", locale);
-		return resourceBundle.getString(key);
+		return getTranslationEventsStatic(key);
 	}
+	/**
+	 * Version estatica del metodo {@link #getTranslationEvents}.
+	 * @param key clave, en el fichero 'countriesAndLocales.properties',
+	 * de la cadena de texto del lenguage correspondiente.
+	 * @return texto perteneciente a la clave dada
+	 */
 	public static String getTranslationEventsStatic(String key) {
 		ResourceBundle resourceBundle = 
 				ResourceBundle.getBundle("i18n/events", locale);
@@ -295,7 +300,8 @@ public class BeanSettingsSession implements Serializable {
 	}
 	
 	/**
-	 * Traduce el formato de una fecha dada en funcion del atributo Locale
+	 * Traduce el formato de una fecha dada en funcion del atributo
+	 * {@link #Locale}
 	 * @param date
 	 * fecha que se va a formatear
 	 * @return
@@ -309,7 +315,8 @@ public class BeanSettingsSession implements Serializable {
 	}
 	
 	/**
-	 * Traduce el formato de una fecha y hora dada en funcion del atributo Locale
+	 * Traduce el formato de una fecha y hora dada en funcion del atributo
+	 * {@link #Locale}
 	 * @param date
 	 * fecha y hora que se va a formatear
 	 * @return

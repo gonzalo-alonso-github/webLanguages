@@ -10,18 +10,23 @@ import javax.faces.context.FacesContext;
 import com.loqua.infrastructure.Factories;
 import com.loqua.presentation.logging.LoquaLogger;
 
+/**
+ * Bean encargado de realizar todas las operaciones
+ * relativas al manejo de mensajes.
+ * @author Gonzalo
+ */
 public class BeanMessage implements Serializable {
 	
 	private static final long serialVersionUID = 1;
 	
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
+	/** Numero de mensajes recibidos por el usuario
+	 * que aun no han sido leidos */
 	private Integer numUnreadMessages;
 	
-	// Inyeccion de dependencia
+	/** Inyeccion de dependencia del {@link BeanLogin} */
 	@ManagedProperty(value="#{beanLogin}")
 	private BeanLogin beanLogin;
 	
@@ -29,12 +34,14 @@ public class BeanMessage implements Serializable {
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
+	/** Constructor del bean. Inicializa el bean inyectado {@link BeanLogin} */
 	@PostConstruct
 	public void init() {
 		initBeanLogin();
 		loadNumUnreadMessages();
 	}
 	
+	/** Inicializa el objeto {@link BeanLogin} inyectado */
 	private void initBeanLogin() {
 		// Buscamos el BeanLogin en la sesion.
 		beanLogin = null;
@@ -48,6 +55,7 @@ public class BeanMessage implements Serializable {
 		}
 	}
 
+	/** Destructor del bean. */
 	@PreDestroy
 	public void end(){}
 	
@@ -55,6 +63,7 @@ public class BeanMessage implements Serializable {
 	// METODOS
 	// // // //
 	
+	/** Inicializa el atributo {@link #numUnreadMessages} */
 	private void loadNumUnreadMessages(){
 		try{
 			numUnreadMessages = Factories.getService().getServiceMessage()

@@ -5,6 +5,12 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
+/**
+ * Define un conversor encargado de eliminar los espacios en blanco
+ * al principio y al final del valor del componente UIComponent
+ * sobre el que se aplica
+ * @author Gonzalo
+ */
 @FacesConverter("converterCleanSpaces")
 public class ConverterCleanSpaces implements Converter {
 

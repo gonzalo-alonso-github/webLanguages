@@ -10,6 +10,12 @@ import javax.faces.validator.ValidatorException;
 
 import com.loqua.presentation.bean.BeanSettingsSession;
 
+/**
+ * Define un validador encargado de comprobar si el valor del componente
+ * UIComponent sobre el que se aplica es igual al email introducido previamente
+ * en otro UIComponent.
+ * @author Gonzalo
+ */
 @FacesValidator("validatorEmailConfirmation")
 public class ValidatorEmailConfirmation implements Validator {
 
@@ -23,13 +29,15 @@ public class ValidatorEmailConfirmation implements Validator {
 		if( inputEmailToConfirm == null || 
 				inputEmailToConfirm.getValue() == null ){
 			throw new ValidatorException(new FacesMessage(inputLabel + ": "
-					+ BeanSettingsSession.getTranslationStatic("errorEmailRequired")));
+					+ BeanSettingsSession.getTranslationStatic(
+							"errorEmailRequired")));
 		}
 		String emailToConfirm = (inputEmailToConfirm).getValue().toString();
 		
 		if (arg2 == null) {
 			throw new ValidatorException(new FacesMessage(inputLabel + ": "
-					+ BeanSettingsSession.getTranslationStatic("errorEmailConfirmRequired")));
+					+ BeanSettingsSession.getTranslationStatic(
+							"errorEmailConfirmRequired")));
 		}
 		String emailConfirmation = arg2.toString();
 		
@@ -42,12 +50,12 @@ public class ValidatorEmailConfirmation implements Validator {
 		
 		emailConfirmation = emailConfirmation.replaceAll(" +$", "");
 		emailConfirmation = emailConfirmation.replaceAll("^ +", "");
-		//BeanRegister.setEmail(email);
 		
 		//Comprobar que la confirmacion de email coincide con el original:
 		if( ! emailConfirmation.equalsIgnoreCase( emailToConfirm ) ){
 			throw new ValidatorException(new FacesMessage(
-					BeanSettingsSession.getTranslationStatic("errorConfirmEmail")));
+					BeanSettingsSession.getTranslationStatic(
+							"errorConfirmEmail")));
 		}
 	}
 }

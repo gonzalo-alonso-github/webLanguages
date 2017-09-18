@@ -9,24 +9,41 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Representa las credenciales que utiliza la aplicacion para utilizar
+ * determinados servicios (conexion al servidor SMTP, autenticacion en la
+ * cuenta de almacenamiento de Azure, acceso a la API de Microsoft Translator,
+ * acceso de clientes REST).
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "credentials")
 @Entity
 @Table(name="Credentials")
 public class Credentials implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
 	// // // // // // //
 	// ATRIBUTOS
 	// // // // // // //
+	
+	/** Identificador del objeto y clave primaria de la entidad */
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) private Long id;
 	private String credentialType;
+	
+	/** Primera credencial de acceso a un servicio dado. Normalmente esta
+	 * credencial es un nombre de usuario o una URL de acceso */
 	private String credentialKey1;
+	/** Segunda credencial de acceso a un servicio dado. Normalmente esta
+	 * credencial es una contrase&ntilde;a
+	 * o una serie ininteligible de caracteres */
 	private String credentialKey2;
 	
 	// // // // // // //
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public Credentials(){}
 	
 	// // // // // // //

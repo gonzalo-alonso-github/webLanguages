@@ -9,24 +9,27 @@ import com.loqua.model.ForumThread;
 import com.loqua.presentation.logging.LoquaLogger;
 import com.loqua.rest.RestServiceForumThread;
 
+/** Implementa la interfaz {@link RestServiceForumThread}
+ * y atiende las peticiones HTTP enviadas por el cliente REST a dicha interfaz
+ */
 public class ImplRestServiceForumThread implements RestServiceForumThread{
 
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
+	/** Servicio {@link ServiceForumThread} que se invoca en los metodos
+	 * de esta clase */
 	ServiceForumThread service = Factories.getService().getServiceThread();
 
 	@Override
-	public List<ForumThread> getAllForumThreadGUIDsInLastHour(){
-		return service.getAllForumThreadGUIDsInLastHour();
+	public List<ForumThread> getAllForumThreadsInLastHour(){
+		return service.getAllForumThreadsInLastHour();
 	}
 	
 	@Override
 	public void createForumThread(ForumThread forumThread){
 		try{
-			service.restCreateForumThread(forumThread, true);
+			service.restCreateForumThread(forumThread);
 		}catch(EntityAlreadyFoundException e){
 			// Noticias con Unique key repetido
 			log.error("EntityAlreadyFoundException at 'createForumThread()'");
@@ -45,10 +48,10 @@ public class ImplRestServiceForumThread implements RestServiceForumThread{
 			/* Si en lugar de recorrer aqui la lista la enviasemos al EJB,
 			entonces en caso de producirse una excepcion (ej: 'guid' repetido),
 			el rollback descartaria todos los threads de dicha lista.
-			Pero de esta manera, como al EJB solo le enviamos un thread,
+			Pero de esta manera, como al EJB solo se le envia un thread,
 			solo se descartaria ese en concreto. */
 			for( ForumThread threadToCreate : threadsToCreate ){
-				service.restCreateForumThread(threadToCreate, true);
+				service.restCreateForumThread(threadToCreate);
 			}
 		}catch(EntityAlreadyFoundException e){
 			// Noticias con Unique key repetido

@@ -19,60 +19,108 @@ import com.loqua.business.services.ServicePublication;
 import com.loqua.business.services.ServiceUser;
 import com.loqua.business.services.ServiceUserAccessDataChange;
 
+/**
+ * Provee los objetos 'RemoteServices' almacenados en el registro JNDI y
+ * gestionados por el contenedor. Aunque se asemeja a un patron Factory Method
+ * implementa el patron Services Locator, que en lugar de generar instancias
+ * de objetos localiza los ya existentes. Desde un programa Java externo
+ * que se conecte como cliente Java se puede acceder a estos servicios
+ * a traves del registro JNDI; para ello debe disponer de un fichero
+ * 'jndi.properties' que indique la direccion y puerto del registro
+ * @author Gonzalo
+ */
 public class LocatorRemoteEjbServices implements ServicesFactory {
 	
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * RemoteServiceComment */
 	private static final String SERVICE_COMMENT_JNDI_KEY =
 			"loqua-ear/loqua-ejb/"
 			+ "EjbServiceComment!"
 			+ "com.loqua.business.services.serviceRemote.RemoteServiceComment";
+
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * RemoteServiceContact */
 	private static final String SERVICE_CONTACT_JNDI_KEY =
 			"loqua-ear/loqua-ejb/"
 			+ "EjbServiceContact!"
 			+ "com.loqua.business.services.serviceRemote.RemoteServiceContact";
+
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * RemoteServiceCorrection */
 	private static final String SERVICE_CORRECTION_JNDI_KEY =
 			"loqua-ear/loqua-ejb/"
 			+ "EjbServiceCorrection!"
 			+ "com.loqua.business.services.serviceRemote"
 			+ ".RemoteServiceCorrection";
+
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * RemoteServiceCountry */
 	private static final String SERVICE_COUNTRY_JNDI_KEY =
 			"loqua-ear/loqua-ejb/"
 			+ "EjbServiceCountry!"
 			+ "com.loqua.business.services.serviceRemote.RemoteServiceCountry";
+
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * RemoteServiceFeed */
 	private static final String SERVICE_FEED_JNDI_KEY =
 			"loqua-ear/loqua-ejb/"
 			+ "EjbServiceFeed!"
 			+ "com.loqua.business.services.serviceRemote.RemoteServiceFeed";
+
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * RemoteServiceLanguage */
 	private static final String SERVICE_LANGUAGE_JNDI_KEY =
 			"loqua-ear/loqua-ejb/"
 			+ "EjbServiceLanguage!"
 			+ "com.loqua.business.services.serviceRemote.RemoteServiceLanguage";
+
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * RemoteServiceMessage */
 	private static final String SERVICE_MESSAGE_JNDI_KEY =
 			"loqua-ear/loqua-ejb/"
 			+ "EjbServiceMessage!"
 			+ "com.loqua.business.services.serviceRemote.RemoteServiceMessage";
+
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * RemoteServiceThread */
 	private static final String SERVICE_NEW_JNDI_KEY =
 			"loqua-ear/loqua-ejb/"
 			+ "EjbServiceThread!"
 			+ "com.loqua.business.services.serviceRemote.RemoteServiceThread";
+
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * RemoteServiceUserAccessDataChange */
 	private static final String SERVICE_USERACCESSDATA_JNDI_KEY =
 			"loqua-ear/loqua-ejb/"
 			+ "EjbServiceUserAccessDataChange!"
 			+ "com.loqua.business.services.serviceRemote"
 			+ ".RemoteServiceUserAccessDataChange";
+
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * RemoteServiceForumPost */
 	private static final String SERVICE_FORUMPOST_JNDI_KEY =
 			"loqua-ear/loqua-ejb/"
 			+ "EjbServiceForumPost!"
 			+ "com.loqua.business.services.serviceRemote"
 			+ ".RemoteServiceForumPost";
+
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * RemoteServicePublication */
 	private static final String SERVICE_PUBLICATION_JNDI_KEY =
 			"loqua-ear/loqua-ejb/"
 			+ "EjbServicePublication!"
 			+ "com.loqua.business.services.serviceRemote"
 			+ ".RemoteServicePublication";
+
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * RemoteServiceUser */
 	private static final String SERVICE_USER_JNDI_KEY =
 			"loqua-ear/loqua-ejb/"
 			+ "EjbServiceUser!"
 			+ "com.loqua.business.services.serviceRemote.RemoteServiceUser";
+
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * RemoteServiceCredentials */
 	private static final String SERVICE_CREDENTIALS_JNDI_KEY =
 			"loqua-ear/loqua-ejb/"
 			+ "EjbServiceCredentials!"

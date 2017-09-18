@@ -5,10 +5,8 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Esta clase solo tiene metodos de utilidad usados desde @see Factories
- * 
- * @author alb
- *
+ * Crea la instancia de ServicesFactory utilizada en la clase {@link Factories}
+ * @author Gonzalo
  */
 public class FactoriesHelper {
 
@@ -48,7 +46,7 @@ public class FactoriesHelper {
 	 * @param property
 	 * @return
 	 */
-	static String loadProperty(String file, String property) {
+	private static String loadProperty(String file, String property) {
 		
 		Properties p = loadPropertiesFile(file);
 		

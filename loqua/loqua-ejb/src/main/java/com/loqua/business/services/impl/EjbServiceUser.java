@@ -8,18 +8,46 @@ import javax.jws.WebService;
 
 import com.loqua.business.exception.EntityAlreadyFoundException;
 import com.loqua.business.exception.EntityNotFoundException;
+import com.loqua.business.services.ServiceUser;
 import com.loqua.business.services.impl.transactionScript.TransactionUser;
+import com.loqua.business.services.locator.LocatorLocalEjbServices;
+import com.loqua.business.services.locator.LocatorRemoteEjbServices;
 import com.loqua.business.services.serviceLocal.LocalServiceUser;
 import com.loqua.business.services.serviceRemote.RemoteServiceUser;
+import com.loqua.model.PrivacityData;
 import com.loqua.model.User;
+import com.loqua.model.UserInfo;
+import com.loqua.model.UserInfoPrivacity;
 
+/**
+ * Da acceso a las transacciones correspondientes a las entidades
+ * {@link User}, {@link UserInfo}, {@link UserInfoPrivacity}
+ * y {@link PrivacityData}.<br/>
+ * La intencion de esta 'subcapa' de EJBs no es albergar mucha logica de negocio
+ * (de ello se ocupa el modelo y el Transaction Script), sino hacer
+ * que las transacciones sean controladas por el contenedor de EJB
+ * (Wildfly en este caso), quien se ocupa por ejemplo de abrir las conexiones
+ * a la base de datos mediate un datasource y de realizar los rollback. <br/>
+ * Al ser un EJB de sesion sin estado no puede ser instanciado desde un cliente
+ * o un Factory Method, sino que debe ser devuelto mediante el registro JNDI.
+ * Forma parte del patron Service Locator y se encapsula tras las fachadas
+ * {@link LocalServiceUser} y {@link RemoteServiceUser},
+ * que heredan de {@link ServiceUser}, producto de
+ * {@link LocatorLocalEjbServices} o {@link LocatorRemoteEjbServices}
+ * @author Gonzalo
+ */
 @Stateless
 @WebService(name="ServiceUser")
 public class EjbServiceUser
 		implements LocalServiceUser, RemoteServiceUser {
 
+	/** Objeto de la capa de negocio que realiza la logica relativa a las
+	 * entidades {@link User}, {@link UserInfo}, {@link UserInfoPrivacity}
+	 * y {@link PrivacityData},
+	 * incluyendo procedimientos 'CRUD' de dichas entidades */
 	private static final TransactionUser transactionUser = 
 			new TransactionUser();
+	
 	
 	@Override
 	public User getUserById(Long userID) throws EntityNotFoundException {
@@ -78,13 +106,13 @@ public class EjbServiceUser
 	
 	@Override
 	public void createUser(User user) throws EntityAlreadyFoundException {
-		transactionUser.create(user);
+		transactionUser.createUser(user);
 	}
 	
 	@Override
-	public void updateAllDataByUser(User userToUpdate, boolean justNow) 
+	public void updateAllDataByUser(User userToUpdate) 
 			throws EntityNotFoundException {
-		transactionUser.updateAllDataByUser(userToUpdate, justNow);
+		transactionUser.updateAllDataByUser(userToUpdate);
 	}
 	
 	@Override
@@ -108,18 +136,10 @@ public class EjbServiceUser
 	public List<User> getMostValuedUsersOfTheMonthFromDB() {
 		return transactionUser.getMostValuedUsersOfTheMonthFromDB();
 	}
-	@Override
-	public List<User> getMostValuedUsersOfTheMonthFromCache() {
-		return transactionUser.getMostValuedUsersOfTheMonthFromCache();
-	}
 	
 	@Override
 	public List<User> getMostActiveUsersOfTheMonthFromDB() {
 		return transactionUser.getMostActiveUsersOfTheMonthFromDB();
-	}
-	@Override
-	public List<User> getMostActiveUsersOfTheMonthFromCache() {
-		return transactionUser.getMostActiveUsersOfTheMonthFromCache();
 	}
 	
 	@Override
@@ -131,10 +151,6 @@ public class EjbServiceUser
 	public int getNumRegisteredUsersAndAdminFromDB() {
 		return transactionUser.getNumRegisteredUsersAndAdminFromDB();
 	}
-	@Override
-	public int getNumRegisteredUsersAndAdminFromCache() {
-		return transactionUser.getNumRegisteredUsersAndAdminFromCache();
-	}
 	
 	// // // // // // // // // // // // // // //
 	// METODOS PARA QUE EL USUARIO SE REGISTRE
@@ -142,10 +158,10 @@ public class EjbServiceUser
 	
 	@Override
 	public String sendEmailForRegister(User user,
-			List<String> contentSchema, String subject,
+			String content, String subject,
 			Map<String, Integer> mapActionsLimits){
 		return transactionUser.sendEmailForRegister(
-				user,contentSchema,subject,mapActionsLimits);
+				user,content,subject,mapActionsLimits);
 	}
 	
 	@Override
@@ -159,9 +175,8 @@ public class EjbServiceUser
 	
 	@Override
 	public void sendEmailForRemoveUser(User user,
-			List<String> contentSchema, String subject)
-					throws EntityNotFoundException {
-		transactionUser.sendEmailForRemoveUser(user, contentSchema, subject);
+			String content, String subject) throws EntityNotFoundException {
+		transactionUser.sendEmailForRemoveUser(user, content, subject);
 	}
 
 	@Override

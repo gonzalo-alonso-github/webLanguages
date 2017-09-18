@@ -20,29 +20,45 @@ import com.loqua.presentation.bean.applicationBean.BeanSettingsActionLimits;
 import com.loqua.presentation.bean.requestBean.BeanActionResult;
 import com.loqua.presentation.logging.LoquaLogger;
 
+/**
+ * Bean encargado de realizar las operaciones
+ * relativas al funcionamiento de las sesiones de usuario. Incluye los metodos
+ * de inicio y cierre de sesion de usuarios, y maneja las listas de sesiones
+ * de usuario que son almacenadas en el contexto de aplicacion.
+ * @author Gonzalo
+ */
 public class BeanLogin implements Serializable {
 	
 	private static final long serialVersionUID = 1;
 	
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
+	/** Direccion de email introducida por el usuario
+	 * al intentar iniciar sesion ('loguearse') */
 	private String email;
+	
+	/** Contrase&ntilde;a introducida por el usuario
+	 * al intentar iniciar sesion ('loguearse') */
 	private String password;
+	
+	/** Objeto {@link User} correspondiente al usuario que ha iniciado sesion
+	 * (que se ha 'logueado'). */
 	private User loggedUser;
 	
+	/** Objeto {@link BeanActionResult} que guarda y muestra el resultado
+	 * del intento de inicio de sesion del usuario */
 	private BeanActionResult actionLogin;
 
-	// Inyeccion de dependencia
+	/** Inyeccion de dependencia del {@link BeanForum} */
 	@ManagedProperty(value="#{beanForum}")
 	private BeanForum beanForum;
 	
-	// Inyeccion de dependencia
+	/** Inyeccion de dependencia del {@link BeanUserData} */
 	@ManagedProperty(value="#{beanUserData}")
 	private BeanUserData beanUserData;
-	// Inyeccion de dependencia
+	
+	/** Inyeccion de dependencia del {@link BeanSettingsActionLimits} */
 	@ManagedProperty(value="#{beanSettingsActionLimits}")
 	private BeanSettingsActionLimits beanSettingsActionLimits;
 	
@@ -50,11 +66,14 @@ public class BeanLogin implements Serializable {
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
+	/** Constructor del bean.
+	 * Inicializa el bean inyectado {@link BeanSettingsActionLimits} */
 	@PostConstruct
 	public void init() {
 		initBeanSettingsActionLimits();
 	}
 	
+	/** Inicializa el objeto {@link BeanSettingsActionLimits} inyectado */
 	private void initBeanSettingsActionLimits() {
 		// Buscamos el BeanSettingsActionLimits en la sesion.
 		beanSettingsActionLimits = null;
@@ -70,6 +89,7 @@ public class BeanLogin implements Serializable {
 		}
 	}
 	
+	/** Destructor del bean. */
 	@PreDestroy
 	public void end(){
 		close();
@@ -79,6 +99,16 @@ public class BeanLogin implements Serializable {
 	// METODOS
 	// // // //
 	
+	/**
+	 * Efectua la verificacion del inicio de sesion del usuario
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 * @return
+	 * enlace a la pagina de inicio del usuario logueado,
+	 * o a la pagina de error si se produce alguna excepcion,
+	 * o 'null' si las credenciales introducidas no corresponden a ningun
+	 * usuario
+	 */
 	public String verify(BeanActionResult beanActionResult) {
 		init();
 		actionLogin = beanActionResult;
@@ -103,7 +133,16 @@ public class BeanLogin implements Serializable {
 		return result;
 	}
 
-	// true: si se pasa el filtro
+	/**
+	 * Comprueba si el usuario tiene permiso para iniciar sesion,
+	 * segun el numero de intentos de inicio de sesion fallidos
+	 * con el mismo 'email'.
+	 * @return
+	 * 'true' si aun no se ha alcanzado el numero de intentos de inicio
+	 * de sesion fallidos con el mismo 'email' <br/>
+	 * 'false' si se alcanzo el numero de intentos de inicio
+	 * de sesion fallidos con el mismo 'email'
+	 */
 	private boolean verifyLimitLoginFails() {
 		boolean result = true;
 		Integer numFails = Factories.getService().getServiceUser()
@@ -123,6 +162,17 @@ public class BeanLogin implements Serializable {
 		return result;
 	}
 	
+	/**
+	 * Comprueba si el usuario tiene permiso para iniciar sesion,
+	 * segun el estado (propiedades {@link User#active} y
+	 * {@link User#locked}) al que corresponde el 'email' introducido.
+	 * @return
+	 * 'true' si el usuario es de tipo Administrador, o bien no esta
+	 * desactivado ni bloqueado <br/>
+	 * 'false' 'true' si el usuario no es de tipo Administrador, y ademas esta
+	 * desactivado o bloqueado
+	 * @throws EntityNotFoundException
+	 */
 	private String resultVerify() throws EntityNotFoundException {
 		String result = "errorUnexpectedAnonymous";
 		if( loggedUser.getRole().equals(User.ADMINISTRATOR) ){
@@ -155,7 +205,7 @@ public class BeanLogin implements Serializable {
 	 * con las mismas credenciales (puede suceder cuando accede desde varios
 	 * navegadores o dispositivos distintos).<br/>
 	 * Los filtros de autorizacion se encargaran de finalizar la sesion antigua,
-	 * gracias a la informacion que este metodo almacena en aplicacion.
+	 * gracias a la informacion que este metodo almacena en el contexto.
 	 */
 	private void filterIfAlreadyLogged() {
 		Map<Long, List<HttpSession>> mapLoggedUsers = getMapLoggedUsers();
@@ -171,10 +221,10 @@ public class BeanLogin implements Serializable {
 	}
 	
 	/**
-	 * Guarda en el contexto de Session el usuario que hace 'login' con exito.
-	 * Si ese usuario aun no esta guardado en contexto de Application,
-	 * entonces tambien lo guarda en contexto de Application
-	 * y ademas actualiza el numero de usuarios conectados.
+	 * Guarda en el contexto de sesion el usuario que inicia sesion con exito
+	 * (variable 'LOGGED_USER'). <br/>
+	 * Tambien lo guarda en el contexto de aplicacion (en el Map 'LOGGED_USERS',
+	 * si no lo estaba ya) y ademas actualiza el numero de usuarios conectados.
 	 */
 	private void putUserInSessionAndAppContext() {
 		Map<String, Object> session = FacesContext.getCurrentInstance()
@@ -202,7 +252,8 @@ public class BeanLogin implements Serializable {
 	}
 	
 	/**
-	 * Agrega el usuario recien conectado a la lista de contexto de aplicacion.
+	 * Agrega el usuario recien conectado a la lista de contexto de aplicacion,
+	 * esto es, el Map 'LOGGED_USERS'.
 	 */
 	private void addLoggedUserInAppContext(){
 		// Agrega el usuario conectado aL Map "LOGGED_USERS"
@@ -219,6 +270,8 @@ public class BeanLogin implements Serializable {
 		application.put("LOGGED_USERS", mapLoggedUsers);
 	}
 	
+	/** Decrementa el numero de usuarios con sesion iniciada, almacenado en
+	 * la variable 'NUM_LOGGED_USERS' de contexto de aplicacion. */
 	private void decrementOnlineUsers() {
 		if( loggedUser==null ) return;
 		Map<String, Object> application = FacesContext.getCurrentInstance()
@@ -237,10 +290,23 @@ public class BeanLogin implements Serializable {
 		application.put("LOGGED_USERS", mapLoggedUsers);
 	}
 	
+	/**
+	 * Comprueba si el usuario tiene una sesion iniciada; esto es,
+	 * si se encuentra guardado en la variable 'LOGGED_USERS'
+	 * de contexto de aplicacion
+	 * @return
+	 * 'true' si el usuario tiene una sesion iniciada. <br/>
+	 * 'false' si el usuario no tiene una sesion iniciada.
+	 */
 	private boolean userAlreadyLogged() {
 		return getMapLoggedUsers().containsKey(loggedUser.getId());
 	}
 	
+	/**
+	 * Halla del contexto de aplicacion todos los usuarios con sesion iniciada.
+	 * @return un Map donde la clave es el atributo 'id' del objeto User,
+	 * y donde el valor es la lista de sesiones que tiene abiertas.
+	 */
 	@SuppressWarnings("unchecked")
 	private Map<Long, List<HttpSession>> getMapLoggedUsers(){
 		Map<String, Object> application = FacesContext.getCurrentInstance()
@@ -254,6 +320,12 @@ public class BeanLogin implements Serializable {
 		return mapLoggedUsers;
 	}
 	
+	/**
+	 * Efectua el cierre de sesion de un usuario
+	 * @return
+	 * enlace a la pagina principal del foro para usuarios anonimos,
+	 * o a la pagina de error si se produce alguna excepcion
+	 */
 	public String close() {
 		decrementOnlineUsers();
 		email = password = null;
@@ -267,6 +339,11 @@ public class BeanLogin implements Serializable {
 	    return "successLogout";
 	}
 	
+	/**
+	 * Elimina de la memoria todos los beans de sesion inicializados
+	 * antes del inicio de sesion del usuario. De esta manera se evita
+	 * que dichos Beans mantengan informacion ajena a la sesion actual.
+	 */
 	private void cleanAllSessionScopedBeansUsedBeforeLogin(){
 		beanForum = (BeanForum)FacesContext.getCurrentInstance().
 				getExternalContext().getSessionMap().get("beanForum");

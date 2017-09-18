@@ -19,57 +19,102 @@ import com.loqua.business.services.ServicePublication;
 import com.loqua.business.services.ServiceUser;
 import com.loqua.business.services.ServiceUserAccessDataChange;
 
+/**
+ * Provee los objetos 'LocalServices' almacenados en el registro JNDI y
+ * gestionados por el contenedor. Aunque se asemeja a un patron Factory Method
+ * implementa el patron Services Locator, que en lugar de generar instancias
+ * de objetos localiza los ya existentes
+ * @author Gonzalo
+ */
 public class LocatorLocalEjbServices implements ServicesFactory {
 	
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * LocalServiceComment */
 	private static final String SERVICE_COMMENT_JNDI_KEY =
 			"java:global/loqua-ear/loqua-ejb/"
 			+ "EjbServiceComment!"
 			+ "com.loqua.business.services.serviceLocal.LocalServiceComment";
+	
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * LocalServiceContact */
 	private static final String SERVICE_CONTACT_JNDI_KEY =
 			"java:global/loqua-ear/loqua-ejb/"
 			+ "EjbServiceContact!"
 			+ "com.loqua.business.services.serviceLocal.LocalServiceContact";
+	
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * LocalServiceCorrection */
 	private static final String SERVICE_CORRECTION_JNDI_KEY =
 			"java:global/loqua-ear/loqua-ejb/"
 			+ "EjbServiceCorrection!"
 			+ "com.loqua.business.services.serviceLocal.LocalServiceCorrection";
+	
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * LocalServiceCountry */
 	private static final String SERVICE_COUNTRY_JNDI_KEY =
 			"java:global/loqua-ear/loqua-ejb/"
 			+ "EjbServiceCountry!"
 			+ "com.loqua.business.services.serviceLocal.LocalServiceCountry";
+	
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * LocalServiceFeed */
 	private static final String SERVICE_FEED_JNDI_KEY =
 			"java:global/loqua-ear/loqua-ejb/"
 			+ "EjbServiceFeed!"
 			+ "com.loqua.business.services.serviceLocal.LocalServiceFeed";
+	
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * LocalServiceLanguage */
 	private static final String SERVICE_LANGUAGE_JNDI_KEY =
 			"java:global/loqua-ear/loqua-ejb/"
 			+ "EjbServiceLanguage!"
 			+ "com.loqua.business.services.serviceLocal.LocalServiceLanguage";
+	
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * LocalServiceMessage */
 	private static final String SERVICE_MESSAGE_JNDI_KEY =
 			"java:global/loqua-ear/loqua-ejb/"
 			+ "EjbServiceMessage!"
 			+ "com.loqua.business.services.serviceLocal.LocalServiceMessage";
+	
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * LocalServiceThread */
 	private static final String SERVICE_NEW_JNDI_KEY =
 			"java:global/loqua-ear/loqua-ejb/"
 			+ "EjbServiceThread!"
 			+ "com.loqua.business.services.serviceLocal.LocalServiceThread";
+	
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * LocalServiceUserAccessDataChange */
 	private static final String SERVICE_USERACCESSDATA_JNDI_KEY =
 			"java:global/loqua-ear/loqua-ejb/"
 			+ "EjbServiceUserAccessDataChange!"
 			+ "com.loqua.business.services.serviceLocal"
 			+ ".LocalServiceUserAccessDataChange";
+	
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * LocalServiceForumPost */
 	private static final String SERVICE_FORUMPOST_JNDI_KEY =
 			"java:global/loqua-ear/loqua-ejb/"
 			+ "EjbServiceForumPost!"
 			+ "com.loqua.business.services.serviceLocal.LocalServiceForumPost";
+	
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * LocalServicePublication */
 	private static final String SERVICE_PUBLICATION_JNDI_KEY =
 			"java:global/loqua-ear/loqua-ejb/"
 			+ "EjbServicePublication!"
 			+ "com.loqua.business.services.serviceLocal.LocalServicePublication";
+	
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * LocalServiceUser */
 	private static final String SERVICE_USER_JNDI_KEY =
 			"java:global/loqua-ear/loqua-ejb/"
 			+ "EjbServiceUser!"
 			+ "com.loqua.business.services.serviceLocal.LocalServiceUser";
+	
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * LocalServiceCredentials */
 	private static final String SERVICE_CREDENTIALS_JNDI_KEY =
 			"java:global/loqua-ear/loqua-ejb/"
 			+ "EjbServiceCredentials!"

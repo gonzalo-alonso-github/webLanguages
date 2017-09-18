@@ -7,20 +7,46 @@ import javax.jws.WebService;
 
 import com.loqua.business.exception.EntityAlreadyFoundException;
 import com.loqua.business.exception.EntityNotFoundException;
+import com.loqua.business.services.ServicePublication;
 import com.loqua.business.services.impl.transactionScript.TransactionPublication;
+import com.loqua.business.services.locator.LocatorLocalEjbServices;
+import com.loqua.business.services.locator.LocatorRemoteEjbServices;
+import com.loqua.business.services.serviceLocal.LocalServiceMessage;
 import com.loqua.business.services.serviceLocal.LocalServicePublication;
+import com.loqua.business.services.serviceRemote.RemoteServiceMessage;
 import com.loqua.business.services.serviceRemote.RemoteServicePublication;
 import com.loqua.model.Event;
 import com.loqua.model.Publication;
+import com.loqua.model.PublicationReceiver;
 import com.loqua.model.User;
 
+/**
+ * Da acceso a las transacciones correspondientes a las entidades
+ * {@link Publication} y {@link PublicationReceiver}.<br/>
+ * La intencion de esta 'subcapa' de EJBs no es albergar mucha logica de negocio
+ * (de ello se ocupa el modelo y el Transaction Script), sino hacer
+ * que las transacciones sean controladas por el contenedor de EJB
+ * (Wildfly en este caso), quien se ocupa por ejemplo de abrir las conexiones
+ * a la base de datos mediate un datasource y de realizar los rollback. <br/>
+ * Al ser un EJB de sesion sin estado no puede ser instanciado desde un cliente
+ * o un Factory Method, sino que debe ser devuelto mediante el registro JNDI.
+ * Forma parte del patron Service Locator y se encapsula tras las fachadas
+ * {@link LocalServiceMessage} y {@link RemoteServiceMessage},
+ * que heredan de {@link ServicePublication}, producto de
+ * {@link LocatorLocalEjbServices} o {@link LocatorRemoteEjbServices}
+ * @author Gonzalo
+ */
 @Stateless
 @WebService(name="ServicePublication")
 public class EjbServicePublication 
 		implements LocalServicePublication, RemoteServicePublication {
 
+	/** Objeto de la capa de negocio que realiza la logica relativa a las
+	 * entidades {@link Publication} y {@link PublicationReceiver},
+	 * incluyendo procedimientos 'CRUD' de dichas entidades */
 	private static final TransactionPublication transactionPublication = 
 			new TransactionPublication();
+	
 	
 	@Override
 	public Publication getPublicationByID(Long publicationID)
@@ -48,16 +74,16 @@ public class EjbServicePublication
 	
 	@Override
 	public List<Publication> getLastNotificationsByUser(
-			Long userReceiverID, Integer limit) {
+			Long userReceiverId, Integer limitNumPubs) {
 		return transactionPublication
-				.getLastNotificationsByUser(userReceiverID, limit);
+				.getLastNotificationsByUser(userReceiverId, limitNumPubs);
 	}
 	
 	@Override
 	public List<Publication> getPublicationsByUser(
-			Long userId, Integer offset, Integer elementsPerPage){
+			Long userId, Integer offset, Integer limitNumPubs){
 		return transactionPublication.getPublicationsByUser(
-				userId, offset, elementsPerPage);
+				userId, offset, limitNumPubs);
 	}
 	
 	@Override
@@ -68,9 +94,9 @@ public class EjbServicePublication
 	
 	@Override
 	public List<Publication> getPublicationsByUserAndContacts(Long userId,
-			Integer offset, Integer elementsPerPage) {
+			Integer offset, Integer limitNumPubs) {
 		return transactionPublication.getPublicationsByUserAndContacts(
-				userId, offset, elementsPerPage);
+				userId, offset, limitNumPubs);
 	}
 	
 	@Override
@@ -86,9 +112,9 @@ public class EjbServicePublication
 	}
 	
 	@Override
-	public void updatePublication(Publication pub)
+	public void updatePublication(Publication publication)
 			throws EntityNotFoundException {
-		transactionPublication.updatePublication(pub);
+		transactionPublication.updatePublication(publication);
 	}
 	
 	@Override
@@ -98,8 +124,8 @@ public class EjbServicePublication
 	}
 	
 	@Override
-	public void deletePublication(Publication pub)
+	public void deletePublication(Publication publication)
 			throws EntityNotFoundException {
-		transactionPublication.deletePublication(pub);
+		transactionPublication.deletePublication(publication);
 	}
 }

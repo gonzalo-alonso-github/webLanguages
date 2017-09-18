@@ -14,16 +14,36 @@ import javax.ws.rs.core.MediaType;
 
 import com.loqua.remote.model.ForumThread;
 
+/** Proxy REST a traves del cual esta aplicacion cliente envia peticiones
+ * a la interfaz remota RestServiceForumThread
+ * (implementada en el proyecto 'loqua-web'). <br/>
+ * Mediante las anotaciones de JAX-RS de cada metodo, la especificacion
+ * RESTEasy podra convertir las llamadas a ellos en peticiones HTTP
+ * dirigidas a la URL que se haya especificado.
+ */
 @Path("/RestServiceForumThread")
 public interface RestServiceForumThread {
 	
+	/**
+	 * Realiza una peticion HTTP al metodo 'getAllForumThreadGUIDsInLastHour'
+	 * del servicio remoto 'RestServiceForumThread'
+	 * (implementado en el proyecto 'loqua-web').
+	 * @return lista de hilos del foro que han sido creados en la ultima hora
+	 */
 	@GET
 	@Path("getAllForumThreadGUIDsInLastHour")
 	@Produces({
 		MediaType.APPLICATION_XML + ";charset=UTF-8",
 		MediaType.APPLICATION_JSON + ";charset=UTF-8"})
-	List<ForumThread> getAllForumThreadGUIDsInLastHour();
+	List<ForumThread> getAllForumThreadsInLastHour();
 	
+	/**
+	 * Agrega al sistema el objeto ForumThread indicado (nuevo hilo del foro).
+	 * <br/> Realiza una peticion HTTP al metodo 'createForumThread'
+	 * del servicio remoto 'RestServiceForumThread'
+	 * (implementado en el proyecto 'loqua-web').
+	 * @param forumThread objeto ForumThread que se agrega
+	 */
 	@PUT
 	@Path("createForumThread")
 	@Consumes({ 
@@ -31,6 +51,14 @@ public interface RestServiceForumThread {
 		MediaType.APPLICATION_JSON + ";charset=UTF-8"})
 	void createForumThread(ForumThread forumThread);
 
+	/**
+	 * Agrega al sistema todos los objetos ForumThread indicados
+	 * (nuevos hilo del foro).
+	 * <br/> Realiza una peticion HTTP al metodo 'createForumThreadsByList'
+	 * del servicio remoto 'RestServiceForumThread'
+	 * (implementado en el proyecto 'loqua-web').
+	 * @param forumThreads lista de objetos ForumThread que se agregan
+	 */
 	@PUT
 	@Path("createForumThreadByList")
 	@Consumes({ 
