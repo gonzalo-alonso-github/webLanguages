@@ -15,32 +15,45 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * Representa la informacion sobre los datos estrictamente personales
+ * de un usuario. <br/><br/>
+ * En lugar de albergar esta informacion en {@link User} esta entidad
+ * corresponde a la tabla UserInfoPrivacity, que almacena datos
+ * que no son de acceso ni referentes al estado del usuario
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "userInfoPrivacity")
 @Entity
 @Table(name="UserInfoPrivacity")
 public class UserInfoPrivacity implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
 	// // // // // // //
 	// ATRIBUTOS
 	// // // // // // //
+	
+	/** Identificador del objeto y clave primaria de la entidad */
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) private Long id;
 	private boolean gender;
+	/** Imagen del perfil de usuario */
 	private byte[] image;
-	//private String name;
-	//private String surname;
-	//private Date birthDate;
 	
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
+	
+	/** Usuario al que se refiere la informacion */
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="user_id", referencedColumnName="id")
 	private User user;
 	
+	/** Pais de origen del usuario */
 	@ManyToOne @JoinColumn(name="countryOrigin_id")
 	private Country countryOrigin;
 	
+	/** Pais de ubicacion del usuario */
 	@ManyToOne @JoinColumn(name="countryLocation_id")
 	private Country countryLocation;
 	
@@ -48,17 +61,27 @@ public class UserInfoPrivacity implements Serializable {
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public UserInfoPrivacity(){}
 	
+	/**
+	 * Constructor que recibe las entidades asociadas a esta
+	 * @param user objeto User asociado al UserInfoPrivacity
+	 * @param cOrigin objeto Country que indica el pais de origen
+	 * asociado al UserInfoPrivacity
+	 * @param cLocation objeto Country que indica el pais de ubicacion
+	 * asociado al UserInfoPrivacity
+	 */
 	public UserInfoPrivacity(User user,
 			Country cOrigin, Country cLocation){
 		this.user = user;
 		user.setUserInfoPrivacity(this);
 		
-		countryOrigin = cOrigin;
-		countryLocation = cLocation;
+		this.countryOrigin = cOrigin;
+		this.countryLocation = cLocation;
 	}
-	
+
+	/** Desasigna de esta entidad a las entidades asociadas */
 	public void unlink(){
 		user.setUserInfoPrivacity( null );
 		user = null;
@@ -74,8 +97,8 @@ public class UserInfoPrivacity implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	/**
@@ -93,7 +116,7 @@ public class UserInfoPrivacity implements Serializable {
 		user = u;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  * UserInfoPrivacity <--> 1 Country (country de origen del user)
 	 */
 	@XmlTransient
@@ -107,7 +130,7 @@ public class UserInfoPrivacity implements Serializable {
 		countryOrigin = c;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  * UserInfoPrivacity <--> 1 Country (country de residencia del user)
 	 */
 	@XmlTransient
@@ -128,8 +151,8 @@ public class UserInfoPrivacity implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	@XmlElement
@@ -215,8 +238,6 @@ public class UserInfoPrivacity implements Serializable {
 	@Override
 	public String toString() {
 		return "UserInfoPrivacity ["
-				/* + "name=" + name
-				+ ", surname=" + surname.toString() */
 				+ "gender=" + gender
 				+ ", countryOrigin=" + countryOrigin.toString()
 				+ ", countryLocation=" + countryLocation.toString()+ "]";

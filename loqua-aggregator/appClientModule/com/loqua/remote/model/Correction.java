@@ -16,6 +16,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * Representa una correccion de un comentario publicada por un usuario
+ * en el foro.
+ * Es una clase heredada de {@link ForumPost}, al igual que {@link Correction}
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "correction")
 @Entity
 @DiscriminatorValue("TypeCorrection")
@@ -23,33 +29,52 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Correction extends ForumPost implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
 	// // // // // // //
 	// ATRIBUTOS
 	// // // // // // //
+	
+	/** Texto plano de la correccion */
 	private String text;
+	/** Texto HTML de la correccion */
 	private String textHtml;
+	/** Indica si la correccion ha quedado aprobada por el usuario que
+	 * la recibio */
 	private boolean approved;
+	/** Fecha en la que la correccion ha quedado aprobada por el usuario que
+	 * la recibio */
 	private Date dateApproved;
 	
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
+	
+	/** Comentario que recibe la correccion */
 	@ManyToOne
 	@JoinColumn(name="comment_id", referencedColumnName="id")
 	private Comment comment;
 	
+	/** Lista de recomendaciones que ha recibido la correccion */
 	@OneToMany(mappedBy="correction")
-	private Set<CorrectionAgree> correctionAgreements = new HashSet<CorrectionAgree>();
+	private Set<CorrectionAgree> correctionAgreements =
+			new HashSet<CorrectionAgree>();
 	
+	/** Lista de desaprobaciones que ha recibido la correccion */
 	@OneToMany(mappedBy="correction")
-	private Set<CorrectionDisagree> correctionDisagreements = new HashSet<CorrectionDisagree>();
+	private Set<CorrectionDisagree> correctionDisagreements = 
+			new HashSet<CorrectionDisagree>();
 	
 	// // // // // // //
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public Correction(){}
 	
+	/**
+	 * Constructor que recibe las entidades asociadas a esta
+	 * @param comment Comentario que recibe la correccion
+	 */
 	public Correction(Comment comment){
 		this.comment = comment;
 	}
@@ -61,11 +86,11 @@ public class Correction extends ForumPost implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  * Corrections <--> 1 Comment
 	 */
 	@XmlTransient
@@ -83,7 +108,7 @@ public class Correction extends ForumPost implements Serializable {
 		return this;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Correction <--> * CorrectionAgrees <--> 1 User
 	 */
 	@XmlTransient
@@ -94,7 +119,7 @@ public class Correction extends ForumPost implements Serializable {
 		return correctionAgreements;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Correction <--> * CorrectionDisagrees <--> 1 User
 	 */
 	@XmlTransient
@@ -112,8 +137,8 @@ public class Correction extends ForumPost implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	@XmlElement
@@ -180,28 +205,46 @@ public class Correction extends ForumPost implements Serializable {
 	// RELACION ENTRE ENTIDADES (METODOS)
 	// // // // // // // // // // // // //
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Correction <--> * CorrectionAgrees <--> 1 User
 	 */
-	public void addCorrectionAgree(CorrectionAgree c){
-		correctionAgreements.add(c);
-		c._setCorrection(this);
+	
+	/** Agrega una recomendacion de correccion a la lista de ellas
+	 * que posee la correccion 
+	 * @param correctionAgree objeto CorrectionAgree que se agrega
+	 */
+	public void addCorrectionAgree(CorrectionAgree correctionAgree){
+		correctionAgreements.add(correctionAgree);
+		correctionAgree._setCorrection(this);
 	}
-	public void removeCorrectionAgree(CorrectionAgree c){
-		correctionAgreements.remove(c);
-		c._setCorrection(null);
+	/** Elimina una recomendacion de correccion de la lista de ellas
+	 * que posee la correccion 
+	 * @param correctionAgree objeto CorrectionAgree que se elimina
+	 */
+	public void removeCorrectionAgree(CorrectionAgree correctionAgree){
+		correctionAgreements.remove(correctionAgree);
+		correctionAgree._setCorrection(null);
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Correction <--> * CorrectionDisagrees <--> 1 User
 	 */
-	public void addCorrectionDisagree(CorrectionDisagree c){
-		correctionDisagreements.add(c);
-		c._setCorrection(this);
+	
+	/** Agrega una desaprobacion a la lista de ellas 
+	 * que posee la correccion
+	 * @param correctionDisagree objeto CorrectionDisagree que se agrega
+	 */
+	public void addCorrectionDisagree(CorrectionDisagree correctionDisagree){
+		correctionDisagreements.add(correctionDisagree);
+		correctionDisagree._setCorrection(this);
 	}
-	public void removeCorrectionDisagree(CorrectionDisagree c){
-		correctionDisagreements.remove(c);
-		c._setCorrection(null);
+	/** Elimina una desaprobacion de la lista de ellas 
+	 * que posee la correccion
+	 * @param correctionDisagree objeto CorrectionDisagree que se agrega
+	 */
+	public void removeCorrectionDisagree(CorrectionDisagree correctionDisagree){
+		correctionDisagreements.remove(correctionDisagree);
+		correctionDisagree._setCorrection(null);
 	}
 	
 	// // // // // // // //

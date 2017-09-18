@@ -10,15 +10,21 @@ import javax.faces.context.FacesContext;
  * segun la cadena de texto devuelta por la aplicacion.
  * En este caso solo se encarga de agregar explicitamente a la URL requerida
  * el ancla especificado (en caso de existir), para evitar que este sea omitido
- * por defecto al pinchar en los 'commandLink' y 'commandButton'.
+ * por defecto al pinchar en los controles JSF 'commandLink' y 'commandButton'
+ * presentes en las vistas xhtml.
  * Este NavigationHandlerCustom debe estar registrado en el faces-config.xhtml.
  * @author Gonzalo
  */
 public class NavigationHandlerCustom /* extends ConfigurableNavigationHandler */
 		extends ConfigurableNavigationHandlerWrapper {
-
+	
+	/** Manejador de la navegacion de la vista */
 	private NavigationHandler wrapped;
 
+	/** Constructor que inicializa el objeto NavigationHandler de la clase.
+	 * @param wrapped objeto NavigationHandler para inicializar el atributo
+	 * {@link #wrapped}
+	 */
 	public NavigationHandlerCustom(NavigationHandler wrapped) {
 		this.wrapped = wrapped;
 	}
@@ -37,6 +43,20 @@ public class NavigationHandlerCustom /* extends ConfigurableNavigationHandler */
 				storeFragment(context, outcome), toFlowDocumentId);
 	}
 
+	/**
+	 * A partir de la URL resultante del enlace seguido
+	 * por el usuario (es decir, a partir del 'action' de un 'commandLink' o
+	 * 'commandButton'), obtiene el ancla si existe, y lo guarda
+	 * en el Map del FacesContext. El manejador {@link ViewHandlerCustom}
+	 * sera quien se encargue de redirigir la vista agregandole a la URL
+	 * el ancla guardado en el FacesContext.
+	 * @param context instancia del FacesContext que procesa a la peticion
+	 * @param outcome cadena resultante despues de que el usuario haya pinchado
+	 * en un enlace 'commandLink' o 'commandButton', que indica
+	 * la siguiente vista que debe ser presentada
+	 * @return cadena de texto que indica la siguiente vista que debe ser
+	 * presentada, es decir, el mismo parametro 'outcome' recibido
+	 */
 	private static String storeFragment(final FacesContext context,
 			final String outcome) {
 		if (outcome != null) {

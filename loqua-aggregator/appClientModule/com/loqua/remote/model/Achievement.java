@@ -17,30 +17,59 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * Representa un logro conseguido por un usuario en la aplicacion.<br/>
+ * Todos los objetos Achievement tienen asociado uno de los objetos
+ * {@link Event} cuyo atributo 'isAchievement' es igual a 'true',
+ * para indicar el 'evento' que ha dado lugar al logro.<br/><br/>
+ * Mas detalladamente: un usuario puede provocar un mismo 'evento'
+ * varias veces; del mismo modo algunos 'eventos' pueden generar un logro,
+ * pero nunca se creara repetidamente un logro que ya haya sido alcanzado.
+ * La informacion de la tabla Achievement ayuda a controlar que los logros
+ * ya generados por un usuario no se repitan.
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "achievement")
 @Entity
 @Table(name="Achievement")
 public class Achievement implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
 	// // // // // // //
 	// ATRIBUTOS
 	// // // // // // //
+	
+	/** Identificador del objeto y clave primaria de la entidad */
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) private Long id;
 	private Date dateAchievement;
+	
+	/** Valor del Achievement que lo distingue de otros objetos Achievement
+	 * generados por el mismo User y por el mismo Event.<br/>
+	 * Ejemplos:
+	 * <ul><li>Si el 'evento' indica que el usuario entra
+	 * en el top-X de la clasificacion de puntos, este eventValue es la variable
+	 * que indica si ese top-X es el top-1, top-5, top-10...</li>
+	 * <li>Si el 'evento' indica que el usuario ha alcanzado una cantidad X
+	 * de comentarios publicados en el foro, este eventValue es la variable
+	 * que indica si ese valor X es 500, 1000, 5000...</li></ul> */
 	private Long eventValue;
 	
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
+	
+	/** Usuario que alcanza el evento que da lugar al logro */
 	@ManyToOne
 	@JoinColumn(name="user_id", referencedColumnName="id")
 	private User user;
 	
+	/** 'Evento' que da lugar al logro */
 	@ManyToOne
 	@JoinColumn(name="event_type", referencedColumnName="type")
 	private Event event;
 	
+	/** Lista de receptores de la publicacion */
 	@OneToMany(mappedBy="publication")
 	private Set<PublicationReceiver> receivers = 
 			new HashSet<PublicationReceiver>();
@@ -49,8 +78,14 @@ public class Achievement implements Serializable {
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public Achievement(){}
 	
+	/**
+	 * Constructor que recibe las entidades asociadas a esta
+	 * @param user objeto User asociado al Achievement
+	 * @param event objeto Event asociado al Achievement
+	 */
 	public Achievement(User user, Event event){
 		this.user = user;
 		this.event = event;
@@ -63,11 +98,11 @@ public class Achievement implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  * Achievements <--> 1 User
 	 */
 	@XmlTransient
@@ -85,7 +120,7 @@ public class Achievement implements Serializable {
 		return this;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:<br>
 	 *  * Achievements <--> 1 Event
 	 */
 	@XmlTransient
@@ -110,8 +145,8 @@ public class Achievement implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	@XmlElement

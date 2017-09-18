@@ -19,7 +19,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.loqua.business.services.impl.MapCredentials;
 
 /**
- * Servlet Filter implementation class LoginFilter
+ * Define el filtro que se aplica sobre los recursos REST ubicados en
+ * el directorio '/rest' y comprueba si las peticiones HTTP recibidas
+ * contienen la cabecera con la credencial correcta para acceder a dichos
+ * recursos.
+ * @author Gonzalo
  */
 @WebFilter(
 		dispatcherTypes = { DispatcherType.REQUEST },
@@ -33,9 +37,8 @@ import com.loqua.business.services.impl.MapCredentials;
 
 public class FilterRESTServices implements Filter {
 
-	// Necesitamos acceder a los parametros de inicializacion en
-	// el metodo doFilter, asi que necesitamos la variable
-	// config que se inicializara en init()
+	/** Se utliza para acceder a los parametros de inicializacion
+	 * definidos en las anotaciones de esta clase */
 	FilterConfig config = null;
 
 	/*private static String[] credentials = 
@@ -43,11 +46,8 @@ public class FilterRESTServices implements Filter {
 	private static String[] credentials = 
 			MapCredentials.getInstance().get("rest");
 	
-	/**
-	 * Default constructor.
-	 */
-	public FilterRESTServices() {
-	}
+	/** Constructor sin parametros de la clase */
+	public FilterRESTServices() {}
 
 	/**
 	 * @see Filter#destroy()
@@ -68,10 +68,10 @@ public class FilterRESTServices implements Filter {
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		// Si el metodo termina despues de hacer 'chain.doFilter',
-		// se permite el acceso a la pagina requerida (no se redirige a otra)
-		// Si el metodo termina despues de hacer 'res.sendRedirect',
-		// no se permite el acceso a la pagina requerida (se redirige a otra)
+		/* Si el metodo termina despues de hacer 'chain.doFilter',
+		se permite el acceso a la pagina requerida (no se redirige a otra)
+		Si el metodo termina despues de hacer 'res.sendRedirect',
+		no se permite el acceso a la pagina requerida (se redirige a otra) */
 		
 		// Si no es peticion HTTP no se filtra
 		if (!(request instanceof HttpServletRequest)){
@@ -81,30 +81,14 @@ public class FilterRESTServices implements Filter {
 		
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
-		/*
-		HttpSession session = req.getSession();
-		if( req.getSession(false)==null ){
-			session = req.getSession(true);
-		}
-		*/
+		
 		String credential = null;
 		String base64Credentials = req.getHeader("NotStandard-Filter");
 		if( base64Credentials!=null && !base64Credentials.isEmpty() ){
-			// && authorization.startsWith("Basic")
-			// credential = base64Credentials.substring("Basic".length()).trim();
 			credential = new String(Base64.getDecoder()
 					.decode(base64Credentials), Charset.forName("UTF-8"));
 		}
 		if( credential==null || credential.equals(credentials[0])==false ){
-			/* Se dice que el header de la respuesta se debe editar
-			despues del doFilter y no antes. Asi que hacemos primero doFilter:
-			https://stackoverflow.com/questions/13461500/
-			java-filter-failing-to-set-response-headers#answer-13483065 */
-			//chain.doFilter(request, response);
-			
-			/* ...aunque finalmente se decide no hacer aqui doFilter,
-			sino redireccionar a pagina de error, por si el 'intruso fallido'
-			es un navegador de usuario y no la aplicacion cliente REST */
 			String defaultResponse = config.getInitParameter("defaultResponse");
 			res.sendRedirect(req.getContextPath() + defaultResponse);
 			

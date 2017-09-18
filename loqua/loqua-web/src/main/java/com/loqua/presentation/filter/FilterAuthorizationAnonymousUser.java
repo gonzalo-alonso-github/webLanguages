@@ -18,7 +18,17 @@ import javax.servlet.http.HttpSession;
 import com.loqua.model.User;
 
 /**
- * Servlet Filter implementation class LoginFilter
+ * Define el filtro que se aplica sobre todas las paginas exclusivas
+ * de usuarios no registrados (o 'anonimos').
+ * Este filtro impide que ningun usuario de otro tipo acceda a dichas paginas.
+ * <br/>
+ * El ciclo de JSF es interceptado por el Filtro antes de que el navegador
+ * muestre la pagina sobre la que este se aplica, y se ejecuta inmediatamene
+ * despues de los manejadores de navegacion (NavigationHandler) y de vista
+ * (ViewHandler). <br/>
+ * Puesto que se definen varios filtros sobre las mismas paginas, es coveniente
+ * indicar, en el fichero web.xml, el orden en que se aplican.
+ * @author Gonzalo
  */
 @WebFilter(
 		dispatcherTypes = { DispatcherType.REQUEST },
@@ -31,20 +41,14 @@ import com.loqua.model.User;
 					name="adminIndex",
 					value="/pages/admin_user/profile_index.xhtml")
 		})
-
-
 public class FilterAuthorizationAnonymousUser implements Filter {
 
-	// Necesitamos acceder a los parametros de inicializacion en
-	// el metodo doFilter, asi que necesitamos la variable
-	// config que se inicializara en init()
+	/** Se utliza para acceder a los parametros de inicializacion
+	 * definidos en las anotaciones de esta clase */
 	FilterConfig config = null;
 
-	/**
-	 * Default constructor.
-	 */
-	public FilterAuthorizationAnonymousUser() {
-	}
+	/** Constructor sin parametros de la clase */
+	public FilterAuthorizationAnonymousUser() {}
 
 	/**
 	 * @see Filter#destroy()
@@ -65,10 +69,10 @@ public class FilterAuthorizationAnonymousUser implements Filter {
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		// Si el metodo termina despues de hacer 'chain.doFilter',
-		// se permite el acceso a la pagina requerida (no se redirige a otra)
-		// Si el metodo termina despues de hacer 'res.sendRedirect',
-		// no se permite el acceso a la pagina requerida (se redirige a otra)
+		/* Si el metodo termina despues de hacer 'chain.doFilter',
+		se permite el acceso a la pagina requerida (no se redirige a otra)
+		Si el metodo termina despues de hacer 'res.sendRedirect',
+		no se permite el acceso a la pagina requerida (se redirige a otra) */
 		
 		// Si no es peticion HTTP no se filtra
 		if (!(request instanceof HttpServletRequest)){

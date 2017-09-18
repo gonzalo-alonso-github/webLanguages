@@ -1,10 +1,26 @@
 package com.loqua.model.compoundkeys;
 
+import com.loqua.model.Comment;
+import com.loqua.model.CommentVoter;
+import com.loqua.model.User;
+
 import java.io.Serializable;
 
-@SuppressWarnings("serial")
+/**
+ * Representa la clave primaria de la entidad {@link CommentVoter}
+ * @author Gonzalo
+ */
 public class CommentVoterKey implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
+	
+	/** Clave primaria de la entidad {@link Comment}
+	 * a la que esta asociado el objeto CommentVoter
+	 */
 	Long comment;
+	/** Clave primaria de la entidad {@link User}
+	 * a la que esta asociado el objeto CommentVoter
+	 */
 	Long user;
 	
 	@Override

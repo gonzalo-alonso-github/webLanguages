@@ -21,20 +21,13 @@ import com.loqua.presentation.logging.LoquaLogger;
  */
 public class BeanSettingsLocale implements Serializable {
 	
-	/**
-	 * Numero de version de la clase serializable.
-	 * @see Serializable#serialVersionUID
-	 */
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
-	/**
-	 * Mapa de pares clave-valor &lt;String, String&gt; donde cada elemento
-	 * representa un lenguaje especificado en el fichero 'locales.properties'.
+	/** Mapa de pares clave-valor &lt;String, String&gt; donde cada elemento
+	 * representa un lenguaje especificado en el fichero 'locales.properties'
 	 */
 	private static Map<String, String> mapLanguages;
 	
@@ -42,16 +35,13 @@ public class BeanSettingsLocale implements Serializable {
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
-	/**
-	 * Construccion del bean.
-	 */
+	/** Constructor del bean. Inicializa el atributo
+	 * {@link #mapLanguages} */
 	public BeanSettingsLocale() {
 		loadMapLanguagesFromProperties();
 	}
 
-	/**
-	 * Destruccion del bean
-	 */
+	/** Destructor del bean */
 	@PreDestroy
 	public void end(){}
 	
@@ -60,7 +50,7 @@ public class BeanSettingsLocale implements Serializable {
 	// // // //
 	
 	/**
-	 * Llena el Map de lenguages de la clase a partir de los datos presentes
+	 * Carga el Map de lenguajes de la clase a partir de los datos presentes
 	 * en el fichero 'locales.properties'. 
 	 * @throws IOException
 	 */
@@ -92,10 +82,6 @@ public class BeanSettingsLocale implements Serializable {
 					+ "'loadMapLanguagesFromProperties()': " + msg);
 		}
 	}
-	
-	// // // // // // //
-	// GETTERS & SETTERS
-	// // // // // // //
 	
 	/**
 	 * Obtiene el Map de propiedades que almacena los idiomas de las vistas

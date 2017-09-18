@@ -9,6 +9,12 @@ import javax.faces.validator.ValidatorException;
 
 import com.loqua.presentation.bean.BeanSettingsSession;
 
+/**
+ * Define un validador encargado de comprobar si el valor del componente
+ * UIComponent sobre el que se aplica es igual a la contrase&ntilde;a
+ * introducida previamente en otro UIComponent.
+ * @author Gonzalo
+ */
 @FacesValidator("validatorPasswordConfirmation")
 public class ValidatorPasswordConfirmation implements Validator {
 

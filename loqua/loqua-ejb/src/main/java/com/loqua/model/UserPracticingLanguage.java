@@ -12,22 +12,32 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@SuppressWarnings("serial")
+/**
+ * Representa la informacion del lenuage practicado por un usuario.
+ * Es una clase asociativa entre {@link Language} y {@link User}
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "userPracticingLanguage")
 @Entity
 @Table(name="UserPracticingLanguage")
 //@IdClass(UserPracticingLanguageKey.class)
 public class UserPracticingLanguage implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+	
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
+	
+	/** Identificador del objeto y clave primaria de la entidad */
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) private Long id;
 	
 	//@Id @GeneratedValue @ManyToOne private Language language;
 	//@Id @GeneratedValue @ManyToOne private User user;
 	@ManyToOne @JoinColumn(name="language_id")
 	private Language language;
+	
+	/** Usuario que practica el lenguaje indicado por {@link #language}*/
 	@ManyToOne @JoinColumn(name="user_id")
 	private User user;
 	
@@ -35,15 +45,22 @@ public class UserPracticingLanguage implements Serializable {
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public UserPracticingLanguage(){}
 	
-	public UserPracticingLanguage(User uip, Language l){
-		user = uip;
-		language = l;
-		uip.addUserPracticingLanguage( this );
-		l.addUserPracticingLanguage( this );
+	/**
+	 * Constructor que recibe las entidades asociadas a esta
+	 * @param user objeto User asociado al UserNativeLanguage
+	 * @param language objeto Language asociado al UserNativeLanguage
+	 */
+	public UserPracticingLanguage(User user, Language language){
+		this.user = user;
+		this.language = language;
+		user.addUserPracticingLanguage( this );
+		language.addUserPracticingLanguage( this );
 	}
 
+	/** Desasigna de esta entidad a las entidades asociadas */
 	public void unlink(){
 		user.removeUserPracticingLanguage( this );
 		language.removeUserPracticingLanguage( this );
@@ -59,8 +76,8 @@ public class UserPracticingLanguage implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	@XmlElement
@@ -78,11 +95,11 @@ public class UserPracticingLanguage implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * UserPracticingLanguage <--> 1 Language 
 	 */
 	public User getUser() {

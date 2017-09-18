@@ -24,11 +24,17 @@ import com.loqua.presentation.util.MapQueryString;
 import com.loqua.presentation.util.VerifierAjaxRequest;
 
 /**
- * Este filtro se aplica a la pagina de 'forum_thread_correction.xhtml'
- * (tanto para usuarios registrados como para administradores).
- * Por tanto existen dos filtros para dicha pagina: el 'FilterAuthorization...'
- * y este. Y el orden en que se aplican esta definido en el fichero de despliegue
- * web.xml.
+ * Define el filtro, que se aplica sobre la pagina de
+ * 'forum_thread_correction.xhtml',
+ * y que comprueba si son correctos los parametros enviados en la URL
+ * (la 'query string'). <br/>
+ * El ciclo de JSF es interceptado por el Filtro antes de que el navegador
+ * muestre la pagina sobre la que este se aplica, y se ejecuta inmediatamene
+ * despues de los manejadores de navegacion (NavigationHandler) y de vista
+ * (ViewHandler). <br/>
+ * Puesto que se definen varios filtros sobre esta misma pagina, es coveniente
+ * indicar, en el fichero web.xml, el orden en que se aplican.
+ * @author Gonzalo
  */
 @WebFilter(
 		dispatcherTypes = { DispatcherType.REQUEST },
@@ -49,9 +55,8 @@ import com.loqua.presentation.util.VerifierAjaxRequest;
 
 public class FilterForumThreadCorrection implements Filter {
 
-	// Necesitamos acceder a los parametros de inicializacion en
-	// el metodo doFilter, asi que necesitamos la variable
-	// config que se inicializara en init()
+	/** Se utliza para acceder a los parametros de inicializacion
+	 * definidos en las anotaciones de esta clase */
 	FilterConfig config = null;
 
 	// La noticia a la que pertenece la correccion que se va a enviar/editar:
@@ -68,11 +73,8 @@ public class FilterForumThreadCorrection implements Filter {
 	
 	MapQueryString queryStringMap;
 	
-	/**
-	 * Default constructor.
-	 */
-	public FilterForumThreadCorrection() {
-	}
+	/** Constructor sin parametros de la clase */
+	public FilterForumThreadCorrection() {}
 
 	/**
 	 * @see Filter#destroy()
@@ -93,10 +95,10 @@ public class FilterForumThreadCorrection implements Filter {
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		// Si el metodo termina despues de hacer 'chain.doFilter',
-		// se permite el acceso a la pagina requerida (no se redirige a otra)
-		// Si el metodo termina despues de hacer 'res.sendRedirect',
-		// no se permite el acceso a la pagina requerida (se redirige a otra)
+		/* Si el metodo termina despues de hacer 'chain.doFilter',
+		se permite el acceso a la pagina requerida (no se redirige a otra)
+		Si el metodo termina despues de hacer 'res.sendRedirect',
+		no se permite el acceso a la pagina requerida (se redirige a otra) */
 		
 		// Si no es peticion HTTP no se filtra
 		if (!(request instanceof HttpServletRequest)){
@@ -151,16 +153,22 @@ public class FilterForumThreadCorrection implements Filter {
 	/**
 	 * Comprueba que la url de la peticion a la pagina
 	 * 'forum_thread_correction.xhtml'
-	 * contiene los parametros correctos ('thread', 'action' y 'comment'). <br/>
-	 * - Parametro 'thread': 'hilo' del foro al cual pertenece el post que se va
-	 * a crear o editar en la siguiente vista (forum_thread_correction.xhtml).<br/>
-	 * - Parametro 'action': accion que se va a realizar en la pagina
-	 * 'forum_thread_correction.xhtml'.<br/>
-	 * -- Si action=1 la vista mostrara lo necesario para crear correccion<br/>
-	 * -- Si action=2 la vista mostrara lo necesario para editar correccion<br/>
-	 * - Parametro 'comment': commentario del foro que se va a editar/citar/corregir
-	 * en la pagina 'forum_thread_comment.xhtml'.
-	 * @return 'true' si los parametros de la url son correctos
+	 * contiene los parametros correctos ('thread', 'action' y 'comment'),
+	 * descritos a continuacion.
+	 * <ul><li>Parametro 'thread': 'hilo' del foro al cual pertenece el post
+	 * que se va a crear o editar en la siguiente vista
+	 * (forum_thread_correction.xhtml)
+	 * </li><li>Parametro 'action': accion que se va a realizar en la pagina
+	 * 'forum_thread_correction.xhtml':<br/>
+	 * - Si action=1 la vista mostrara lo necesario para crear correccion<br/>
+	 * - Si action=2 la vista mostrara lo necesario para editar correccion<br/>
+	 * </li><li>Parametro 'comment': commentario del foro que se va a
+	 * editar/citar/corregir en la pagina 'forum_thread_comment.xhtml'</li></ul>
+	 * @param req la peticion HTTP
+	 * @param loggedUser el usuario que accede a la pagina
+	 * @return
+	 * 'true' si los parametros de la url son correctos <br/>
+	 * 'false' si los parametros de la url no son correctos
 	 */
 	private boolean verifyParameters(HttpServletRequest req, User loggedUser){
 		try{
@@ -173,10 +181,10 @@ public class FilterForumThreadCorrection implements Filter {
 				(de hecho, el agregar a la url un parametro 'correccion'
 				con cualquier valor aleatorio no provoca efecto alguno)
 				pero son necesarios 'thread y 'comment',
-				y comprobar que solo el admin puede corregir comments ajenos: */
+				y comprobar que solo el admin puede corregir comments propios:*/
 				return verifyRequestedThread(req) 
 						&& verifyRequestedComment(req) 
-						&& verifyIfCorrectingForeignComm(req, loggedUser);
+						&& verifyIfCorrectingOwnComm(req, loggedUser);
 			}else if( action==2 ){
 				// si action=2: editar una correccion
 				/* Para ello no es necesario el parametro 'comment'.
@@ -196,6 +204,16 @@ public class FilterForumThreadCorrection implements Filter {
 		}
 	}
 	
+	/**
+	 * Comprueba que la url de la peticion a la pagina
+	 * 'forum_thread_correction.xhtml' contiene el parametro 'thread'
+	 * y es correcto (indica la noticia, tambien llamada 'hilo',
+	 * a la que pertenece la correccion que se va a crear o editar).
+	 * @param req la peticion HTTP
+	 * @return
+	 * 'true' si el parametro 'thread' de la url es correcto <br/>
+	 * 'false' si el parametro 'thread' de la url no es correcto
+	 */
 	private boolean verifyRequestedThread(HttpServletRequest req){
 		try{
 			String requestedThreadParam = queryStringMap.get("thread");
@@ -210,6 +228,15 @@ public class FilterForumThreadCorrection implements Filter {
 		}
 	}
 	
+	/**
+	 * Comprueba que la url de la peticion a la pagina
+	 * 'forum_thread_correction.xhtml' contiene el parametro 'comment'
+	 * y es correcto (indica el comentario que se va a corregir).
+	 * @param req la peticion HTTP
+	 * @return
+	 * 'true' si el parametro 'comment' de la url es correcto <br/>
+	 * 'false' si el parametro 'comment' de la url no es correcto
+	 */
 	private boolean verifyRequestedComment(HttpServletRequest req){
 		try{
 		// Esta llamada a "verifyRequestedThread" no es necesaria,
@@ -235,6 +262,15 @@ public class FilterForumThreadCorrection implements Filter {
 		}
 	}
 	
+	/**
+	 * Comprueba que la url de la peticion a la pagina
+	 * 'forum_thread_correction.xhtml' contiene el parametro 'correction'
+	 * y es correcto (indica la correccion que se va a editar).
+	 * @param req la peticion HTTP
+	 * @return
+	 * 'true' si el parametro 'correction' de la url es correcto <br/>
+	 * 'false' si el parametro 'correction' de la url no es correcto
+	 */
 	private boolean verifyRequestedCorrection(HttpServletRequest req){
 		try{
 		// Esta llamada a "verifyRequestedThread" no es necesaria,
@@ -259,7 +295,22 @@ public class FilterForumThreadCorrection implements Filter {
 		}
 	}
 	
-	private boolean verifyIfCorrectingForeignComm(HttpServletRequest req,
+	/**
+	 * Comprueba si el usuario tiene permiso para corregir el comentario
+	 * recibido en la 'query string' de la URL.
+	 * <ul><li>Si los parametros 'action' y 'comment' de la URL indican
+	 * que el usuario quiere corregir (no editar) un comentario propio,
+	 * solo se permite realizar la accion si es un administrador.
+	 * </li><li>Si por el contrario el parametro 'comment' indica que es un
+	 * comentario ajeno, siempre se permite la accion
+	 * </li></ul>
+	 * @param req la peticion HTTP
+	 * @param loggedUser el usuario que accede a la pagina
+	 * @return
+	 * 'true' si el usuario dado tiene permiso para corregir el comentario <br/>
+	 * 'false' si el usuario dado no tiene permiso para corregir el comentario
+	 */
+	private boolean verifyIfCorrectingOwnComm(HttpServletRequest req,
 			User loggedUser) {
 		// Si el usuario autenticado es administrador,
 		// si se permite corregir un comentario propio (no confundir con editar)
@@ -279,6 +330,21 @@ public class FilterForumThreadCorrection implements Filter {
 		return true;
 	}
 	
+	/**
+	 * Comprueba si el usuario tiene permiso para
+	 * editar la correccion recibida en la 'query string' de la URL.
+	 * <ul><li>Si los parametros 'action' y 'correction' de la URL indican
+	 * que el usuario quiere editar una correccion realizada por otro usuario,
+	 * solo se permite realizar la accion si es un administrador.
+	 * </li><li>Si por el contrario el parametro 'correction' indica que es una
+	 * correccion propia, siempre se permite la accion
+	 * </li></ul>
+	 * @param req la peticion HTTP
+	 * @param loggedUser el usuario que accede a la pagina
+	 * @return
+	 * 'true' si el usuario dado tiene permiso para editar la correccion <br/>
+	 * 'false' si el usuario dado no tiene permiso para editar la correccion
+	 */
 	private boolean verifyIfEdittingForeignCorr(HttpServletRequest req,
 			User loggedUser) {
 		// Si el usuario autenticado es administrador,
@@ -299,6 +365,18 @@ public class FilterForumThreadCorrection implements Filter {
 		return true;
 	}
 	
+	/**
+	 * Comprueba si la correccion que se pretende editar
+	 * (indicada por el parametro 'correction' de la URL)
+	 * pertenece al comentario indicado por el parametro 'comment'
+	 * de la URL.
+	 * @param req la peticion HTTP
+	 * @return
+	 * 'true' si la correccion que se pretende editar pertenece
+	 * al comentario indicado en la URL <br/>
+	 * 'false' si la correccion que se pretende editar no pertenece
+	 * al comentario indicado en la URL
+	 */
 	private boolean verifyOptionallyCommentOfCorrection(HttpServletRequest req){
 		// Esta llamada a "verifyRequestedCorrection" no es necesaria,
 		// porque aqui solo sirve para inicializar "requestedCorr",

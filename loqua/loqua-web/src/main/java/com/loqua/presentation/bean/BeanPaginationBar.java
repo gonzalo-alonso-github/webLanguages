@@ -11,11 +11,17 @@ import javax.faces.context.FacesContext;
 
 import com.loqua.presentation.bean.applicationBean.BeanSettingsForumPage;
 
+/**
+ * Bean encargado de realizar todas las operaciones
+ * relativas al manejo de la barra de paginacion principal del foro,
+ * y la barra de paginacion de cada hilo del foro.
+ * @author Gonzalo
+ */
 public class BeanPaginationBar implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
-	// Inyeccion de dependencia
+	/** Inyeccion de dependencia del {@link BeanSettingsForumPage} */
 	@ManagedProperty(value="#{beanSettingsForum}")
 	private BeanSettingsForumPage beanSettingsForum;
 		
@@ -23,18 +29,14 @@ public class BeanPaginationBar implements Serializable{
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
+	/** Constructor del bean. Inicializa el bean inyectado
+	 * {@link BeanSettingsForumPage} */
 	@PostConstruct
 	public void init() {
 		initBeanSettingsForum();
 	}
 	
-	/**
-	 * Inicializa el BeanSettingsForum perteneciente a esta clase.</br>
-	 * Si el BeanSettingsForum ya fue inicializado,
-	 * simplemente se obtiene del contexto de aplicacion.</br>
-	 * Si el BeanSettingsForum no existe en el contexto de aplicacion,
-	 * se crea y se guarda en sesion bajo la clave 'beanSettingsForum'.
-	 */
+	/** Inicializa el objeto {@link BeanSettingsForumPage} inyectado */
 	private void initBeanSettingsForum() {
 		// Buscamos el BeanSettings en la sesion.
 		beanSettingsForum = null;
@@ -51,6 +53,7 @@ public class BeanPaginationBar implements Serializable{
 		}
 	}
 	
+	/** Destructor del bean. */
 	@PreDestroy
 	public void end(){}
 	
@@ -58,6 +61,13 @@ public class BeanPaginationBar implements Serializable{
 	// METODOS PARA CARGAR LA BARRA PRINCIPAL DE PAGINACION
 	// // // // // // // // // // // // // // // // // //
 	
+	/**
+	 * Calcula el numero maximo de paginas que debe incluir
+	 * la barra de paginacion que se muestra en la lista de noticias del foro
+	 * (vista 'forum.xhtml').
+	 * @param totalNumberOfListElements numero total de noticias del foro
+	 * @return numero maximo de paginas hallado
+	 */
 	public int loadSizeMainPaginationBar(int totalNumberOfListElements){
 		Integer numberOfListElementsPerPage = 
 				beanSettingsForum.getNumNewsPerPage();
@@ -66,6 +76,26 @@ public class BeanPaginationBar implements Serializable{
 		return sizePaginationBar;
 	}
 	
+	/**
+	 * Halla la manera en que se mostrara la barra de paginacion que se muestra
+	 * en la lista de noticias del foro (vista 'forum.xhtml'). <br/>
+	 * Eso depende de la pagina que haya sido seleccionada por el usuario,
+	 * y del tama&ntilde;o de la barra. Ejemplos: <br/>
+	 * <ul><li>Si hay 8 paginas, y el usuario selecciona la 1 o la 2,
+	 * o la 7 o la 8, la barra se mostrara asi: <br/> &nbsp;&nbsp;&nbsp;&nbsp;
+	 * [1] [2] [3] [...] [6] [7] [8]
+	 * </li><li>Si hay 8 paginas, y el usuario selecciona la 4,
+	 * la barra se mostrara asi: <br/> &nbsp;&nbsp;&nbsp;&nbsp;
+	 * [1] [...] [3] [4] [5] [...] [8]
+	 * </li><li>Si hay 8 paginas, y el usuario selecciona la 3,
+	 * la barra se mostrara asi: <br/> &nbsp;&nbsp;&nbsp;&nbsp;
+	 * [1] [2] [3] [4] [...] [7] [8]
+	 * </li></ul>
+	 * @param sizePaginationBar numero maximo de paginas que incluye
+	 * la barra de paginacion
+	 * @param selectedPage pagina seleccionada por el usuario
+	 * @return numero entero que identifica el tipo de la barra de paginacion
+	 */
 	public int loadTypeMainPaginationBar(
 			int sizePaginationBar, Integer selectedPage){
 		int typePaginationBar = loadTypePaginationBar(
@@ -77,6 +107,27 @@ public class BeanPaginationBar implements Serializable{
 	// METODOS PARA CARGAR LA BARRA DE PAGINACION DE CADA NOTICIA DEL FORO
 	// // // // // // // // // // // // // // // // // // // // // // //
 	
+	/**
+	 * Halla la manera en que se mostrara la barra de paginacion que se muestra
+	 * en la lista de comentarios de un hilo del foro
+	 * (vista 'forum_thread.xhtml'). <br/>
+	 * Eso depende de la pagina que haya sido seleccionada por el usuario,
+	 * y del tama&ntilde;o de la barra. Ejemplos: <br/>
+	 * <ul><li>Si hay 8 paginas, y el usuario selecciona la 1 o la 2,
+	 * o la 7 o la 8, la barra se mostrara asi: <br/> &nbsp;&nbsp;&nbsp;&nbsp;
+	 * [1] [2] [3] [...] [6] [7] [8]
+	 * </li><li>Si hay 8 paginas, y el usuario selecciona la 4,
+	 * la barra se mostrara asi: <br/> &nbsp;&nbsp;&nbsp;&nbsp;
+	 * [1] [...] [3] [4] [5] [...] [8]
+	 * </li><li>Si hay 8 paginas, y el usuario selecciona la 3,
+	 * la barra se mostrara asi: <br/> &nbsp;&nbsp;&nbsp;&nbsp;
+	 * [1] [2] [3] [4] [...] [7] [8]
+	 * </li></ul>
+	 * @param sizePaginationBar numero maximo de paginas que incluye
+	 * la barra de paginacion
+	 * @param selectedPage pagina seleccionada por el usuario
+	 * @return numero entero que identifica el tipo de la barra de paginacion
+	 */
 	public int loadTypeSingleNewThreadPaginationBar(
 			int sizePaginationBar, Integer selectedPage){
 		int typePaginationBar = loadTypePaginationBar(
@@ -84,6 +135,14 @@ public class BeanPaginationBar implements Serializable{
 		return typePaginationBar;
 	}
 	
+	/**
+	 * Halla la manera en que se mostrara cualquier barra de paginacion,
+	 * ya sea la de la pagina principal del foro, o la de una noticia del foro.
+	 * @param sizePaginationBar numero maximo de paginas que incluye
+	 * la barra de paginacion
+	 * @param selectedPage pagina seleccionada por el usuario
+	 * @return numero entero que identifica el tipo de la barra de paginacion
+	 */
 	private int loadTypePaginationBar(
 			int sizePaginationBar, Integer selectedPage) {
 		int typePaginationBar = 0;
@@ -107,6 +166,13 @@ public class BeanPaginationBar implements Serializable{
 		return typePaginationBar;
 	}
 	
+	/**
+	 * Carga la lista de paginas que debe incluir
+	 * la barra de paginacion que se muestra en la lista de comentarios
+	 * de una noticia ('hilo') del foro (vista 'forum_thread.xhtml'). <br/>
+	 * @param sizePaginationBar numero total de paginas que incluye la barra
+	 * @return la lista generada
+	 */
 	public List<Integer> loadListNumbersForSimpleTypePaginationBar(
 			int sizePaginationBar){
 		List<Integer> result = new ArrayList<Integer>();
@@ -116,6 +182,17 @@ public class BeanPaginationBar implements Serializable{
 		return result;
 	}
 	
+	/**
+	 * Indica si, al seleccionar uno de los botones (paginas) de una
+	 * barra de paginacion, deberia realizarse alguna accion o no.
+	 * @param buttonBar el boton (o numero de pagina) seleccionado en la barra
+	 * @param currentPage la pagina que estaba seleccionada actualmente
+	 * @return
+	 * 'true': si el usuario ha seleccionado en la barra una pagina distinta
+	 * a la que ya estaba seleccionada <br>
+	 * 'false': si el usuario ha seleccionado en la barra la misma pagina
+	 * que ya estaba seleccionada.
+	 */
 	public boolean markButton(int buttonBar, int currentPage) {
 		if( buttonBar==currentPage ){
 			return true;

@@ -15,27 +15,28 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * Servlet Filter implementation class LoginFilter
+ * Define el filtro, que se aplica sobre todas las paginas del sitio web,
+ * y que comprueba si la URL ha sido codificada (por ejemplo, que el caracter
+ * '#', utilizado para indicar un ancla en la URL, sea codificado a '%23').
+ * En tal caso la descodifica de nuevo, para evitar que los demas filtros
+ * tengan problemas a la hora de trabajar con la 'query string' de la URL.<br/>
+ * Puesto que se definen varios filtros sobre las mismas paginas, es coveniente
+ * indicar, en el fichero web.xml, el orden en que se aplican.
+ * @author Gonzalo
  */
 @WebFilter(
 		dispatcherTypes = { DispatcherType.REQUEST },
 		urlPatterns = { "/pages/*" })
-
-
 public class FilterEncodingURLparams implements Filter {
 
-	// Necesitamos acceder a los parametros de inicializacion en
-	// el metodo doFilter, asi que necesitamos la variable
-	// config que se inicializara en init()
+	/** Se utliza para acceder a los parametros de inicializacion
+	 * definidos en las anotaciones de esta clase */
 	FilterConfig config = null;
 
 	boolean urlWasEncoded = false;
 	
-	/**
-	 * Default constructor.
-	 */
-	public FilterEncodingURLparams() {
-	}
+	/** Constructor sin parametros de la clase */
+	public FilterEncodingURLparams() {}
 
 	/**
 	 * @see Filter#destroy()
@@ -56,10 +57,10 @@ public class FilterEncodingURLparams implements Filter {
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		// Si el metodo termina despues de hacer 'chain.doFilter',
-		// se permite el acceso a la pagina requerida (no se redirige a otra)
-		// Si el metodo termina despues de hacer 'res.sendRedirect',
-		// no se permite el acceso a la pagina requerida (se redirige a otra)
+		/* Si el metodo termina despues de hacer 'chain.doFilter',
+		se permite el acceso a la pagina requerida (no se redirige a otra)
+		Si el metodo termina despues de hacer 'res.sendRedirect',
+		no se permite el acceso a la pagina requerida (se redirige a otra) */
 		
 		// Si no es peticion HTTP no se filtra
 		if (!(request instanceof HttpServletRequest)){
@@ -70,10 +71,11 @@ public class FilterEncodingURLparams implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 		
-		// req.setCharacterEncoding("UTF-8");
-		// La linea anterior no sirve para este proposito
 		String redirectPage =  null;
 		String requestedPage = req.getRequestURI().toString();
+		/* Si automaticamente se ha agregado a la URL el parametro 'sessionId',
+		 * antes de decodificar la 'query string' se eliminara dicho parametro
+		 * de la URL, y despues se redireccionara */
 		if( existsSessionIdInURL(req) ){
 			//requestedPage=requestedPage.substring(0,requestedPage.indexOf(";"));
 			redirectPage = requestedPage;
@@ -90,21 +92,19 @@ public class FilterEncodingURLparams implements Filter {
 		chain.doFilter(req, response);
 	}
 	
+	/**
+	 * Comprueba si durante el ciclo de JSF se ha agregado a la URL
+	 * el parametro 'sessionId'.
+	 * @param req la peticion HTTP
+	 * @return
+	 * 'true' si la URL presenta el parametro 'sessionId' <br/>
+	 * 'false' si la URL no tiene el parametro 'sessionId'
+	 */
 	private boolean existsSessionIdInURL(HttpServletRequest req) {
-		// a veces la uri va seguida de la cadena ";jsessionid=..."
-		// Sucede cuando el objeto HttpSession es creado por primera vez.
-		// Conviene eliminarla si existe:
-		/*String requestedPage = req.getRequestURI().toString();
-		// a veces la uri va seguida de la cadena ";jsessionid=..."
-		// por tanto la eliminamos si existe:
-		int indexOfMudString = requestedPage.indexOf(";");
-		if( indexOfMudString!=-1 ){
-			return true;
-		}
-		return false;*/
-		HttpSession s = req.getSession();
-        if(s.isNew()) {
-        	//after the redirect we don't want to redirect again.
+		HttpSession session = req.getSession();
+        if( session.isNew() ) {
+        	/* este 'if' hace que el redireccionamiento
+        	no se repita aqui otra vez */
         	if( !(req.isRequestedSessionIdFromCookie()
         			&& req.isRequestedSessionIdFromURL()) ){
         		// Sera necesario redireccionar. Se devuelve true:
@@ -114,6 +114,11 @@ public class FilterEncodingURLparams implements Filter {
         return false;
     }
 	
+	/**
+	 * Decodifica los parametros y el ancla de la 'query string', si existen.
+	 * @param req la peticion HTTP
+	 * @return la 'query string', una vez decodificada
+	 */
 	private String getQueryStringDecoded(HttpServletRequest req) {
 		// Por defecto las URL son codificadas de tal modo que, por ejemplo,
 		// el caracter '#' se convierte en '%23'. Aqui se revierte el proceso:

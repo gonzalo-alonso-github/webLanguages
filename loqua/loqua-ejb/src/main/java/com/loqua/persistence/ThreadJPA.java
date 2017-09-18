@@ -9,6 +9,7 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.NoResultException;
 
 import com.loqua.model.ForumThread;
+import com.loqua.model.ForumThreadInfo;
 import com.loqua.model.ForumThreadVoter;
 import com.loqua.model.User;
 import com.loqua.persistence.exception.EntityAlreadyPersistedException;
@@ -16,6 +17,11 @@ import com.loqua.persistence.exception.EntityNotPersistedException;
 import com.loqua.persistence.exception.PersistenceRuntimeException;
 import com.loqua.persistence.util.JPA;
 
+/**
+ * Efectua en la base de datos las operaciones 'CRUD' de elementos
+ * {@link ForumThread}, {@link ForumThreadInfo} y {@link ForumThreadVoter}
+ * @author Gonzalo
+ */
 public class ThreadJPA {
 	
 	/*
@@ -52,20 +58,39 @@ public class ThreadJPA {
 		updateDataByThread
 	*/
 	
+	/** Valor por defecto del limite maximo de noticias que se muestran
+	 * en el foro */
 	private static final int MAX_NEWS_TO_RETURN = 1000;
-	private static final String FORUMTHREAD_NOT_PERSISTED_EXCEPTION=
-			"EntityNotPersistedException: 'Thread' entity not found"
-			+ " at Persistence layer";
-	private static final String FORUMTHREAD_ALREADY_PERSISTED_EXCEPTION=
-			"EntityAlreadyPersistedException: 'FotumThread' entity already"
-			+ " found at Persistence layer";
-	private static final String THREADVOTER_ALREADY_PERSISTED_EXCEPTION=
-			"EntityAlreadyPersistedException: 'ThreadVoter' entity already"
-			+ " found at Persistence layer";
+	
+	/** Mensaje de la RuntimeException producida al efectuar una transaccion
+	 * o lectura a la base de datos */
 	private static final String PERSISTENCE_GENERAL_EXCEPTION=
 			"PersistenceGeneralException: Infraestructure or technical problem"
 			+ " at Persistence layer";
 	
+	/** Mensaje de la excepcion producida al no encontrar la entidad
+	 * 'ForumThread' en la base de datos */
+	private static final String FORUMTHREAD_NOT_PERSISTED_EXCEPTION=
+			"EntityNotPersistedException: 'ForumThread' entity not found"
+			+ " at Persistence layer";
+	/** Mensaje de la excepcion producida al repetirse la entidad 'ForumThread'
+	 * en la base de datos */
+	private static final String FORUMTHREAD_ALREADY_PERSISTED_EXCEPTION=
+			"EntityAlreadyPersistedException: 'ForumThread' entity already"
+			+ " found at Persistence layer";
+	
+	/** Mensaje de la excepcion producida al repetirse la entidad 'ThreadVoter'
+	 * en la base de datos */
+	private static final String THREADVOTER_ALREADY_PERSISTED_EXCEPTION=
+			"EntityAlreadyPersistedException: 'ThreadVoter' entity already"
+			+ " found at Persistence layer";
+	
+	/**
+	 * Realiza la consulta JPQL 'Thread.getThreadById'
+	 * @param threadId atributo 'id' del ForumThread que se consulta
+	 * @return ForumThread cuyo atributo 'id' coincide con el parametro dado
+	 * @throws EntityNotPersistedException
+	 */
 	public ForumThread getThreadById(Long threadId)
 			throws EntityNotPersistedException {
 		ForumThread result = new ForumThread();
@@ -85,6 +110,12 @@ public class ThreadJPA {
 		return result;
 	}
 	
+	/**
+	 * Realiza la consulta JPQL 'Thread.getThreadByGUID'
+	 * @param guid atributo 'guid' del ForumThread que se consulta
+	 * @return ForumThread cuyo atributo 'guid' coincide con el parametro dado
+	 * @throws EntityNotPersistedException
+	 */
 	public ForumThread getThreadByGuid(String guid) 
 			throws EntityNotPersistedException {
 		ForumThread result = new ForumThread();
@@ -104,6 +135,9 @@ public class ThreadJPA {
 		return result;
 	}
 	
+	/*
+	 * Realiza la consulta JPQL 'ForumThread.getThreadsInOrder'
+	 * @return lista de todos los ForumThread de la base de datos
 	@SuppressWarnings("unchecked")
 	public List<ForumThread> getAllThreads(){
 		List<ForumThread> result = new ArrayList<ForumThread>();
@@ -119,16 +153,24 @@ public class ThreadJPA {
 		}
 		return result;
 	}
+	*/
 	
+	/**
+	 * Realiza la consulta JPQL 'ForumThread.getThreadsInOrder'
+	 * @param offset offset de los ForumThread devueltos
+	 * @param limitNumThreads limite maximo de ForumThread devueltos
+	 * @return lista de ForumThread, aplicando el offset y el limite maximo
+	 * indicados en los parametrros
+	 */
 	@SuppressWarnings("unchecked")
 	public List<ForumThread> getThreads(
-			Integer offsetRows, int numThreadsToReturn){
+			Integer offset, int limitNumThreads){
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		try{
 			result = (List<ForumThread>) JPA.getManager()
 					.createNamedQuery("Thread.getThreadsInOrder")
-					.setFirstResult(offsetRows) // offset
-					.setMaxResults(numThreadsToReturn) // limit
+					.setFirstResult(offset) // offset
+					.setMaxResults(limitNumThreads) // limit
 					.getResultList();				
 		}catch( RuntimeException ex ){
 			//HibernateException,IllegalArgumentException,ClassCastException...
@@ -138,12 +180,17 @@ public class ThreadJPA {
 		return result;
 	}
 	
+	/**
+	 * Realiza la consulta JPQL 'ForumThread.getNumThreads'
+	 * @return cantidad ForumThread de la base de datos
+	 */
 	public Integer getNumThreads() {
 		Long result = 0L;
 		try{
 			result = (Long) JPA.getManager()
 					.createNamedQuery(
 						"Thread.getNumThreads", Long.class)
+					.setMaxResults(MAX_NEWS_TO_RETURN) // limit
 					.getResultList().stream().findFirst().orElse(null);
 		}catch( RuntimeException ex ){
 			//HibernateException,IllegalArgumentException,ClassCastException...
@@ -153,6 +200,12 @@ public class ThreadJPA {
 		return result.intValue();
 	}
 	
+	/**
+	 * Realiza la consulta 'Thread.getThreadsByLanguages'
+	 * @param listLanguagesIDs lista de atributos 'id' de los Language
+	 * a los que pertenecen los ForumThread que se desean consultar
+	 * @return lista de ForumThread que pertenecen a los Language dados
+	 */
 	@SuppressWarnings("unchecked")
 	public List<ForumThread> getAllThreadsByLanguages(
 			List<Long> listLanguagesIDs) {
@@ -171,17 +224,26 @@ public class ThreadJPA {
 		return result;
 	}
 	
+	/**
+	 * Realiza la consulta 'Thread.getThreadsByLanguages'
+	 * @param listLanguagesIDs lista de atributos 'id' de los Language
+	 * a los que pertenecen los ForumThread que se desean consultar
+	 * @param offset offset de los ForumThread devueltos
+	 * @param limitNumThreads limite maximo de ForumThread devueltos
+	 * @return lista de ForumThread que pertenecen a los Language dados,
+	 * aplicando el offset y el limite recibidos por parametro
+	 */
 	@SuppressWarnings("unchecked")
 	public List<ForumThread> getThreadsByLanguages(
 			List<Long> listLanguagesIDs,
-			Integer offsetRows, int numThreadsToReturn){
+			Integer offset, int limitNumThreads){
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		try{
 			result = (List<ForumThread>) JPA.getManager()
 					.createNamedQuery(
 						"Thread.getThreadsByLanguages")
-					.setFirstResult(offsetRows) // offset
-					.setMaxResults(numThreadsToReturn) // limit
+					.setFirstResult(offset) // offset
+					.setMaxResults(limitNumThreads) // limit
 					.setParameter(1, listLanguagesIDs)
 					.getResultList();
 		}catch( RuntimeException ex ){
@@ -192,12 +254,19 @@ public class ThreadJPA {
 		return result;
 	}
 	
+	/**
+	 * Realiza la consulta JPQL 'Thread.getNumThreadsByLanguages'
+	 * @param listLanguagesIDs lista de atributos 'id' de los Language
+	 * a los que pertenecen los ForumThread que se desean consultar
+	 * @return cantidad de ForumThread que pertenecen a los Language dados
+	 */
 	public Integer getNumThreadsByLanguages(List<Long> listLanguagesIDs) {
 		Long result = 0L;
 		try{
 			result = (Long) JPA.getManager()
 					.createNamedQuery(
 						"Thread.getNumThreadsByLanguages",Long.class)
+					.setMaxResults(MAX_NEWS_TO_RETURN) // limit
 					.setParameter(1, listLanguagesIDs)
 					.getResultList().stream().findFirst().orElse(null);
 		}catch( RuntimeException ex ){
@@ -208,6 +277,14 @@ public class ThreadJPA {
 		return result.intValue();
 	}
 	
+	/*
+	 * Realiza la consulta JPQL 'Thread.getThreadsByLanguagesAndCategory'
+	 * @param listLanguagesIDs lista de atributos 'id' de los Language
+	 * a los que pertenecen los ForumThread que se desean consultar
+	 * @param category atributo 'id' del FeedCategory
+	 * al que pertenecen los ForumThread que se desean consultar
+	 * @return lista de ForumThread que pertenecen a los Language y al
+	 * FeedCategory dados
 	@SuppressWarnings("unchecked")
 	public List<ForumThread> getAllThreadsByLanguagesAndCategory(
 			List<Long> listLanguagesIDs, Long category){
@@ -227,18 +304,31 @@ public class ThreadJPA {
 		}
 		return result;
 	}
+	*/
 	
+	/**
+	 * Realiza la consulta JPQL 'Thread.getThreadsByLanguagesAndCategory'
+	 * @param listLanguagesIDs lista de atributos 'id' de los Language
+	 * a los que pertenecen los ForumThread que se desean consultar
+	 * @param category atributo 'id' del FeedCategory
+	 * al que pertenecen los ForumThread que se desean consultar
+	 * @param offset offset de los ForumThread devueltos
+	 * @param limitNumThreads limite maximo de ForumThread devueltos
+	 * @return lista de ForumThread que pertenecen a los Language y al
+	 * FeedCategory dados, aplicando el offset y el limite maximo recibidos
+	 * por parametro
+	 */
 	@SuppressWarnings("unchecked")
 	public List<ForumThread> getThreadsByLanguagesAndCategory(
 			List<Long> listLanguagesIDs, Long category,
-			Integer offsetRows, int numThreadsToReturn){
+			Integer offset, int limitNumThreads){
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		try{
 			result = (List<ForumThread>) JPA.getManager()
 					.createNamedQuery(
 						"Thread.getThreadsByLanguagesAndCategory")
-					.setFirstResult(offsetRows) // offset
-					.setMaxResults(numThreadsToReturn) // limit
+					.setFirstResult(offset) // offset
+					.setMaxResults(limitNumThreads) // limit
 					.setParameter(1, category)
 					.setParameter(2, listLanguagesIDs)
 					.getResultList();
@@ -250,6 +340,15 @@ public class ThreadJPA {
 		return result;
 	}
 	
+	/**
+	 * Realiza la consulta JPQL
+	 * 'Thread.getNumThreadsByLanguagesAndCategory'
+	 * @param listLanguagesIDs lista de atributos 'id' de los Language
+	 * a los que pertenecen los ForumThread que se desean consultar
+	 * @param category atributo 'id' del FeedCategory
+	 * @return cantidad de ForumThread que pertenecen a los Language y al
+	 * FeedCategory dados
+	 */
 	public Integer getNumThreadsByLanguagesAndCategory(
 			List<Long> listLanguagesIDs, Long category) {
 		Long result = 0L;
@@ -257,6 +356,7 @@ public class ThreadJPA {
 			result = (Long) JPA.getManager()
 					.createNamedQuery(
 						"Thread.getNumThreadsByLanguagesAndCategory",Long.class)
+					.setMaxResults(MAX_NEWS_TO_RETURN) // limit
 					.setParameter(1, category)
 					.setParameter(2, listLanguagesIDs)
 					.getResultList().stream().findFirst().orElse(null);
@@ -268,6 +368,11 @@ public class ThreadJPA {
 		return result.intValue();
 	}
 	
+	/*
+	 * Realiza la consulta JPQL 'Thread.getAllThreadsByCategory'
+	 * @param category atributo 'id' del FeedCategory al que pertenecen los
+	 * ForumThread que se consultan
+	 * @return lista de ForumThread que pertenecen al FeedCategory dado
 	@SuppressWarnings("unchecked")
 	public List<ForumThread> getAllThreadsByCategory(Long category){
 		List<ForumThread> result = new ArrayList<ForumThread>();
@@ -284,16 +389,26 @@ public class ThreadJPA {
 		}
 		return result;
 	}
+	*/
 	
+	/**
+	 * Realiza la consulta JPQL 'Thread.getThreadsByCategory'
+	 * @param category atributo 'id' del FeedCategory al que pertenecen los
+	 * ForumThread que se consultan
+	 * @param offset offset de los ForumThread devueltos
+	 * @param limitNumThreads limite maximo de ForumThread devueltos
+	 * @return lista de ForumThread que pertenecen al FeedCategory dado,
+	 * aplicando el offset y el limite maximo recibidos por parametro
+	 */
 	@SuppressWarnings("unchecked")
 	public List<ForumThread> getThreadsByCategory(Long category,
-			Integer offsetRows, int numThreadsToReturn){
+			Integer offset, int limitNumThreads){
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		try{
 			result = (List<ForumThread>) JPA.getManager()
 					.createNamedQuery("Thread.getThreadsByCategory")
-					.setFirstResult(offsetRows) // offset
-					.setMaxResults(numThreadsToReturn) // limit
+					.setFirstResult(offset) // offset
+					.setMaxResults(limitNumThreads) // limit
 					.setParameter(1, category)
 					.getResultList();				
 		}catch( RuntimeException ex ){
@@ -304,12 +419,19 @@ public class ThreadJPA {
 		return result;
 	}
 	
+	/**
+	 * Realiza la consulta JPQL 'Thread.getNumThreadsByCategory'
+	 * @param category atributo 'id' del FeedCategory al que pertenecen los
+	 * ForumThread que se consultan
+	 * @return cantidad de ForumThread que pertenecen al FeedCategory dado
+	 */
 	public Integer getNumThreadsByCategory(Long category) {
 		Long result = 0L;
 		try{
 			result = (Long) JPA.getManager()
 					.createNamedQuery(
 						"Thread.getNumThreadsByCategory", Long.class)
+					.setMaxResults(MAX_NEWS_TO_RETURN) // limit
 					.setParameter(1, category)
 					.getResultList().stream().findFirst().orElse(null);
 		}catch( RuntimeException ex ){
@@ -320,6 +442,12 @@ public class ThreadJPA {
 		return result.intValue();
 	}
 	
+	/**
+	 * Realiza la consulta JPQL 'Thread.getMostValuedThreadsOfTheMonth'
+	 * @return lista de los ForumThread publicados en el ultimo mes,
+	 * cuyo ForumThreadInfo asociado tiene
+	 * los mayores valores del atributo 'countVotes'
+	 */
 	@SuppressWarnings("unchecked")
 	public List<ForumThread> getMostValuedThreadsOfTheMonth() {
 		List<ForumThread> result = new ArrayList<ForumThread>();
@@ -341,6 +469,12 @@ public class ThreadJPA {
 		return result;
 	}
 	
+	/**
+	 * Realiza la consulta JPQL 'Thread.getMostCommentedThreadsOfTheMonth'
+	 * @return lista de los ForumThread publicados en el ultimo mes,
+	 * cuyo ForumThreadInfo asociado tiene
+	 * los mayores valores del atributo 'countComments'
+	 */
 	@SuppressWarnings("unchecked")
 	public List<ForumThread> getMostCommentedThreadsOfTheMonth() {
 		List<ForumThread> result = new ArrayList<ForumThread>();
@@ -362,6 +496,13 @@ public class ThreadJPA {
 		return result;
 	}
 	
+	/**
+	 * Realiza la consulta JPQL 'Thread.getLastThreadsByCategory'
+	 * @param categoryName atributo 'name' del FeedCategory al que pertenecen
+	 * los ForumThread que se consultan
+	 * @return lista de los ForumThread cuya fecha es mas reciente,
+	 * segun su atributo 'date', pertenecientes al FeedCategory dado
+	 */
 	@SuppressWarnings("unchecked")
 	public List<ForumThread> getLastThreadsByCategory(Long categoryName) {
 		List<ForumThread> result = new ArrayList<ForumThread>();
@@ -379,8 +520,15 @@ public class ThreadJPA {
 		return result;
 	}
 	
+	/**
+	 * Realiza la consulta JPQL 'Thread.getAllForumThreadGUIDsInLastHour'
+	 * @param currentDate fecha minima de los ForumThread que se consultan
+	 * @param lastHourDate fecha maxima de los ForumThread que se consultan
+	 * @return lista de los ForumThread cuyo atributo 'date' esta comprendido
+	 * entre las dos fechas recibidas por parametro
+	 */
 	@SuppressWarnings("unchecked")
-	public List<ForumThread> getAllForumThreadGUIDsInLastHour(
+	public List<ForumThread> getAllForumThreadsInLastHour(
 			Date currentDate, Date lastHourDate){
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		try{
@@ -397,6 +545,13 @@ public class ThreadJPA {
 		return result;
 	}
 	
+	/**
+	 * Realiza la consulta JPQL 'Thread.getThreadVoters'
+	 * @param threadId atributo 'id' del ForumThread al cual pertenecen los
+	 * ForumThreadVoter que se desean consultar
+	 * @return lista de ForumThreadVoter que pertenecen al ForumThread
+	 * recibido por parametro
+	 */
 	@SuppressWarnings("unchecked")
 	public List<ForumThreadVoter> getThreadVoters( Long threadId ){
 		List<ForumThreadVoter> result = new ArrayList<ForumThreadVoter>();
@@ -413,12 +568,18 @@ public class ThreadJPA {
 		return result;
 	}
 	
+	/**
+	 * Agrega a la base de datos el objeto ForumThread dado
+	 * @param threadToCreate objeto ForumThread que se desea guardar
+	 * @throws EntityAlreadyPersistedException
+	 * @throws Exception
+	 */
 	public void restCreateForumThread(ForumThread threadToCreate)
 			throws EntityAlreadyPersistedException, Exception{
 		try{
-			/*Feed feed = JPA.getManager().find(
+			/* Feed feed = JPA.getManager().find(
 					Feed.class, threadToCreate.getFeed().getId());
-			threadToCreate.setFeed(feed);*/
+			threadToCreate.setFeed(feed); */
 			JPA.getManager().persist( threadToCreate );
 			JPA.getManager().persist( threadToCreate.getForumThreadInfo() );
 			JPA.getManager().flush();
@@ -432,7 +593,12 @@ public class ThreadJPA {
 					PERSISTENCE_GENERAL_EXCEPTION, ex);
 		}
 	}
+	
 	/*
+	 * Agrega a la base de datos los objetos ForumThread dados
+	 * @param threadsToCreate lista de ForumThread que se desean guardar
+	 * @throws EntityAlreadyPersistedException
+	 * @throws Exception
 	public void restCreateForumThreadsByList(List<ForumThread> threadsToCreate)
 			throws EntityAlreadyPersistedException, Exception{
 		try{
@@ -452,6 +618,18 @@ public class ThreadJPA {
 		}
 	}
 	*/
+	
+	/**
+	 * Genera un objeto ForumThreadVoter a partir de los parametros recibidos
+	 * y lo agrega a la base de datos
+	 * (es decir: crea una relacion 'User difunde ForumThread')
+	 * @param userId atributo 'id' del User autor del ForumThreadVoter
+	 * que se genera
+	 * @param threadId atributo 'id' del ForumThread asociado al
+	 * ForumThreadVoter que se genera
+	 * @throws EntityAlreadyPersistedException
+	 * @throws EntityNotPersistedException
+	 */
 	public void createThreadVoter(Long userId, Long threadId)
 			throws EntityAlreadyPersistedException, EntityNotPersistedException {
 		try{
@@ -480,6 +658,12 @@ public class ThreadJPA {
 		}
 	}
 
+	/**
+	 * Actualiza en la base de datos el objeto ForumThread dado y
+	 * tambien su ForumThreadInfo asociado
+	 * @param threadToUpdate objeto ForumThread que se desea actualizar
+	 * @throws EntityNotPersistedException
+	 */
 	public void updateAllDataByThread(ForumThread threadToUpdate)
 			throws EntityNotPersistedException {
 		try{
@@ -495,6 +679,11 @@ public class ThreadJPA {
 		}
 	}
 	
+	/**
+	 * Actualiza en la base de datos el objeto ForumThread dado
+	 * @param threadToUpdate objeto ForumThread que se desea actualizar
+	 * @throws EntityNotPersistedException
+	 */
 	public void updateDataByThread(ForumThread threadToUpdate)
 			throws EntityNotPersistedException {
 		try{	

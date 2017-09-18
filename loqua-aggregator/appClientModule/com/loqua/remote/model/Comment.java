@@ -13,6 +13,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * Representa un comentario publicado por un usuario en el foro.
+ * Es una clase heredada de {@link ForumPost}, al igual que {@link Correction}
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "comment")
 @Entity
 @DiscriminatorValue("TypeComment")
@@ -20,33 +25,52 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Comment extends ForumPost implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
 	// // // // // // //
 	// ATRIBUTOS
 	// // // // // // //
+	
+	/** Texto plano del comentario */
 	private String text;
+	/** Texto HTML del comentario */
 	private String textHtml;
+	/** Posicion del comentario entre todos los comentarios
+	 * pertenecientes al mismo hilo, ordenados por su fecha */
 	private int positionIndex;
+	/** Cantidad de puntos ('votos') que ha recibido el comentario */
 	private int numVotes;
 	
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
+	
+	/** Lista de correciones del comentario */
 	@OneToMany(mappedBy="comment")
 	private Set<Correction> corrections = new HashSet<Correction>();
 	
+	/** Lista de votaciones (o puntuaciones) del comentario */
 	@OneToMany(mappedBy="comment")
 	private Set<CommentVoter> commentVoters = new HashSet<CommentVoter>();
 	
+	/** Lista de comentarios citados por este comentario. <br/> En esta version
+	 * de la aplicacion solo se permite que cada comentario cite a un solo
+	 * comentario, por tanto esta lista tiene a lo sumo un solo elemento.
+	 * Sin embargo si se espera permitirlo en proximas versiones, por eso
+	 * se implementa como una lista */
 	@OneToMany(mappedBy="actorComment")
-	private Set<CommentQuoteTo> commentsQuotedByThis = new HashSet<CommentQuoteTo>();
+	private Set<CommentQuoteTo> commentsQuotedByThis =
+		new HashSet<CommentQuoteTo>();
 	
+	/** Lista de comentarios que citan a este comentario */
 	@OneToMany(mappedBy="quotedComment")
-	private Set<CommentQuoteTo> commentQuotesToThis = new HashSet<CommentQuoteTo>();
+	private Set<CommentQuoteTo> commentQuotesToThis =
+		new HashSet<CommentQuoteTo>();
 	
 	// // // // // // //
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public Comment(){}
 	
 	// // // // // // // // // // // // // //
@@ -56,11 +80,11 @@ public class Comment extends ForumPost implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Comment <--> * Corrections
 	 */
 	@XmlTransient
@@ -71,7 +95,7 @@ public class Comment extends ForumPost implements Serializable {
 		return corrections;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Comment <--> * CommentVoters <--> 1 User
 	 */
 	@XmlTransient
@@ -82,7 +106,7 @@ public class Comment extends ForumPost implements Serializable {
 		return commentVoters;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Comment <--> * CommentsQuoteTo <--> 1 Comment
 	 */
 	@XmlTransient
@@ -93,7 +117,7 @@ public class Comment extends ForumPost implements Serializable {
 		return commentsQuotedByThis;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Comment <--> * CommentsQuoteTo <--> 1 Comment
 	 */
 	@XmlTransient
@@ -111,8 +135,8 @@ public class Comment extends ForumPost implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	@XmlElement
@@ -124,6 +148,41 @@ public class Comment extends ForumPost implements Serializable {
 	}
 	public Comment setTextThis(String textCurrent) {
 		this.text = textCurrent;
+		return this;
+	}
+	
+	@XmlElement
+	public String getTextHtml() {
+		return textHtml;
+	}
+	public void setTextHtml(String code) {
+		this.textHtml = code;
+	}
+	public Comment setTextHtmlThis(String code) {
+		this.textHtml = code;
+		return this;
+	}
+	
+	/* En la vista de crear/editar comentarios,
+	el usuario esablece el texto del comentario mediante un editor de summernote.
+	No es muy eficaz: une las palabras cuando hay saltos de linea entre ellas
+	(ej: traduce "<p>word1</p><p>word2</p>" por "word1word2"). 
+	En este caso se solvento agregando mediante javascript una indicacion "\n"
+	de salto de linea al final de cada parrafo (ej: "word1\nword2").
+	Y con ese formato queda guardada la propiedad text al crear el Comment en bdd. 
+	Por tanto ahora se necesita un getter que sustituya "\\n" por "\n".
+	Este getter es usado en las listas de publicaciones y notificaciones
+	("profile_list_publiations.xhtml" y "menu_main_registered/_admin.xhtml") */
+	@XmlElement
+	public String getPlainText() {
+		String regExpNewParagraph = "(\\\\n)";
+		return text.replaceAll(regExpNewParagraph, "\n");
+	}
+	public void setPlainText(String plainText) {
+		this.text = plainText;
+	}
+	public Comment setPlainThis(String plainText) {
+		this.text = plainText;
 		return this;
 	}
 	
@@ -152,18 +211,6 @@ public class Comment extends ForumPost implements Serializable {
 	}
 	
 	@XmlElement
-	public String getTextHtml() {
-		return textHtml;
-	}
-	public void setTextHtml(String code) {
-		this.textHtml = code;
-	}
-	public Comment setTextHtmlThis(String code) {
-		this.textHtml = code;
-		return this;
-	}
-	
-	@XmlElement
 	public Long getId() {
 		return id;
 	}
@@ -179,52 +226,80 @@ public class Comment extends ForumPost implements Serializable {
 	// RELACION ENTRE ENTIDADES (METODOS)
 	// // // // // // // // // // // // //
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Comment <--> * Correction
 	 */
-	public void addCorrection(Correction c){
-		corrections.add(c);
-		c._setComment(this);
+	/** Agrega una correccion a la lista de ellas que posee el comentario
+	 * @param correction objeto Correction que se agrega
+	 */
+	public void addCorrection(Correction correction){
+		corrections.add(correction);
+		correction._setComment(this);
 	}
-	public void removeCorrection(Correction c){
-		corrections.remove(c);
-		c._setComment(null);
+	/** Elimina una correccion de la lista de ellas que posee el comentario
+	 * @param correction objeto Correction que se elimina
+	 */
+	public void removeCorrection(Correction correction){
+		corrections.remove(correction);
+		correction._setComment(null);
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Comment <--> * CommentVoters <--> 1 User
 	 */
-	public void addCommentVoter(CommentVoter cv){
-		commentVoters.add(cv);
-		cv._setComment(this);
+	/** Agrega una votacion a la lista de ellas que posee el comentario
+	 * @param commentVoter objeto CommentVoter que se agrega
+	 */
+	public void addCommentVoter(CommentVoter commentVoter){
+		commentVoters.add(commentVoter);
+		commentVoter._setComment(this);
 	}
-	public void removeCommentVoter(CommentVoter cv){
-		commentVoters.remove(cv);
-		cv._setComment(null);
+	/** Elimina una votacion de la lista de ellas que posee el comentario
+	 * @param commentVoter objeto CommentVoter que se elimina
+	 */
+	public void removeCommentVoter(CommentVoter commentVoter){
+		commentVoters.remove(commentVoter);
+		commentVoter._setComment(null);
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Comment <--> * CommentsQuoteTo <--> 1 Comment
 	 */
-	public void addCommentQuotedByThis(CommentQuoteTo cv){
-		commentsQuotedByThis.add(cv);
-		cv._setActorComment(this);
+	/** Agrega un comentario a la lista de comentarios
+	 * citados por este comentario
+	 * @param commentQuoteTo objeto CommentQuoteTo que se agrega
+	 */
+	public void addCommentQuotedByThis(CommentQuoteTo commentQuoteTo){
+		commentsQuotedByThis.add(commentQuoteTo);
+		commentQuoteTo._setActorComment(this);
 	}
-	public void removeCommentQuotedByThis(CommentQuoteTo cv){
-		commentsQuotedByThis.remove(cv);
-		cv._setActorComment(null);
+	/** Elimina un comentario de la lista de comentarios
+	 * citados por este comentario
+	 * @param commentQuoteTo objeto CommentQuoteTo que se elimina
+	 */
+	public void removeCommentQuotedByThis(CommentQuoteTo commentQuoteTo){
+		commentsQuotedByThis.remove(commentQuoteTo);
+		commentQuoteTo._setActorComment(null);
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Comment <--> * CommentsQuoteTo <--> 1 Comment
 	 */
-	public void addCommentQuoteToThis(CommentQuoteTo cv){
-		commentQuotesToThis.add(cv);
-		cv._setQuotedComment(this);
+	/** Agrega un comentario a la lista de comentarios
+	 * que citan a este comentario
+	 * @param commentQuoteTo objeto CommentQuoteTo que se agrega
+	 */
+	public void addCommentQuoteToThis(CommentQuoteTo commentQuoteTo){
+		commentQuotesToThis.add(commentQuoteTo);
+		commentQuoteTo._setQuotedComment(this);
 	}
-	public void removeCommentQuoteToThis(CommentQuoteTo cv){
-		commentQuotesToThis.remove(cv);
-		cv._setQuotedComment(null);
+	/** Elimina un comentario de la lista de comentarios
+	 * que citan por a este comentario
+	 * @param commentQuoteTo objeto CommentQuoteTo que se elimina
+	 */
+	public void removeCommentQuoteToThis(CommentQuoteTo commentQuoteTo){
+		commentQuotesToThis.remove(commentQuoteTo);
+		commentQuoteTo._setQuotedComment(null);
 	}
 	
 	// // // // // // // //

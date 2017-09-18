@@ -5,6 +5,12 @@ import java.io.Serializable;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Bean de ambito de vista que contiene metodos pueden ser accedidos
+ * desde cualquier pagina del sitio y manejan informacion
+ * de la vista actual a la que accede el usuario.
+ * @author Gonzalo
+ */
 public class BeanUtilsView implements Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -13,6 +19,7 @@ public class BeanUtilsView implements Serializable{
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
+	/**Constructor del bean. */
 	public BeanUtilsView() {}
 	
 	// // // //
@@ -27,6 +34,8 @@ public class BeanUtilsView implements Serializable{
 	 * la etiqueta &lt;f:ajax render="@all"&gt;
 	 * @param anchor 'ancla' en el cual se situara el scroll del navegador tras
 	 * recargar la pagina.
+	 * @return valor necesario del atributo 'action' de un commandLink
+	 * para que redirija a la misma vista actual
 	 */
 	public String renderViewAgainFromCommandLink(String anchor){
 		// Por ejemplo, se utiliza desde la pagina 'forum_thread.xhtml'.
@@ -34,13 +43,12 @@ public class BeanUtilsView implements Serializable{
 	}
 	
 	/**
-	 * Recarga la pagina actual en la que se encuentra el usuario.
-	 * Si se llama a este metodo desde un componente de formulario de la vista
-	 * (ej: el boton para recomendar/desaconsejar una correccion)
-	 * el efecto que produce es equivalente a agregar en dicho componente
-	 * la etiqueta &lt;f:ajax render="@all"&gt;
+	 * Version estatica del metodo {@link #renderViewAgainFromCommandLink}
 	 * @param anchor 'ancla' en el cual se situara el scroll del navegador tras
 	 * recargar la pagina.
+	 * @return valor necesario del atributo 'action' de un commandLink
+	 * para que redirija a la misma vista actual
+	 * @see #renderViewAgainFromCommandLink
 	 */
 	public static String renderViewAgainFromCommandLinkStatic(String anchor){
 		FacesContext facesContext = FacesContext.getCurrentInstance();

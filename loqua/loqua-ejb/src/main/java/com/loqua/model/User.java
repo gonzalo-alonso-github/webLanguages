@@ -24,95 +24,149 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import com.loqua.model.types.TypeUserRole;
 
+/**
+ * Representa la informacion sobre los datos de acceso a la aplicacion
+ * y del estado de un usuario
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "user")
 @Entity
 @Table(name="User")
 public class User implements Serializable, Cloneable{
 	
 	private static final long serialVersionUID = 1L;
+	
 	// // // // // // //
 	// ATRIBUTOS
 	// // // // // // //
+	
+	/** Constante con el valor 'ADMINISTRATOR' */
 	@Transient
 	public static final String ADMINISTRATOR = "ADMINISTRATOR";
+	
+	/** Constante con el valor 'USER' */
 	@Transient
 	public static final String USER = "USER";
 	
+	/** Identificador del objeto y clave primaria de la entidad */
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) private Long id;
+	/** Direccion de email del usuario */
 	private String email;
+	/** Fecha de registro del usuario */
 	private Date dateRegistered;
+	/** Fecha de eliminacion de la cuenta del usuario */
 	private Date dateRemoved;
+	/** Pseud&oacute;nimo (o 'nick') del usuario */
 	private String nick;
+	/** Contrase&ntilde;a del usuario */
 	private String password;
+	/** Cantidad de intentos de inicio de sesion fallidos del usuario */
 	private int loginFails;
+	/** Indica el tipo del usuario. Es un Enumerado que
+	 * admite los siguientes valores:
+	 * <ul>
+	 * <li>'ADMINISTRATOR': es un usuario administrador,
+	 * con permisos adicionales respecto al usuario comun</li>
+	 * <li>'USER': es un usuario comun, sin permisos especiales</li></ul> */
 	@Enumerated(EnumType.STRING)
 	private TypeUserRole role;
+	/** Indica si el usuario esta en estado activo */
 	private boolean active;
+	/** Indica si el usuario esta en estado bloqueado */
 	private boolean locked;
+	/** Indica si el usuario esta en estado eliminado */
 	private boolean removed;
+	/** Codigo de dos letras de la configuracion regional
+	 * asociada al usuario. No es necesario que coincida con algun valor de
+	 * {@link Country#codeIso3166}. Este atributo permite, por ejemplo,
+	 * decidir en que idioma se envian los correos electronicos al usuario */
 	private String locale;
+	/** Cadena aleatoria (de al menos 26 caracteres) que permite identificar
+	 * al usuario que accede a la URL de confirmacion de su registro
+	 * en la aplicacion, o de restauracion de contrase&ntilde;a,
+	 * o de eliminacion de su cuenta */
 	private String urlConfirm;
 	
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
+	
+	/** Informacion sobre la puntuacion del usuario */
 	@OneToOne(mappedBy = "user")
 	private UserInfo userInfo;
 	
+	/** Informacion sobre los datos estrictamente personales del usuario */
 	@OneToOne(mappedBy = "user")
 	private UserInfoPrivacity userInfoPrivacity;
 	
+	/** Informacion sobre los niveles de privacidad de los datos del usuario */
 	@OneToOne(mappedBy = "user")
 	private PrivacityData privacityData;
 	
+	/** Lista de contactos del usuario */
 	@OneToMany(mappedBy="user")
 	private Set<Contact> contacts = new HashSet<Contact>();
 	
+	/** Lista de solicitudes de contacto enviadas por el usuario */
 	@OneToMany(mappedBy="userSender")
 	private Set<ContactRequest> contactRequestSent = 
 		new HashSet<ContactRequest>();
+	/** Lista de solicitudes de contacto recibidas por el usuario */
 	@OneToMany(mappedBy="userReceiver")
 	private Set<ContactRequest> contactRequestReceived = 
 		new HashSet<ContactRequest>();
 	
+	/** Lista de participaciones en el foro realizadas por el usuario */
 	@OneToMany(mappedBy="user")
 	private Set<ForumPost> phorumPosts = new HashSet<ForumPost>();
 	
+	/** Lista de lenguajes utilizados por el usuario a nivel nativo */
 	@OneToMany(mappedBy="user"/*, fetch = FetchType.EAGER*/)
-	private Set<UserNativeLanguage> userNativeLanguages = new HashSet<UserNativeLanguage>();
+	private Set<UserNativeLanguage> userNativeLanguages = 
+		new HashSet<UserNativeLanguage>();
 	
+	/** Lista de lenguajes utilizados por el usuario a nivel de practicante */
 	@OneToMany(mappedBy="user"/*, fetch = FetchType.EAGER*/)
 	private Set<UserPracticingLanguage> userPracticingLanguages = 
 		new HashSet<UserPracticingLanguage>();
 	
+	/** Lista de mensajes enviados por el usuario */
 	@OneToMany(mappedBy="user")
 	private Set<Message> messages = new HashSet<Message>();
 	
+	/** Lista de mensajes recibidos por el usuario */
 	@OneToMany(mappedBy="user")
 	private Set<MessageReceiver> messageReceivers = 
 		new HashSet<MessageReceiver>();
 	
+	/** Lista de publicaciones generadas o provocadas por el usuario */
 	@OneToMany(mappedBy="user")
 	private Set<Publication> publications = new HashSet<Publication>();
 	
+	/** Lista de publicaciones recibidas por el usuario */
 	@OneToMany(mappedBy="user")
 	private Set<PublicationReceiver> publicationReceivers = 
 		new HashSet<PublicationReceiver>();
 	
+	/** Lista de logros alcanzados por el usuario */
 	@OneToMany(mappedBy="user")
 	private Set<Achievement> achievements = new HashSet<Achievement>();
 	
+	/** Lista de recomendaciones (de correcciones) emitidas por el usuario */
 	@OneToMany(mappedBy="user")
 	private Set<CorrectionAgree> correctionAgreements = 
 		new HashSet<CorrectionAgree>();
 	
+	/** Lista de desaprobaciones (de correcciones) emitidas por el usuario */
 	@OneToMany(mappedBy="user")
 	private Set<CorrectionDisagree> correctionDisagreements = 
 		new HashSet<CorrectionDisagree>();
 	
+	/** Lista de votaciones a comentarios enviadas por el usuario */
 	@OneToMany(mappedBy="user")
 	private Set<CommentVoter> commentVoters = new HashSet<CommentVoter>();
 	
+	/** Lista de votaciones a hilos del foro enviadas por el usuario */
 	@OneToMany(mappedBy="user")
 	private Set<ForumThreadVoter> phorumThreadVoters =
 		new HashSet<ForumThreadVoter>();
@@ -121,6 +175,7 @@ public class User implements Serializable, Cloneable{
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public User(){
 		userInfoPrivacity = new UserInfoPrivacity();
 		userInfoPrivacity.setUser(this);
@@ -132,29 +187,35 @@ public class User implements Serializable, Cloneable{
 		privacityData.setUser(this);
 	}
 	
+	/**
+	 * Constructor que recibe las entidades asociadas a esta
+	 * @param userInfo objeto UserInfo asociado al User
+	 * @param userInfoPrivacity objeto UserInfoPrivacity asociado al User
+	 * @param privacityData objeto PrivacityData asociado al User
+	 */
 	public User( UserInfo userInfo, UserInfoPrivacity userInfoPrivacity,
-			PrivacityData pd ){
+			PrivacityData privacityData ){
 		this.userInfo = userInfo;
 		userInfo.setUser(this);
 		
 		this.userInfoPrivacity = userInfoPrivacity;
 		userInfoPrivacity.setUser(this);
 		
-		this.privacityData = pd;
-		pd.setUser(this);
+		this.privacityData = privacityData;
+		privacityData.setUser(this);
 	}
 	
 	/**
-	 * Este constructor inicializa todos los atributos de la clase
+	 * Constructor que inicializa todos los atributos de la clase
 	 * asignandoles el msimo valor que los del objeto dado.
 	 * El efecto buscado es que el usuario creado mediante este constructor
 	 * sea una copia identica al usuario que se da como parametro.
-	 * @param user 
+	 * @param user objeto User que se desea clonar
 	 */
 	public User( User user ){
 		// Con el fin de evitar escribir muchas lineas para inicializar
 		// los muchos atributos de la clase,
-		// se utiliza reflection para tratar de hacerlo de forma automatica.
+		// se utiliza reflection para hacerlo de forma automatica.
 		try {
 			Field[] fields = this.getClass().getDeclaredFields();
 			for( Field field : fields ) {
@@ -162,10 +223,7 @@ public class User implements Serializable, Cloneable{
 					field.set(this, field.get(user));
 				}
 	        }
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			//TODO
-			//e.printStackTrace();
-		}
+		} catch (IllegalArgumentException | IllegalAccessException e) {}
 	}
 	
 	// // // // // // // // // // // // // //
@@ -175,12 +233,11 @@ public class User implements Serializable, Cloneable{
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/**
-	 * Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> 1 UserInfo
 	 */
 	/*@XmlElement*/@XmlTransient
@@ -194,8 +251,7 @@ public class User implements Serializable, Cloneable{
 		userInfo = ui;
 	}
 	
-	/**
-	 * Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> 1 UserInfoPrivacity
 	 */
 	/*@XmlElement*/@XmlTransient
@@ -209,8 +265,7 @@ public class User implements Serializable, Cloneable{
 		userInfoPrivacity = uip;
 	}
 	
-	/**
-	 * Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> 1 PrivacityData
 	 */
 	/*@XmlElement*/@XmlTransient
@@ -224,7 +279,7 @@ public class User implements Serializable, Cloneable{
 		privacityData = pd;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * Contact
 	 */
 	@XmlTransient
@@ -235,7 +290,7 @@ public class User implements Serializable, Cloneable{
 		return contacts;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * ContactRequest (contactRequest enviados por el usuario)
 	 */
 	@XmlTransient
@@ -247,7 +302,7 @@ public class User implements Serializable, Cloneable{
 	}
 	
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * ContactRequest (contactRequest recibidos por el usuario)
 	 */
 	@XmlTransient
@@ -258,7 +313,7 @@ public class User implements Serializable, Cloneable{
 		return contactRequestReceived;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * PhorumPost
 	 */
 	@XmlTransient
@@ -269,7 +324,7 @@ public class User implements Serializable, Cloneable{
 		return phorumPosts;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * UserNativeLanguage <--> 1 Language
 	 */
 	@XmlTransient
@@ -280,7 +335,7 @@ public class User implements Serializable, Cloneable{
 		return userNativeLanguages;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * UserPracticingLanguage <--> 1 Language
 	 */
 	@XmlTransient
@@ -291,7 +346,7 @@ public class User implements Serializable, Cloneable{
 		return userPracticingLanguages;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * Messages
 	 */
 	@XmlTransient
@@ -302,7 +357,7 @@ public class User implements Serializable, Cloneable{
 		return messages;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * MessageReceivers <--> 1 Message
 	 */
 	@XmlTransient
@@ -313,7 +368,7 @@ public class User implements Serializable, Cloneable{
 		return messageReceivers;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * Publications
 	 */
 	@XmlTransient
@@ -324,7 +379,7 @@ public class User implements Serializable, Cloneable{
 		return publications;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * PublicationReceivers <--> 1 Publication
 	 */
 	@XmlTransient
@@ -335,7 +390,7 @@ public class User implements Serializable, Cloneable{
 		return publicationReceivers;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * Achievements
 	 */
 	@XmlTransient
@@ -346,7 +401,7 @@ public class User implements Serializable, Cloneable{
 		return achievements;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * CorrectionAgrees <--> 1 Correction
 	 */
 	@XmlTransient
@@ -357,7 +412,7 @@ public class User implements Serializable, Cloneable{
 		return correctionAgreements;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * CorrectioDisaAgrees <--> 1 Correction
 	 */
 	@XmlTransient
@@ -368,7 +423,7 @@ public class User implements Serializable, Cloneable{
 		return correctionDisagreements;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * CommentVoters <--> 1 Comment
 	 */
 	@XmlTransient
@@ -379,7 +434,7 @@ public class User implements Serializable, Cloneable{
 		return commentVoters;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * ThreadVoter <--> 1 Thread
 	 */
 	@XmlTransient
@@ -397,8 +452,8 @@ public class User implements Serializable, Cloneable{
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	@XmlElement
@@ -516,34 +571,61 @@ public class User implements Serializable, Cloneable{
 	// // // //
 	// METODOS
 	// // // //
-	/*
+	
+	/* Clona este objeto User generando y devolviendo una
+	 * nueva instancia identica
 	public User cloneUser(){
+		// Como alternativa a este metodo se usa el constructor
+		// que recibe un User
 		// requiere 'implements Cloneable'
 		User result = null;
 		try {
 			result = (User) super.clone();
-		} catch (CloneNotSupportedException e) {
-			// TODO
-		}
+		} catch (CloneNotSupportedException e) {}
 		return result;
 	}
 	*/
+	
+	/** Elimina los datos del User reseteandolos a su valor por defecto,
+	 * cambia el estado de 'removed' igual a 'true',
+	 * y establece la fecha actual como fecha de eliminacion
+	 * de la cuenta de usuario */
+	public void removeUserData() {
+		locale = null;
+		dateRemoved = new Date();
+		password = null;
+		loginFails = 0;
+		active = true;
+		locked = false;
+		removed = true;
+		urlConfirm = null;
+		// Si se elimina un Administrador, ademas de "resetear" esos datos
+		// tambien se le podria reducir el "role":
+		// role = TypeUserRole.USER;
+	}
 	
 	// // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (METODOS)
 	// // // // // // // // // // // // //
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * Contacts
 	 */
-	public void addContact(Contact c){
-		contacts.add(c);
-		c._setUser(this);
+	/** Agrega un contacto a la lista de ellos que posee el usuario
+	 * @param contact objeto Contact que se agrega
+	 */
+	public void addContact(Contact contact){
+		contacts.add(contact);
+		contact._setUser(this);
 	}
-	public void removeContact(Contact c){
-		contacts.remove(c);
-		c._setUser(null);
+	/** Elimina un contacto a la lista de ellos que posee el usuario
+	 * @param contact objeto Contact que se elimina
+	 */
+	public void removeContact(Contact contact){
+		contacts.remove(contact);
+		contact._setUser(null);
 	}
+	/** Elimina todos los contactos de la lista de ellos que posee el usuario */
 	public void removeAllContacts(){
 		for(Contact c : Collections.unmodifiableSet(contacts)){
 			c.unlink();
@@ -551,17 +633,27 @@ public class User implements Serializable, Cloneable{
 		contacts.clear();
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * ContactRequest (contactRequest enviados por el usuario)
 	 */
-	public void addContactRequestSent(ContactRequest c){
-		contactRequestSent.add(c);
-		c._setUserSender(this);
+	/** Agrega una solicitud de contacto a la lista de solicitudes enviadas
+	 * por el usuario
+	 * @param contactRequest objeto ContactRequest que se agrega
+	 */
+	public void addContactRequestSent(ContactRequest contactRequest){
+		contactRequestSent.add(contactRequest);
+		contactRequest._setUserSender(this);
 	}
-	public void removeContactRequestSent(ContactRequest c){
-		contactRequestSent.remove(c);
-		c._setUserSender(null);
+	/** Ellimina una solicitud de contacto de la lista de solicitudes enviadas
+	 * por el usuario
+	 * @param contactRequest objeto ContactRequest que se elimina
+	 */
+	public void removeContactRequestSent(ContactRequest contactRequest){
+		contactRequestSent.remove(contactRequest);
+		contactRequest._setUserSender(null);
 	}
+	/** Elimina todas las solicitudes de contacto de la lista de solicitudes
+	 * enviadas que posee el usuario */
 	public void removeAllSentContactRequests(){
 		for(ContactRequest cr : 
 				Collections.unmodifiableSet(contactRequestSent)){
@@ -570,17 +662,27 @@ public class User implements Serializable, Cloneable{
 		contactRequestSent.clear();
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * ContactRequest (contactRequest recibidos por el usuario)
 	 */
-	public void addContactRequestReceived(ContactRequest c){
-		contactRequestSent.add(c);
-		c._setUserReceiver(this);
+	/** Agrega una solicitud de contacto a la lista de solicitudes recibidas
+	 * por el usuario
+	 * @param contactRequest objeto ContactRequest que se agrega
+	 */
+	public void addContactRequestReceived(ContactRequest contactRequest){
+		contactRequestSent.add(contactRequest);
+		contactRequest._setUserReceiver(this);
 	}
-	public void removeContactRequestReceived(ContactRequest c){
-		contactRequestSent.remove(c);
-		c._setUserReceiver(null);
+	/** Elimina una solicitud de contacto a la lista de solicitudes recibidas
+	 * por el usuario
+	 * @param contactRequest objeto ContactRequest que se elimina
+	 */
+	public void removeContactRequestReceived(ContactRequest contactRequest){
+		contactRequestSent.remove(contactRequest);
+		contactRequest._setUserReceiver(null);
 	}
+	/** Elimina todas las solicitudes de contacto de la lista de recibidas
+	 * enviadas que posee el usuario */
 	public void removeAllReceivedContactRequests(){
 		for(ContactRequest cr : 
 				Collections.unmodifiableSet(contactRequestReceived)){
@@ -589,29 +691,46 @@ public class User implements Serializable, Cloneable{
 		contactRequestReceived.clear();
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * PhorumPost
 	 */
-	public void addPhorumPost(ForumPost p){
-		phorumPosts.add(p);
-		p._setUser(this);
+	/** Agrega una participacion del foro (comentario o correccion)
+	 * a la lista de ellas que posee el usuario
+	 * @param forumPost objeto ForumPost que se agrega
+	 */
+	public void addPhorumPost(ForumPost forumPost){
+		phorumPosts.add(forumPost);
+		forumPost._setUser(this);
 	}
-	public void removePhorumPost(ForumPost p){
-		phorumPosts.remove(p);
-		p._setUser(null);
+	/** Elimina una participacion del foro (comentario o correccion)
+	 * de la lista de ellas que posee el usuario
+	 * @param forumPost objeto ForumPost que se elimina
+	 */
+	public void removePhorumPost(ForumPost forumPost){
+		phorumPosts.remove(forumPost);
+		forumPost._setUser(null);
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * Messages
 	 */
-	public void addMessage(Message m){
-		messages.add(m);
-		m._setUser(this);
+	/** Agrega un mensaje a la lista de mensajes enviados por el usuario
+	 * @param message objeto Message que se agrega
+	 */
+	public void addMessage(Message message){
+		messages.add(message);
+		message._setUser(this);
 	}
-	public void removeMessage(Message m){
-		messages.remove(m);
-		m._setUser(null);
+	/** Elimina un mensaje a la lista de mensajes enviados por el usuario
+	 * @param message objeto Message que se agrega
+	 */
+	public void removeMessage(Message message){
+		messages.remove(message);
+		message._setUser(null);
 	}
+	/** Elimina todos los mensajes de la lista de mensajes enviados
+	 * por el usuario
+	 */
 	public void removeAllMessages(){
 		for(Message m : Collections.unmodifiableSet(messages)){
 			m._setUser(null);
@@ -619,17 +738,27 @@ public class User implements Serializable, Cloneable{
 		messages.clear();
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * Publications
 	 */
-	public void addPublication(Publication p){
-		publications.add(p);
-		p._setUser(this);
+	/** Agrega una publicacion a la lista de publicaciones
+	 * generadas o provocadas por el usuario
+	 * @param publication objeto Publication que se agrega
+	 */
+	public void addPublication(Publication publication){
+		publications.add(publication);
+		publication._setUser(this);
 	}
-	public void removePublication(Publication p){
-		publications.remove(p);
-		p._setUser(null);
+	/** Elimina una publicacion de la lista de publicaciones
+	 * generadas o provocadas por el usuario
+	 * @param publication objeto Publication que se elimina
+	 */
+	public void removePublication(Publication publication){
+		publications.remove(publication);
+		publication._setUser(null);
 	}
+	/** Elimina todas las publicaciones de la lista de ellas
+	 * que posee el usuario */
 	public void removeAllPublications(){
 		for(Publication p : Collections.unmodifiableSet(publications)){
 			p._setUser(null);
@@ -637,17 +766,24 @@ public class User implements Serializable, Cloneable{
 		publications.clear();
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * UserNativeLanguages <--> 1 Language
 	 */
-	public void addUserNativeLanguage(UserNativeLanguage u){
-		userNativeLanguages.add(u);
-		u._setUser(this);
+	/** Agrega un lenguaje a la lista de lenguajes nativos del usuario
+	 * @param userNativeLanguage objeto UserNativeLanguage que se agrega
+	 */
+	public void addUserNativeLanguage(UserNativeLanguage userNativeLanguage){
+		userNativeLanguages.add(userNativeLanguage);
+		userNativeLanguage._setUser(this);
 	}
-	public void removeUserNativeLanguage(UserNativeLanguage u){
-		userNativeLanguages.remove(u);
-		u._setUser(null);
+	/** Elimina un lenguaje de la lista de lenguajes nativos del usuario
+	 * @param userNativeLanguage objeto UserNativeLanguage que se elimina
+	 */
+	public void removeUserNativeLanguage(UserNativeLanguage userNativeLanguage){
+		userNativeLanguages.remove(userNativeLanguage);
+		userNativeLanguage._setUser(null);
 	}
+	/** Elimina todos los lenguajes nativos que posee el usuario */
 	public void removeAllUserNativeLanguages(){
 		for(UserNativeLanguage unl : 
 				Collections.unmodifiableSet(userNativeLanguages)){
@@ -656,35 +792,27 @@ public class User implements Serializable, Cloneable{
 		userNativeLanguages.clear();
 	}
 	
-	/** Relacion entre entidades:<br>
-	 *  1 User <--> * Achievements
-	 */
-	public void addAchievement(Achievement a){
-		achievements.add(a);
-		a._setUser(this);
-	}
-	public void removeAchievement(Achievement a){
-		achievements.remove(a);
-		a._setUser(null);
-	}
-	public void removeAllAchievements(){
-		for(Achievement a : Collections.unmodifiableSet(achievements)){
-			a._setUser(null);
-		}
-		achievements.clear();
-	}
-	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * UserPracticingLanguages <--> 1 Language
 	 */
-	public void addUserPracticingLanguage(UserPracticingLanguage u){
-		userPracticingLanguages.add(u);
-		u._setUser(this);
+	/** Agrega un lenguaje a la lista de lenguajes practicados por el usuario
+	 * @param userPracticingLanguage objeto UserPracticingLanguage que se agrega
+	 */
+	public void addUserPracticingLanguage(UserPracticingLanguage
+			userPracticingLanguage){
+		userPracticingLanguages.add(userPracticingLanguage);
+		userPracticingLanguage._setUser(this);
 	}
-	public void removeUserPracticingLanguage(UserPracticingLanguage u){
-		userPracticingLanguages.remove(u);
-		u._setUser(null);
+	/** Elimina un lenguaje de la lista de lenguajes practicados por el usuario
+	 * @param userPracticingLanguage objeto UserPracticingLanguage
+	 * que se elimina
+	 */
+	public void removeUserPracticingLanguage(
+			UserPracticingLanguage userPracticingLanguage){
+		userPracticingLanguages.remove(userPracticingLanguage);
+		userPracticingLanguage._setUser(null);
 	}
+	/** Elimina todos los lenguajes practicados que posee el usuario */
 	public void removeAllUserPracticedLanguages(){
 		for(UserPracticingLanguage upl : 
 				Collections.unmodifiableSet(userPracticingLanguages)){
@@ -693,115 +821,152 @@ public class User implements Serializable, Cloneable{
 		userPracticingLanguages.clear();
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
+	 *  1 User <--> * Achievements
+	 */
+	/** Agrega un logro a la lista de ellos que posee el usuario
+	 * @param achievement objeto Achievement que se agrega
+	 */
+	public void addAchievement(Achievement achievement){
+		achievements.add(achievement);
+		achievement._setUser(this);
+	}
+	/** Elimina un logro de la lista de ellos que posee el usuario
+	 * @param achievement objeto Achievement que se elimina
+	 */
+	public void removeAchievement(Achievement achievement){
+		achievements.remove(achievement);
+		achievement._setUser(null);
+	}
+	/** Elimina todos los logros que posee el usuario */
+	public void removeAllAchievements(){
+		for(Achievement a : Collections.unmodifiableSet(achievements)){
+			a._setUser(null);
+		}
+		achievements.clear();
+	}
+	
+	/* Relacion entre entidades:
 	 *  1 User <--> * MessageReceivers <--> 1 Message
 	 */
-	public void addMessageReceiver(MessageReceiver msg){
-		messageReceivers.add(msg);
-		msg._setUser(this);
+	/** Agrega un mensaje a la lista de mensajes recibidos por el usuario
+	 * @param messageReceiver objeto MessageReceiver que se agrega
+	 */
+	public void addMessageReceiver(MessageReceiver messageReceiver){
+		messageReceivers.add(messageReceiver);
+		messageReceiver._setUser(this);
 	}
-	public void removeMessageReceiver(MessageReceiver msg){
-		messageReceivers.remove(msg);
-		msg._setUser(null);
+	/** Elimina un mensaje de la lista de mensajes recibidos por el usuario
+	 * @param messageReceiver objeto MessageReceiver que se elimina
+	 */
+	public void removeMessageReceiver(MessageReceiver messageReceiver){
+		messageReceivers.remove(messageReceiver);
+		messageReceiver._setUser(null);
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * PublicationReceivers <--> 1 Publication
 	 */
-	public void addPublicationReceiver(PublicationReceiver n){
-		publicationReceivers.add(n);
-		n._setUser(this);
+	/** Agrega una publicacion a la lista de publicaciones
+	 * que posee el usuario
+	 * @param publicationReceiver objeto PublicationReceiver que se agrega
+	 */
+	public void addPublicationReceiver(
+			PublicationReceiver publicationReceiver){
+		publicationReceivers.add(publicationReceiver);
+		publicationReceiver._setUser(this);
 	}
-	public void removePublicationReceiver(PublicationReceiver n){
-		publicationReceivers.remove(n);
-		n._setUser(null);
+	/** Elimina una publicacion de la lista de publicaciones
+	 * que posee el usuario
+	 * @param publicationReceiver objeto PublicationReceiver que se elimina
+	 */
+	public void removePublicationReceiver(
+			PublicationReceiver publicationReceiver){
+		publicationReceivers.remove(publicationReceiver);
+		publicationReceiver._setUser(null);
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * CorrectionAgrees <--> 1 Correction
 	 */
-	public void addCorrectionAgree(CorrectionAgree c){
-		correctionAgreements.add(c);
-		c._setUser(this);
+	/** Agrega una recomendacion de una correccion a la lista de ellas
+	 * que posee el usuario
+	 * @param correctionAgree objeto CorrectionAgree que se agrega
+	 */
+	public void addCorrectionAgree(CorrectionAgree correctionAgree){
+		correctionAgreements.add(correctionAgree);
+		correctionAgree._setUser(this);
 	}
-	public void removeCorrectionAgree(CorrectionAgree c){
-		correctionAgreements.remove(c);
-		c._setUser(null);
+	/** Elimina una recomendacion de una correccion de la lista de ellas
+	 * que posee el usuario
+	 * @param correctionAgree objeto CorrectionAgree que se elimina
+	 */
+	public void removeCorrectionAgree(CorrectionAgree correctionAgree){
+		correctionAgreements.remove(correctionAgree);
+		correctionAgree._setUser(null);
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * CorrectionDisagrees <--> 1 Correction
 	 */
-	public void addCorrectionDisagree(CorrectionDisagree c){
-		correctionDisagreements.add(c);
-		c._setUser(this);
-	}
-	public void removeCorrectionDisagree(CorrectionDisagree c){
-		correctionDisagreements.remove(c);
-		c._setUser(null);
-	}
-	
-	/** Relacion entre entidades:<br>
-	 *  1 User <--> * CommentVoters <--> 1 Comment
+	/** Agrega una desaprobacion de una correccion a la lista de ellas
+	 * que posee el usuario
+	 * @param correctionDisagree objeto CorrectionDisagree que se agrega
 	 */
-	public void addCommentVoter(CommentVoter cv){
-		commentVoters.add(cv);
-		cv._setUser(this);
+	public void addCorrectionDisagree(CorrectionDisagree correctionDisagree){
+		correctionDisagreements.add(correctionDisagree);
+		correctionDisagree._setUser(this);
 	}
-	public void removeCommentVoter(CommentVoter cv){
-		commentVoters.remove(cv);
-		cv._setUser(null);
+	/** Elimina una desaprobacion de una correccion de la lista de ellas
+	 * que posee el usuario
+	 * @param correctionAgree objeto CorrectionAgree que se elimina
+	 */
+	public void removeCorrectionDisagree(CorrectionDisagree correctionDisagree){
+		correctionDisagreements.remove(correctionDisagree);
+		correctionDisagree._setUser(null);
 	}
 	
-	/** Relacion entre entidades:<br>
+	/** Agrega una votacion de un comentario a la lista de ellas
+	 * realizadas por el usuario
+	 * @param commentVoter objeto CommentVoter que se agrega
+	 */
+	public void addCommentVoter(CommentVoter commentVoter){
+		commentVoters.add(commentVoter);
+		commentVoter._setUser(this);
+	}
+	/** Elimina una votacion de un comentario de la lista de ellas
+	 * realizadas por el usuario
+	 * @param commentVoter objeto CommentVoter que se elimina
+	 */
+	public void removeCommentVoter(CommentVoter commentVoter){
+		commentVoters.remove(commentVoter);
+		commentVoter._setUser(null);
+	}
+	
+	/* Relacion entre entidades:
 	 *  1 User <--> * ThreadVoters <--> 1 Thread
 	 */
-	public void addPhorumThreadVoter(ForumThreadVoter tv){
-		phorumThreadVoters.add(tv);
-		tv._setUser(this);
+	/** Agrega una votacion de un hilo a la lista de ellas
+	 * realizadas por el usuario
+	 * @param forumThreadVoter objeto ForumThreadVoter que se agrega
+	 */
+	public void addPhorumThreadVoter(ForumThreadVoter forumThreadVoter){
+		phorumThreadVoters.add(forumThreadVoter);
+		forumThreadVoter._setUser(this);
 	}
-	public void removePhorumThreadVoter(ForumThreadVoter tv){
-		phorumThreadVoters.remove(tv);
-		tv._setUser(null);
+	/** Elimina una votacion de un hilo de la lista de ellas
+	 * realizadas por el usuario
+	 * @param forumThreadVoter objeto ForumThreadVoter que se elimina
+	 */
+	public void removePhorumThreadVoter(ForumThreadVoter forumThreadVoter){
+		phorumThreadVoters.remove(forumThreadVoter);
+		forumThreadVoter._setUser(null);
 	}
 	
 	// // // // // // // //
 	// HASH CODE & EQUALS
 	// // // // // // // //
-	/*
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((email == null) ? 0 : email.hashCode());
-		result = prime * result
-				+ ((dateRegistered == null) ? 0 : dateRegistered.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		User other = (User) obj;
-		if (email == null) {
-			if (other.email != null)
-				return false;
-		} else if (!email.equals(other.email))
-			return false;
-		if (dateRegistered == null) {
-			if (other.dateRegistered != null)
-				return false;
-		} else if (!dateRegistered.equals(other.dateRegistered))
-			return false;
-		return true;
-	}
-	*/
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -841,19 +1006,5 @@ public class User implements Serializable, Cloneable{
 				+ ", locked=" + locked
 				+ ", removed=" + removed
 				+ "]";
-	}
-
-	public void removeUserData() {
-		locale = null;
-		dateRemoved = new Date();
-		password = null;
-		loginFails = 0;
-		active = true;
-		locked = false;
-		removed = true;
-		urlConfirm = null;
-		// Si queremos borrar un Administrador,
-		// ademas de "resetear" esos datos anteriores le reducimos el "role":
-		role = TypeUserRole.USER;
 	}
 }

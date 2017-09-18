@@ -25,11 +25,16 @@ import com.loqua.presentation.util.MapQueryString;
 import com.loqua.presentation.util.VerifierAjaxRequest;
 
 /**
- * Este filtro se aplica a la pagina de 'forum_thread.xhtml'
- * (tanto para usuarios anonimos como para registrados y administradores).
- * Por tanto existen dos filtros para dicha pagina: el 'FilterAuthorization...'
- * y este. Y el orden en que se aplican esta definido en el fichero de despliegue
- * web.xml.
+ * Define el filtro, que se aplica sobre la pagina de 'forum_thread.xhtml',
+ * y que comprueba si son correctos los parametros enviados en la URL
+ * (la 'query string'). <br/>
+ * El ciclo de JSF es interceptado por el Filtro antes de que el navegador
+ * muestre la pagina sobre la que este se aplica, y se ejecuta inmediatamene
+ * despues de los manejadores de navegacion (NavigationHandler) y de vista
+ * (ViewHandler). <br/>
+ * Puesto que se definen varios filtros sobre esta misma pagina, es coveniente
+ * indicar, en el fichero web.xml, el orden en que se aplican.
+ * @author Gonzalo
  */
 @WebFilter(
 		dispatcherTypes = { DispatcherType.REQUEST },
@@ -51,9 +56,8 @@ import com.loqua.presentation.util.VerifierAjaxRequest;
 
 public class FilterForumThread implements Filter {
 
-	// Necesitamos acceder a los parametros de inicializacion en
-	// el metodo doFilter, asi que necesitamos la variable
-	// config que se inicializara en init()
+	/** Se utliza para acceder a los parametros de inicializacion
+	 * definidos en las anotaciones de esta clase */
 	FilterConfig config = null;
 	
 	Long requestedThreadId = 0L;
@@ -61,11 +65,8 @@ public class FilterForumThread implements Filter {
 	int requestedPage = 0;
 	MapQueryString queryStringMap;
 
-	/**
-	 * Default constructor.
-	 */
-	public FilterForumThread() {
-	}
+	/** Constructor sin parametros de la clase */
+	public FilterForumThread() {}
 
 	/**
 	 * @see Filter#destroy()
@@ -86,10 +87,10 @@ public class FilterForumThread implements Filter {
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		// Si el metodo termina despues de hacer 'chain.doFilter',
-		// se permite el acceso a la pagina requerida (no se redirige a otra)
-		// Si el metodo termina despues de hacer 'res.sendRedirect',
-		// no se permite el acceso a la pagina requerida (se redirige a otra)
+		/* Si el metodo termina despues de hacer 'chain.doFilter',
+		se permite el acceso a la pagina requerida (no se redirige a otra)
+		Si el metodo termina despues de hacer 'res.sendRedirect',
+		no se permite el acceso a la pagina requerida (se redirige a otra) */
 		
 		// Si no es peticion HTTP no se filtra
 		if (!(request instanceof HttpServletRequest)){
@@ -144,11 +145,14 @@ public class FilterForumThread implements Filter {
 	
 	/**
 	 * Comprueba que la url de la peticion a la pagina 'forum_thread.xhtml'
-	 * contiene los parametros correctos ('thread' y 'page'). <br/>
-	 * - Parametro 'thread': 'hilo' del foro que se va a consultar
-	 * en la siguiente vista (forum_thread.xhtml).<br/>
-	 * - Parametro 'page': pagina del 'hilo' que se va a consultar.
-	 * @return 'true' si los parametros de la url son correctos
+	 * contiene los parametros correctos ('thread' y 'page'). <ul>
+	 * <li>Parametro 'thread': 'hilo' del foro que se va a consultar
+	 * en la siguiente vista (forum_thread.xhtml).</li>
+	 * <li>Parametro 'page': pagina del 'hilo' que se va a consultar.</li></ul>
+	 * @param req la peticion HTTP
+	 * @return
+	 * 'true' si los parametros de la url son correctos <br/>
+	 * 'false' si los parametros de la url no son correctos
 	 */
 	private boolean verifyParameters(HttpServletRequest req){
 		try{
@@ -166,6 +170,15 @@ public class FilterForumThread implements Filter {
 		}
 	}
 
+	/**
+	 * Comprueba que la url de la peticion a la pagina 'forum_thread.xhtml'
+	 * contiene el parametro 'page' y es correcto (pagina que se va a consultar
+	 * en la lista de comentarios de la noticia).
+	 * @param req la peticion HTTP
+	 * @return
+	 * 'true' si el parametro 'page' de la url es correcto <br/>
+	 * 'false' si el parametro 'page' de la url no es correcto
+	 */
 	private boolean verifyRequestedPage(
 			ForumThread thread, HttpServletRequest req){
 		try{
@@ -187,6 +200,13 @@ public class FilterForumThread implements Filter {
 		}
 	}
 	
+	/**
+	 * Incrementa el numero de visitas de una noticia del foro.
+	 * No se incrementa si, durante una misma sesion, se realizan varias
+	 * visitas al hilo. Para comprobarlo utiliza la variable 'VISITED_THREADS'
+	 * almacenada en el contexto de sesion.
+	 * @param session la sesion del usuario
+	 */
 	private void incrementForumThreadVisits(HttpSession session) {
 		// Los valores 'requestedThread' y 'requestedThreadId'
 		// ya se han inicializado con el metodo "verifyParameters(...)"

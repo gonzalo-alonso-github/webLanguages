@@ -1,10 +1,25 @@
 package com.loqua.model.compoundkeys;
 
+import com.loqua.model.Country;
+import com.loqua.model.Language;
+
 import java.io.Serializable;
 
-@SuppressWarnings("serial")
+/**
+ * Representa la clave primaria de la entidad CountryLanguage
+ * @author Gonzalo
+ */
 public class CountryLanguageKey implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
+	
+	/** Clave primaria de la entidad {@link Country}
+	 * a la que esta asociado el objeto CountryLanguage
+	 */
 	Long country;
+	/** Clave primaria de la entidad {@link Language}
+	 * a la que esta asociado el objeto CountryLanguage
+	 */
 	Long language;
 	
 	@Override

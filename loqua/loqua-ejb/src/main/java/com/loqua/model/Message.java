@@ -18,27 +18,41 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * Representa un mensaje que puede ser creado por un usuario
+ * registrado y recibido por otro
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "message")
 @Entity
 @Table(name="Message")
 public class Message implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
 	// // // // // // //
 	// ATRIBUTOS
 	// // // // // // //
+	
+	/** Identificador del objeto y clave primaria de la entidad */
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) private Long id;
+	/** Texto del cuerpo del mensaje */
 	private String content;
+	/** Fecha de envio del mensaje */
 	private Date date;
+	/** Indica si el mensaje ya ha sido leido por el usaurio que lo recibio */
 	private boolean read;
 	
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
+	
+	/** Usuario que envia el mensaje */
 	@ManyToOne
 	@JoinColumn(name="user_id", referencedColumnName="id")
 	private User user;
 	
+	/** Lista de usuarios que reciben el mensaje */
 	@OneToMany(mappedBy="message")
 	private Set<MessageReceiver> receivers = new HashSet<MessageReceiver>();
 	
@@ -46,8 +60,13 @@ public class Message implements Serializable {
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public Message(){}
 	
+	/**
+	 * Constructor que recibe las entidades asociadas a esta
+	 * @param user objeto User asociado al Message
+	 */
 	public Message(User user){
 		this.user = user;
 	}
@@ -59,11 +78,11 @@ public class Message implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  * Messages <--> 1 User
 	 */
 	@XmlTransient
@@ -74,7 +93,7 @@ public class Message implements Serializable {
 		user = u;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Message <--> * MessageReceiver <--> 1 User
 	 */
 	@XmlTransient
@@ -92,8 +111,8 @@ public class Message implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	@XmlElement
@@ -132,16 +151,22 @@ public class Message implements Serializable {
 	// RELACION ENTRE ENTIDADES (METODOS)
 	// // // // // // // // // // // // //
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Message <--> * MessageReceiver <--> User
 	 */
-	public void addMessageReceiver(MessageReceiver r){
-		receivers.add(r);
-		r._setMessage(this);
+	/** Agrega un usuario a la lista de ellos que posee el Message
+	 * @param messageReceiver objeto MessageReceiver que se agrega
+	 */
+	public void addMessageReceiver(MessageReceiver messageReceiver){
+		receivers.add(messageReceiver);
+		messageReceiver._setMessage(this);
 	}
-	public void removeMessageReceiver(MessageReceiver r){
-		receivers.remove(r);
-		r._setMessage(null);
+	/** Elimina un usuario de la lista de ellos que posee el Message
+	 * @param messageReceiver objeto MessageReceiver que se elimina
+	 */
+	public void removeMessageReceiver(MessageReceiver messageReceiver){
+		receivers.remove(messageReceiver);
+		messageReceiver._setMessage(null);
 	}	
 	
 	// // // // // // // //

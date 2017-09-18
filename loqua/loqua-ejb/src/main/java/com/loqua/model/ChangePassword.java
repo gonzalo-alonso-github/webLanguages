@@ -19,6 +19,11 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import com.loqua.model.types.TypeChangePassword;
 
+/**
+ * Representa un cambio de direccion de contrase&ntilde;a
+ * de la cuenta de un usuario
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "changePassword")
 @Entity
 @Table(name="ChangePassword")
@@ -29,23 +34,55 @@ public class ChangePassword implements Serializable {
 	// // // // // // //
 	// ATRIBUTOS
 	// // // // // // //
+	
+	/** Constante con el valor 'RESTORE' */
 	@Transient
 	public static final String RESTORE = "RESTORE";
+	/** Constante con el valor 'EDIT' */
 	@Transient
 	public static final String EDIT = "EDIT";
 	
+	/** Identificador del objeto y clave primaria de la entidad */
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) private Long id;
+	
+	/** Indica la contrase&ntilde;a que utiliza el usuario, previa a la
+	 * confirmacion del cambio */
 	private String passwordRemoved;
+	
+	/** Indica la nueva contrase&ntilde;a que utilizara el usuario una vez que
+	 * confirme el cambio. Esta puede ser generada aleatoriamente
+	 * (en caso de que se trate de una restauracion de contrase&ntilde;a)
+	 * o bien puede ser introducida por el usuario
+	 * (en caso de que se trate de una edicion de contrase&ntilde;a) */
 	private String passwordGenerated;
+	
+	/** Cadena aleatoria (de al menos 26 caracteres) que permite identificar
+	 * al usuario que accede a la URL de confirmacion de su cambio de
+	 * contrase&ntilde;a */
 	private String urlConfirm;
+	
+	/** Indica si el usuario que solicita el cambio de contrase&ntilde;a
+	 * ya ha accedido a la URL de confirmacion enviada a su email */
 	private boolean confirmed;
+	
+	/** Fecha en la que el usuario solicita el cambio de contrase&ntilde;a */
 	private Date date;
+	
+	/** Indica el tipo del cambio de contrase&ntilde;a. Es un Enumerado que
+	 * admite los siguientes valores:
+	 * <ul>
+	 * <li>'RESTORE': es una restauracion de contrase&ntilde;a por parte del
+	 * usuario</li>
+	 * <li>'EDIT': es una edicion de contrase&ntilde;a por parte del usuario
+	 * </li></ul> */
 	@Enumerated(EnumType.STRING)
 	private TypeChangePassword typeChangePassword;
 	
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
+	
+	/** Usuario que da lugar al ChangePassword */
 	@ManyToOne
 	@JoinColumn(name="user_id", referencedColumnName="id")
 	private User user;
@@ -54,8 +91,13 @@ public class ChangePassword implements Serializable {
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public ChangePassword(){}
 	
+	/**
+	 * Constructor que recibe las entidades asociadas a esta
+	 * @param user objeto User asociado al ChangePassword
+	 */
 	public ChangePassword(User user){
 		this.user = user;
 	}
@@ -67,11 +109,11 @@ public class ChangePassword implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  * Messages <--> 1 User
 	 */
 	@XmlTransient
@@ -89,8 +131,8 @@ public class ChangePassword implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	@XmlElement

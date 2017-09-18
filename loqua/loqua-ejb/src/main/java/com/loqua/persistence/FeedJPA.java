@@ -12,18 +12,37 @@ import com.loqua.persistence.exception.EntityNotPersistedException;
 import com.loqua.persistence.exception.PersistenceRuntimeException;
 import com.loqua.persistence.util.JPA;
 
+/**
+ * Efectua en la base de datos las operaciones 'CRUD' de elementos
+ * {@link Feed} y {@link FeedCategory}
+ * @author Gonzalo
+ */
 public class FeedJPA {
 	
-	private static final String FEED_NOT_PERSISTED_EXCEPTION=
-			"EntityNotPersistedException: 'Feed' entity not found"
-			+ " at Persistence layer";
-	private static final String FEEDCATEGORY_ALREADY_PERSISTED_EXCEPTION=
-			"EntityAlreadyPersistedException: 'FeedCategory' entity already"
-			+ " found at Persistence layer";
+	/** Mensaje de la RuntimeException producida al efectuar una transaccion
+	 * o lectura a la base de datos */
 	private static final String PERSISTENCE_GENERAL_EXCEPTION=
 			"PersistenceGeneralException: Infraestructure or technical problem"
 			+ " at Persistence layer";
 	
+	/** Mensaje de la excepcion producida al no encontrar la entidad 'Feed'
+	 * en la base de datos */
+	private static final String FEED_NOT_PERSISTED_EXCEPTION=
+			"EntityNotPersistedException: 'Feed' entity not found"
+			+ " at Persistence layer";
+	
+	/** Mensaje de la excepcion producida al repetirse la entidad 'FeedCategory'
+	 * en la base de datos */
+	private static final String FEEDCATEGORY_ALREADY_PERSISTED_EXCEPTION=
+			"EntityAlreadyPersistedException: 'FeedCategory' entity already"
+			+ " found at Persistence layer";
+	
+	/**
+	 * Realiza la consulta JPQL 'Feed.getFeedById'
+	 * @param feedId atributo 'id' del Feed que se consulta
+	 * @return Feed cuyo atributo 'id' coincide con el parametro dado
+	 * @throws EntityNotPersistedException
+	 */
 	public Feed getFeedById(Long feedId) throws EntityNotPersistedException {
 		Feed result = new Feed();
 		try{
@@ -43,6 +62,10 @@ public class FeedJPA {
 		return result;
 	}
 
+	/**
+	 * Realiza la consulta JPQL 'Feed.getAllFeeds'
+	 * @return lista de todos los Feed de la base de datos
+	 */
 	@SuppressWarnings("unchecked")
 	public List<Feed> getAllFeeds() {
 		List<Feed> result = new ArrayList<Feed>();
@@ -58,6 +81,11 @@ public class FeedJPA {
 		return result;
 	}
 	
+	/**
+	 * Realiza la consulta JPQL 'Feed.getAllFeedCategoriesIds'
+	 * @return lista de todos los atributos 'id' de los FeedCategories 
+	 * de la base de datos
+	 */
 	@SuppressWarnings("unchecked")
 	public List<Long> getAllFeedCategoriesIds() {
 		List<Long> result = new ArrayList<Long>();
@@ -73,6 +101,10 @@ public class FeedJPA {
 		return result;
 	}
 	
+	/**
+	 * Realiza la consulta JPQL 'Feed.getAllFeedCategories'
+	 * @return lista de todos los FeedCategories de la base de datos
+	 */
 	@SuppressWarnings("unchecked")
 	public List<FeedCategory> getAllFeedCategories() {
 		List<FeedCategory> result = new ArrayList<FeedCategory>();
@@ -88,6 +120,11 @@ public class FeedJPA {
 		return result;
 	}
 	
+	/**
+	 * Agrega a la base de datos el objeto FeedCategory dado
+	 * @param feedCategory objeto FeedCategory que se desea guardar
+	 * @throws EntityAlreadyPersistedException
+	 */
 	public void createFeedCategory(FeedCategory feedCategory)
 			throws EntityAlreadyPersistedException {
 		try{
@@ -101,6 +138,11 @@ public class FeedJPA {
 		}
 	}
 	
+	/**
+	 * Actualiza en la base de datos el objeto FeedCategory dado
+	 * @param feedCategory objeto FeedCategory que se desea guardar
+	 * @throws EntityNotPersistedException
+	 */
 	public void updateFeedCategory(FeedCategory feedCategory)
 			throws EntityNotPersistedException {
 		try{	

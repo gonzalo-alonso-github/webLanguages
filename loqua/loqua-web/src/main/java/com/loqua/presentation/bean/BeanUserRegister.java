@@ -3,9 +3,7 @@ package com.loqua.presentation.bean;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.annotation.PostConstruct;
@@ -25,27 +23,49 @@ import com.loqua.presentation.bean.applicationBean.BeanUserImages;
 import com.loqua.presentation.bean.requestBean.BeanActionResult;
 import com.loqua.presentation.logging.LoquaLogger;
 
-// Al ser un bean de scope 'request', los campos se resetean ante cada peticion
+/**
+ * Bean, de ambito de peticion, encargado de realizar
+ * todas las operaciones relativas al manejo de la pagina
+ * de registro de usuarios. No solo incluye el dar de alta al nuevo usuario,
+ * sino tambien el proceso previo de verificar la accion mediante el envio de
+ * un email de confirmacion. <br/>
+ * Al ser un bean de ambito de peticion ('request'),
+ * todo el estado de esta clase se resetea ante cada peticion.
+ * @author Gonzalo
+ */
 public class BeanUserRegister implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
+	/** Datos introducidos por el usuario que se registra. <br/> Para completar
+	 * la informacion que se da de alta, sera necesario inicializar tambien
+	 * otros atributos del User asignandoles valores por defecto; de ello
+	 * se encarga el metodo {@link #generateUser}. */
 	private User userToRegister;
+	
+	/** Dato del sexo del usuario, introducido al registrarse. <br/> */
 	private String radioBtnGender = null;
+	
+	/** Parametro 'confirm' recibido en la URL. Es una cadena aleatoria
+	 * (de 26 caracteres) que permite identificar
+	 * al usuario que accede a la URL de confirmacion de su registro
+	 * en la aplicacion. <br/>
+	 * Se utiliza en la vista 'register_confirm.xhtml', donde se inicializa
+	 * mediante el &lt;f:viewParam&gt; que invoca al metodo set del atributo. */
 	private String urlConfirm;
 	
-	// Inyeccion de dependencia
+	/** Inyeccion de dependencia del {@link BeanSettingsSession} */
 	@ManagedProperty(value="#{beanSettingsSession}")
 	private BeanSettingsSession beanSettingsSession;
-	// Inyeccion de dependencia
+	
+	/** Inyeccion de dependencia del {@link BeanSettingsActionLimits} */
 	@ManagedProperty(value="#{beanSettingsActionLimits}")
 	private BeanSettingsActionLimits beanSettingsActionLimits;
-	// Inyeccion de dependencia
+	
+	/** Inyeccion de dependencia del {@link BeanUserImages} */
 	@ManagedProperty(value="#{beanUserImages}")
 	private BeanUserImages beanUserImages;
 
@@ -53,28 +73,18 @@ public class BeanUserRegister implements Serializable{
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
+	/** Constructor del bean. Inicializa los beans inyectados:
+	 * {@link BeanSettingsSession}, {@link BeanSettingsActionLimits}
+	 * y {@link BeanUserImages} */
 	@PostConstruct
 	public void init() {
 		userToRegister = new User();
-		//initBeanLogin();
 		initBeanSettings();
 		initBeanSettingsActionLimits();
 		initBeanUserImages();
 	}
-	/*
-	private void initBeanLogin() {
-		// Buscamos el BeanLogin en la sesion.
-		beanLogin = null;
-		beanLogin = (BeanLogin)FacesContext.getCurrentInstance().
-				getExternalContext().getSessionMap().get("beanLogin");
-		// si no existe lo creamos e inicializamos:
-		if (beanLogin == null) { 
-			beanLogin = new BeanLogin();
-			FacesContext.getCurrentInstance().getExternalContext().
-				getSessionMap().put("beanLogin", beanLogin);
-		}
-	}
-	*/
+	
+	/** Inicializa el objeto {@link BeanSettingsSession} inyectado */
 	private void initBeanSettings() {
 		// Buscamos el BeanSettingsSession en la sesion.
 		beanSettingsSession = null;
@@ -89,6 +99,7 @@ public class BeanUserRegister implements Serializable{
 		}
 	}
 	
+	/** Inicializa el objeto {@link BeanSettingsActionLimits} inyectado */
 	private void initBeanSettingsActionLimits() {
 		// Buscamos el BeanSettingsActionLimits en la sesion.
 		beanSettingsActionLimits = null;
@@ -104,6 +115,7 @@ public class BeanUserRegister implements Serializable{
 		}
 	}
 	
+	/** Inicializa el objeto {@link BeanUserImages} inyectado */
 	private void initBeanUserImages() {
 		// Buscamos el BeanUserImages en la sesion.
 		beanUserImages = null;
@@ -117,6 +129,7 @@ public class BeanUserRegister implements Serializable{
 		}
 	}
 
+	/** Destructor del bean. */
 	@PreDestroy
 	public void end(){}
 	
@@ -124,6 +137,18 @@ public class BeanUserRegister implements Serializable{
 	// METODOS PARA ENVIAR EL EMAIL DE REGISTRO
 	// // // // // // // // // // // // // // //
 	
+	/**
+	 * Indica, mediante el objeto {@link #beanActionResult}, el resultado
+	 * de la accion de invocar al metodo {@link #sendEmailForRegister}.
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 * @return
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si se produce alguna excepcion, devuelve la regla de navegacion
+	 * que redirige a la pagina de error desconocido ('errorRegister' o
+	 * 'errorUnexpected').
+	 * @see #sendEmailForRegister
+	 */
 	public String generateEmailForRegister(BeanActionResult beanActionResult){
 		beanActionResult.setFinish(false);
 		beanActionResult.setSuccess(false);
@@ -153,8 +178,18 @@ public class BeanUserRegister implements Serializable{
 		return action;
 	}
 	
+	/**
+	 * Envia al email del usuario un correo que muestra un enlace para que 
+	 * confirme su registro en la aplicacion y se active su cuenta.
+	 * @param userToRegister usuario que confirma el registro
+	 * y cuya cuenta sera activada
+	 * @return
+	 * Si la accion se produce sin ningun error, retorna la cadena 'noError'.
+	 * <br/>  Si se alcanza el limite de registros de usuarios permitidos
+	 * en cierto lapso de tiempo, se devuelve la cadena 'limitTooRegistrations'
+	 */
 	private String sendEmailForRegister(User userToRegister){
-		List<String> content = new ArrayList<String>();
+		String content = "";
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ResourceBundle bundle = facesContext.getApplication().getResourceBundle(
 				facesContext, "msgs");
@@ -169,13 +204,13 @@ public class BeanUserRegister implements Serializable{
 		String url = uri.substring(0, uri.length()-req.getRequestURI().length())
 				+ req.getContextPath() + "/";
 		// Aqui bastaria que 'content' sea un simple String y no List<String>,
-		// pero para facilitar la uniformidad del codigo, queria que este metodo
-		// se parezca al de BeanRestorePassword.sendEmailForPasswordRestore
-		content.add(0, bundle.getString("mailContentRegister01")
+		// pero para facilitar la uniformidad del codigo, este metodo
+		// se asemeja al de BeanRestorePassword.sendEmailForPasswordRestore
+		content = bundle.getString("mailContentRegister01")
 				+ "\n\n" + bundle.getString("mailContentAdviceRemove")
 				+ "\n\n" + bundle.getString("mailContentRegister02")
 				+ ":" +"\n\t" + url
-				+ "pages/confirmationPages/register_confirm.xhtml?confirm=");
+				+ "pages/confirmationPages/register_confirm.xhtml?confirm=";
 		
 		// Enviar el correo:
 		String result = Factories.getService().getServiceUser()
@@ -184,6 +219,18 @@ public class BeanUserRegister implements Serializable{
 		return result;
 	}
 	
+	/**
+	 * Inicializa los datos por defecto que el usuario que se da de alta
+	 * no introduce en la vista. <br/>
+	 * Son datos relativos al estado del usuario
+	 * que normalmente no se le permiten editar directamente, salvo el atributo
+	 * {@link User#locale}, que el usuario puede modificar al cambiar el idioma
+	 * de la pagina. Dicho {@link User#locale}, a la hora de registrar a un
+	 * usuario, se obtiene a partir de la informacion del navegador,
+	 * inicializandose en {@link BeanSettingsSession#loadLocale}.
+	 * @throws EntityAlreadyFoundException
+	 * @throws Exception
+	 */
 	private void generateUser() throws EntityAlreadyFoundException, Exception {
 		userToRegister.setRole(User.USER);
 		userToRegister.setActive(false);
@@ -199,6 +246,11 @@ public class BeanUserRegister implements Serializable{
 		Factories.getService().getServiceUser().createUser(userToRegister);
 	}
 	
+	/**
+	 * Cifra con hash la contrase&ntilde;a recibida.
+	 * @param password contrase&ntilde;a que se cifra
+	 * @return la contrase&ntilde;a, una vez cifrada
+	 */
 	private String hashPassword(String password){
 		String salt = BCrypt.gensalt(12);
 		String hashedPassword = BCrypt.hashpw(password, salt);
@@ -209,6 +261,22 @@ public class BeanUserRegister implements Serializable{
 	// METODOS PARA CONFIRMAR EL REGISTRO
 	// // // // // // // // // // // // //
 	
+	/**
+	 * Cambia el estado del objeto {@link User} (cuyo atributo
+	 * {@link User#urlConfirm} coincide con el parametro
+	 * 'confirm' de la URL de la vista) estableciendo a 'true' el valor de
+	 * su propiedad {@link User#active}.
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 * @return
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si el usuario ya habia confirmado su regisro, devuelve la regla
+	 * de navegacion que redirige a la pagina que indica que la accion ya fue
+	 * realizada ('errorAlreadyPerformed'). <br/>
+	 * Si se produce alguna excepcion, devuelve la regla de navegacion
+	 * que redirige a la pagina que indica que la URL es desconocida
+	 * ('errorUnexpectedAnonymous').
+	 */
 	public String confirmRegistration(BeanActionResult beanActionResult) {
 		beanActionResult.setFinish(false);
 		beanActionResult.setSuccess(false);
@@ -240,6 +308,12 @@ public class BeanUserRegister implements Serializable{
 		return action;
 	}
 
+	/**
+	 * Halla el objeto {@link User} segun el atributo {@link User#urlConfirm}.
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 * @return el objeto User obtenido, o valor 'null' si no se encuentra
+	 */
 	private User getUserByUrlConfirm(BeanActionResult beanActionResult) {
 		User userToActivate = null;
 		userToActivate = Factories.getService().getServiceUser()
@@ -250,11 +324,18 @@ public class BeanUserRegister implements Serializable{
 		return userToActivate;
 	}
 	
+	/**
+	 * Actualiza en el sistema los datos del usuario indicado.
+	 * @param user usuario que se actualiza
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 * @throws Exception
+	 */
 	private void updateUser(User user, BeanActionResult beanActionResult)
 			throws Exception{
 		try{
 			Factories.getService().getServiceUser()
-				.updateAllDataByUser(user, true);
+				.updateAllDataByUser(user);
 		} catch (EntityNotFoundException e) {
 			beanActionResult.setMsgActionResult("errorUnknownUrl");
 			log.error("EntityNotFoundException at 'updateUser()'");

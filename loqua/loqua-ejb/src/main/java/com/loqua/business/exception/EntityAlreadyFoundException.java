@@ -1,12 +1,16 @@
 package com.loqua.business.exception;
 
 /**
- * Se lanza cuando se intenta obtener una entidad
- * que ya existe en el sistema de persistencia
+ * Representa la Exception que se lanza desde la capa de negocio
+ * cuando se intenta crear una entidad que ya existe en la base de datos.
+ * No esta provocada por errores en el codigo, sino que depende del estado
+ * de la base de datos, y sera conveniente capturarla o relanzarla
+ * cuando se produzca
  */
-@SuppressWarnings("serial")
 public class EntityAlreadyFoundException extends Exception {
 
+	private static final long serialVersionUID = 1L;
+	
 	public EntityAlreadyFoundException() {
 	}
 

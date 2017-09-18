@@ -15,30 +15,76 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * Representa un suceso significativo (un 'evento') alcanzado o recibido
+ * por un usuario en la aplicacion. Los objetos Event ya estan predefinidos
+ * (se obtienen de la base de datos) y nunca se van a crear
+ * nuevos objetos Event en tiempo de ejecucion.<br/>
+ * Ejemplos de eventos:
+ * <ul><li>El usuario entra en el top-X de la clasificacion de puntos</li>
+ * <li>El usuario alcanza una cantidad X de comentarios
+ * publicados en el foro</li>
+ * <li>El usuario recibe una sugerencia de correccion en el comentario X</li>
+ * </ul>
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "event")
 @Entity
 @Table(name="Event")
-//@IdClass(EventKey.class)
 public class Event implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
 	// // // // // // //
 	// ATRIBUTOS
 	// // // // // // //
+	
+	/** Identificador del objeto y clave primaria de la entidad */
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) private Long type;
+	
+	/** Si un usuario provoca un 'evento' cuyo atributo 'isAchievement'
+	 * es igual a 'true', se generara un objeto {@link Achievement}. Ese tipo
+	 * de 'eventos' se muestran como publicaciones (en el perfil del usuario)
+	 * y tambien como notificaciones (en el menu horizontal superior y tambien
+	 * en la pagina de notificaciones)
+	 */
 	private boolean isAchievement;
+	/** Palabra clave que, en los ficheros .properties de internacionalizacion
+	 * del proyecto 'loqua-web', indica el texto de plantilla que muestran
+	 * las publicaciones asociadas al 'evento' */
 	private String content;
+	/** Indica si es editable la privacidad de las publicaciones
+	 * generadas por este 'evento'*/
 	private boolean editablePrivacity;
+	/** Si es 'true', indica que la publicacion asociada al 'evento'
+	 * se deberia mostrar en su pagina de perfil. <br/>
+	 * Si es 'false', no se deberia mostrar en dicha vista
+	 */
 	private boolean showAsPublication;
+	/** Si es 'true', indica que la publicacion asociada al 'evento'
+	 * se deberia mostrar en el menu horizontal superior de la pagina,
+	 * o en la pagina de notificaciones. <br/>
+	 * Si es 'false', no se deberia mostrar en dichas vistas
+	 */
 	private boolean showAsNotification;
 	
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
-	// // // // // // // // // // // // // //�
+	// // // // // // // // // // // // // //
 	
+	/** Si un usuario provoca un 'evento', siempre se generara un objeto
+	 * {@link Publication} asociado a este.
+	 * La relacion entre ambas entidades es que los 'eventos'
+	 * dan lugar a publicaciones
+	 */
 	@OneToMany(mappedBy="event")
 	private Set<Publication> publications = new HashSet<Publication>();
 	
+	/** Si un usuario provoca un 'evento' cuyo atributo 'isAchievement' es igual
+	 * a 'true', se generara un objeto {@link Achievement} asociado a este.
+	 * La relacion entre ambas entidades es que los 'eventos'
+	 * pueden dar lugar a logros
+	 */
 	@OneToMany(mappedBy="event")
 	private Set<Achievement> achievements = new HashSet<Achievement>();
 	
@@ -46,6 +92,7 @@ public class Event implements Serializable {
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public Event(){}
 	
 	// // // // // // // // // // // // // //
@@ -55,11 +102,11 @@ public class Event implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Event <--> * Publications
 	 */
 	@XmlTransient
@@ -70,7 +117,7 @@ public class Event implements Serializable {
 		return publications;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Event <--> * Achievements
 	 */
 	@XmlTransient
@@ -88,8 +135,8 @@ public class Event implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	@XmlElement
@@ -144,25 +191,38 @@ public class Event implements Serializable {
 	// RELACION ENTRE ENTIDADES (METODOS)
 	// // // // // // // // // // // // //
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Event <--> * Publications
 	 */
-	public void addPublication(Publication p){
-		publications.add(p);
-		p._setEvent(this);
+	
+	/** Agrega una publicacion a la lista de ellas que posee el evento
+	 * @param publication objeto Publication que se agrega
+	 */
+	public void addPublication(Publication publication){
+		publications.add(publication);
+		publication._setEvent(this);
 	}
-	public void removePublication(Publication p){
-		publications.remove(p);
-		p._setEvent(null);
+	/** Elimina una publicacion de la lista de ellas que posee el evento
+	 * @param publication objeto Publication que se elimina
+	 */
+	public void removePublication(Publication publication){
+		publications.remove(publication);
+		publication._setEvent(null);
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Event <--> * Achievements
 	 */
-	public void addAchievement(Achievement a){
-		achievements.add(a);
-		a._setEvent(this);
+	/** Agrega un logro a la lista de ellos que posee el evento
+	 * @param achievement objeto Achievement que se agrega
+	 */
+	public void addAchievement(Achievement achievement){
+		achievements.add(achievement);
+		achievement._setEvent(this);
 	}
+	/** Elimina un logro de la lista de ellos que posee el evento
+	 * @param achievement objeto Achievement que se elimina
+	 */
 	public void removeAchievement(Achievement a){
 		achievements.remove(a);
 		a._setEvent(null);

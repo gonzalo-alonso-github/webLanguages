@@ -1,11 +1,14 @@
 package com.loqua.persistence.exception;
 
 /**
- * Se lanza cuando sucede cualquier excepcion
- * de tipo esctructural en la persistencia
+ * Representa la RuntimeException que se lanza desde la capa de persistencia
+ * cuando sucede fallo interno de la aplicacion en la capa de persistencia
+ * Puede ser causada por algun error en el codigo y no es preciso relanzarla
+ * en cada capa de abstraccion
  */
-@SuppressWarnings("serial")
 public class PersistenceRuntimeException extends RuntimeException {
+	
+	private static final long serialVersionUID = 1L;
 	
 	public PersistenceRuntimeException() {
 		super();

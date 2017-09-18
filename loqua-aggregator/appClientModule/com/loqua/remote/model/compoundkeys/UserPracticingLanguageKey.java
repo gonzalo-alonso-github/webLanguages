@@ -1,10 +1,26 @@
 package com.loqua.remote.model.compoundkeys;
 
+import com.loqua.remote.model.Language;
+import com.loqua.remote.model.User;
+import com.loqua.remote.model.UserPracticingLanguage;
+
 import java.io.Serializable;
 
-@SuppressWarnings("serial")
+/**
+ * Representa la clave primaria de la entidad {@link UserPracticingLanguage}
+ * @author Gonzalo
+ */
 public class UserPracticingLanguageKey implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
+	
+	/** Clave primaria de la entidad {@link Language}
+	 * a la que esta asociado el objeto UserPracticingLanguage
+	 */
 	Long language;
+	/** Clave primaria de la entidad {@link User}
+	 * a la que esta asociado el objeto UserPracticingLanguage
+	 */
 	Long user;
 	
 	@Override

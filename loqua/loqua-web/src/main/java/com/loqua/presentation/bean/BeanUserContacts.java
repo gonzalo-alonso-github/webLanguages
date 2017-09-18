@@ -15,23 +15,44 @@ import com.loqua.model.User;
 import com.loqua.presentation.bean.requestBean.BeanActionResult;
 import com.loqua.presentation.logging.LoquaLogger;
 
+/**
+ * Bean encargado de realizar las operaciones
+ * relativas al funcionamiento de los contactos de usuario. Incluye los metodos
+ * de visualizacion de listas de contactos y de solicitudes de contacto,
+ * el envio, aceptacion o rechazo de solicitudes y laeliminacion de contactos.
+ * @author Gonzalo
+ */
 public class BeanUserContacts implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
+	/** Lista de contactos del usuario que se consulta. Se permite consultar
+	 * no solo la lista de contactos propia, sino tambien la de otros usuarios
+	 * (considerando su nivel de privacidad).
+	 */
 	private List<Contact> contactsOfUser;
-	private List<ContactRequest> pendingContactRequests;
-	private User user;
-	private User userContact;
-
-	private BeanActionResult actionSendContactRequest;
 	
-	// Inyeccion de dependencia
+	/** Lista de solicitudes de contacto pendientes recibidas por el usuario
+	 * que se consulta. Cada usuario solo puede ver su propia lista de
+	 * solicitudes pendientes, salvo los administradores, que pueden ver
+	 * la de otros usuarios. */
+	private List<ContactRequest> pendingContactRequests;
+	
+	/** Representa el usuario que posee al contacto {@link #userContact}.<br/>
+	 * Ambos atributos son utilizados para obtener la relacion de contactos
+	 * entre dos usuarios, necesaria en los metodos de eliminacion de contactos,
+	 * y de aceptacion o rechazo de solicitudes de contacto. */
+	private User user;
+	/** Representa el contacto del usuario {@link #user}.<br/>
+	 * Ambos atributos son utilizados para obtener la relacion de contactos
+	 * entre dos usuarios, necesaria en los metodos de eliminacion de contactos,
+	 * y de aceptacion o rechazo de solicitudes de contacto. */
+	private User userContact;
+	
+	/** Inyeccion de dependencia del {@link BeanLogin} */
 	@ManagedProperty(value="#{beanLogin}")
 	private BeanLogin beanLogin;
 	
@@ -39,11 +60,13 @@ public class BeanUserContacts implements Serializable{
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
+	/** Constructor del bean. Inicializa el bean inyectado {@link BeanLogin} */
 	@PostConstruct
 	public void init() {
 		initBeanLogin();
 	}
 	
+	/** Inicializa el objeto {@link BeanLogin} inyectado */
 	private void initBeanLogin() {
 		// Buscamos el BeanLogin en la sesion.
 		beanLogin = null;
@@ -57,6 +80,7 @@ public class BeanUserContacts implements Serializable{
 		}
 	}
 
+	/** Destructor del bean. */
 	@PreDestroy
 	public void end(){}
 	
@@ -65,28 +89,27 @@ public class BeanUserContacts implements Serializable{
 	// // // //
 	
 	/**
-	 * Genera una peticion de contacto cuyo autor es el usuario dado 'userSender'
-	 * y cuyo receptor es el usuario 'userReceiver'
+	 * Genera una peticion de contacto cuyo autor es el usuario dado
+	 * 'userSender' y cuyo receptor es el usuario 'userReceiver'
 	 * @param userSender usuario que envia la peticion de contacto
 	 * @param userReceiver usuario que recibe la peticion de contacto
-	 * @param beanActionResult bean que se encarga de imprimir en la vista el
-	 * resultado de la accion, exitoso o no.
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
 	 */
 	public void sendContactRequest(User userSender, User userReceiver,
 			BeanActionResult beanActionResult){
-		actionSendContactRequest = beanActionResult;
-		actionSendContactRequest.setFinish(false);
-		actionSendContactRequest.setSuccess(false);
+		beanActionResult.setFinish(false);
+		beanActionResult.setSuccess(false);
 		try {
 			Factories.getService().getServiceContact()
 				.createContactRequest(userSender, userReceiver);
-			actionSendContactRequest.setSuccess(true);
+			beanActionResult.setSuccess(true);
 		} catch (Exception e) {
-			/* actionSendContactRequest
+			/* beanActionResult
 				.setMsgActionResult("errorSendContactRequest"); */
 			log.error("Unexpected Exception at 'sendContactRequest()'");
 		}
-		actionSendContactRequest.setFinish(true);
+		beanActionResult.setFinish(true);
 	}
 	
 	/**
@@ -95,8 +118,8 @@ public class BeanUserContacts implements Serializable{
 	 * contactos
 	 * @param userContact el segundo de los usuarios que conforman la relacion
 	 * de contactos
-	 * @param beanActionResult bean que se encarga de imprimir en la vista el
-	 * resultado de la accion, exitoso o no.
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
 	 */
 	public void deleteContact(BeanActionResult beanActionResult){
 		beanActionResult.setFinish(false);
@@ -114,6 +137,13 @@ public class BeanUserContacts implements Serializable{
 		beanActionResult.setFinish(true);
 	}
 	
+	/**
+	 * Acepta una solicitud de contacto recibida por el usuario
+	 * indicado por el usuario {@link BeanUserContacts#user} y enviada por
+	 * el usuario {@link BeanUserContacts#userContact}
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 */
 	public void acceptRequest(BeanActionResult beanActionResult){
 		beanActionResult.setFinish(false);
 		beanActionResult.setSuccess(false);
@@ -131,6 +161,13 @@ public class BeanUserContacts implements Serializable{
 		beanActionResult.setFinish(true);
 	}
 	
+	/**
+	 * Rechaza una solicitud de contacto recibida por el usuario
+	 * indicado por el usuario {@link BeanUserContacts#user} y enviada por
+	 * el usuario {@link BeanUserContacts#userContact}
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
+	 */
 	public void rejectRequest(BeanActionResult beanActionResult){
 		beanActionResult.setFinish(false);
 		beanActionResult.setSuccess(false);
@@ -146,8 +183,14 @@ public class BeanUserContacts implements Serializable{
 		beanActionResult.setFinish(true);
 	}
 	
+	/**
+	 * Comprueba si el usuario logueado es contacto del usuario indicado.
+	 * @param userContact contacto que se comprueba
+	 * @return
+	 * 'true' si el usuario dado es logueado del usuario indicado
+	 * 'false' si el usuario dado no es logueado del usuario indicado
+	 */
 	public boolean isContactOfLoggedUser(User userContact){
-		// Si el usuario dado es contacto del usuario logueado, devuelve true
 		if( beanLogin.getLoggedUser()==null ) return false;
 		List<Contact> userContacts = Factories.getService().getServiceContact()
 				.getContactsByUser( beanLogin.getLoggedUser().getId() );
@@ -156,10 +199,19 @@ public class BeanUserContacts implements Serializable{
 		}
 		return false;
 	}
+	
+	/**
+	 * Comprueba si el usuario se&ntilde;alado por el parametro 'user'
+	 * es contacto del usuario indicado por el parametro 'userContact'.
+	 * @param user usuario que se comprueba si posee al contato dado
+	 * @param userContact contacto que se comprueba
+	 * @return
+	 * 'true' si el usuario indicado por 'user' es contacto del usuario
+	 * indicado por 'userContact'
+	 * 'false' si 'user' no es contacto de 'userContact'
+	 */
 	public static boolean areContacts(User user, User userContact){
 		// Este metodo se usa desde el BenUserData y el BeanPublication
-		// Cuando declaro 'static' un metodo de un bean,
-		// suele ser para poder acceder a el desde otro bean sin instanciar aquel
 		if( user==null || userContact==null ) return false;
 		List<Contact> userContacts = Factories.getService().getServiceContact()
 				.getContactsByUser( user.getId() );
@@ -169,9 +221,15 @@ public class BeanUserContacts implements Serializable{
 		return false;
 	}
 	
+	/**
+	 * Comprueba si el usuario dado ya ha recibido una peticion de contacto
+	 * por parte del usuario logueado
+	 * @param userReceiver usuario que se comprueba
+	 * @return
+	 * 'true' si el usuario dado ya ha recibido la peticion
+	 * 'false' si el usuario dado no ha recibido la peticion
+	 */
 	public boolean contactRequestAlreadySent(User userReceiver){
-		// Si el usuario dado ya ha recibido la peticion de contacto
-		// por parte del usuario logueado, devuelve true
 		List<ContactRequest> userContactRequest = Factories.getService()
 				.getServiceContact().getContactRequestByUser(
 						beanLogin.getLoggedUser());
@@ -181,6 +239,13 @@ public class BeanUserContacts implements Serializable{
 		return false;
 	}
 	
+	/**
+	 * Inicializa el atributo {@link #contactsOfUser}, consultando la lista
+	 * de contactos del usuario dado.
+	 * @param userId identificador del usuario cuya lista de contactos se
+	 * consulta
+	 * @return la lista {@link #contactsOfUser}, una vez inicializada
+	 */
 	public List<Contact> getContactsByUser(Long userId){
 		if(contactsOfUser!=null && !contactsOfUser.isEmpty()){
 			return contactsOfUser;
@@ -194,6 +259,12 @@ public class BeanUserContacts implements Serializable{
 		return contactsOfUser;
 	}
 	
+	/**
+	 * Sobreescribe la propiedad {@link #contactsOfUser},
+	 * inicializandola sin tener en cuenta su informacion actual.
+	 * @param userId identificador del usuario cuya lista de contactos se
+	 * sobreescribe
+	 */
 	public void resetContacts(Long userId){
 		try {
 			contactsOfUser = Factories.getService().getServiceContact()
@@ -203,6 +274,13 @@ public class BeanUserContacts implements Serializable{
 		}
 	}
 	
+	/**
+	 * Inicializa el atributo {@link #contactsOfUser}, consultando la lista
+	 * de solicitudes de contacto recibidas.
+	 * @param userId identificador del usuario cuya lista de solicitudes
+	 * de contacto recibidas se consulta
+	 * @return la lista {@link #pendingContactRequests}, una vez inicializada
+	 */
 	public List<ContactRequest> getContactRequestsReceivedByUser(Long userId){
 		if(pendingContactRequests!=null && !pendingContactRequests.isEmpty()){
 			return pendingContactRequests;
@@ -217,6 +295,12 @@ public class BeanUserContacts implements Serializable{
 		return pendingContactRequests;
 	}
 	
+	/**
+	 * Sobreescribe la propiedad {@link #pendingContactRequests},
+	 * inicializandola sin tener en cuenta su informacion actual.
+	 * @param userId identificador del usuario cuya lista de solicitudes
+	 * de contacto recibidas se sobreescribe
+	 */
 	public void resetPendingContactRequests(Long userId){
 		try {
 			pendingContactRequests = Factories.getService().getServiceContact()

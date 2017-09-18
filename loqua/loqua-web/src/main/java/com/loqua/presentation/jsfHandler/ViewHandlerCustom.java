@@ -12,53 +12,49 @@ import javax.faces.context.FacesContext;
  * ciertos elementos de la vista y se ejecuta automaticamente
  * en las fases 1 y 6 de JSF ("Render Response" y "Restore View").
  * En este caso se encarga unicamente de permitir que los enlaces de los
- * 'commandLink' y 'commandButton' puedan agregar un ancla; por ejemplo:
+ * 'commandLink' y 'commandButton' puedan incluir un ancla; por ejemplo:
  * 'forum.xhtml?faces-redirect=true&includeViewParams=true#thread46
  * Este ViewHandlerCustom debe estar registrado en el faces-config.xhtml.
  * @author Gonzalo
  */
 public class ViewHandlerCustom extends ViewHandlerWrapper {
 	
-	private ViewHandler wrapped;
+	/** Valor que se utiliza para nombrar la variable guardada por el componente
+	 * {@link NavigationHandler} en el FacesContext durante la peticion,
+	 * y que debe ser leida por ViewHandlerCustom 
+	 * (en el metodo {@link #getRedirectURL}) */
 	public static final String REDIRECT_FRAGMENT_ATTRIBUTE =
 			ViewHandlerCustom.class.getSimpleName() + ".redirect.fragment";
 	
+	/** Manejador de la generacion de las vistas xhtml */
+	private ViewHandler wrapped;
+	
+	/** Constructor que inicializa el objeto ViewHandler de la clase.
+	 * @param wrapped objeto ViewHandler para inicializar el atributo
+	 * {@link #wrapped}
+	 */
 	public ViewHandlerCustom(ViewHandler wrapped){
 		super();
 		this.wrapped = wrapped;
 	}
-	
-	/*
-	@Override
-	public void initView(FacesContext context) throws FacesException{
-		//acciones que se realizan al renderizar cualquier vista o recargarla
-		//(Se ejecuta antes de cada 'restoreView' y de cada 'renderView')
-		//(A su vez, los Filtros se ejecutarian antes de cada 'ViewHandler').
-		super.initView(context);
-	}
-	
-	@Override
-	public UIViewRoot restoreView(FacesContext context, String viewId)
-			throws FacesException, NullPointerException {
-		//acciones que se realizan al re-renderizar la misma pagina
-		//(mediante Ajax). Si se ejecuta 'renderView' no se ejecuta este metodo
-		return super.restoreView(context, viewId);
-	}
-	
-	@Override
-	public void renderView(FacesContext context, UIViewRoot viewToRender)
-			throws FacesException, IOException {
-		//acciones que se realizan al renderizar cualquier pagina
-		//(salvo Ajax). Si se ejecuta 'restoreView' no se ejecuta este metodo
-		super.renderView(context, viewToRender);
-	}
-	*/
 	
 	@Override
 	public ViewHandler getWrapped() {
 		return wrapped;
 	}
 	
+	/**
+	 * Busca en el FacesContext si existe la variable que habria sido creada
+	 * por el {@link NavigationHandlerCustom}, cuyo valor es el ancla
+	 * que deberia incluirse en la URL de la vista que se va a renderizar.
+	 * Si dicha variable existe, entonces concatena su valor a la URL.
+	 * @param context instancia del FacesContext que procesa a la peticion
+	 * @param viewId el identificador de vista de la pagina de destino
+	 * @param parameters una asignacion de nombres de parametros
+	 * para uno o varios valores
+	 * @param includeViewParams indica si los parametros de la vista
+	 * (la 'query string') deberian ser codificados en la URL
+	 */
 	@Override
 	public String getRedirectURL( final FacesContext context,
 			final String viewId, final Map<String, List<String>> parameters,

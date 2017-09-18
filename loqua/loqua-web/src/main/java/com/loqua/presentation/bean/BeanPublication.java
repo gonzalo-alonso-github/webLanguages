@@ -20,26 +20,53 @@ import com.loqua.presentation.bean.applicationBean.BeanUtils;
 import com.loqua.presentation.bean.requestBean.BeanActionResult;
 import com.loqua.presentation.logging.LoquaLogger;
 
+/**
+ * Bean encargado de realizar todas las operaciones
+ * relativas al manejo de publicaciones de las paginas personales de usuarios
+ * (paginas de inicio y de perfil).
+ * @author Gonzalo
+ */
 public class BeanPublication implements Serializable {
 	
 	private static final long serialVersionUID = 1;
 	
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
+	/** Es la publicacion que se desea crear/editar/eliminar */
 	private Publication publicationToCRUD;
+	
+	/** Lista de publicaciones que, segun su nivel de privacidad, son visibles
+	 * para el usuario que accede a la vista */
 	private List<Publication> visiblePubsByUser;
+	
+	/** Numero maximo de publicaciones consultadas en la pagina personal,
+	 * cada vez que el usuario pincha en el boton de 'Ver mas'. */
 	private Integer numPublicationsPerPage;
+	
+	/** Numero total de publicaciones realizadas por el usuario cuya
+	 * pagina personal se consulta */
 	private Integer numPublicationsByUser;
+	
+	/** Indica si la lista de publicaciones, mostradas en la pagina personal
+	 * de un usuario, deberia incluir aquellas realizadas
+	 * por los contactos del mismo. <br/>
+	 * Deberia ser asi cuando el usuario este visitando su propia pagina
+	 * de inicio. <br/> No deberia ser asi cuando el usuario este visitando
+	 * su propia pagina de perfil (no confundir con la pagina de inicio),
+	 * o la pagina de perfil de otro usuario.*/
 	private boolean includePubsByContacts;
+	
+	/** Numero de publicaciones que se estan mostrando en la pagina personal
+	 * consultada. Cuenta tambien las publicaciones que se han agregado
+	 * cada vez que el usuario pincha en el boton de 'Ver mas'. */
 	private int numProcessedPubs;
 
-	// Inyeccion de dependencia
+	/** Inyeccion de dependencia del {@link BeanLogin} */
 	@ManagedProperty(value="#{beanLogin}")
 	private BeanLogin beanLogin;
-	// Inyeccion de dependencia
+	
+	/** Inyeccion de dependencia del {@link BeanSettingsProfilePage} */
 	@ManagedProperty(value="#{beanSettingsProfilePage}")
 	private BeanSettingsProfilePage beanSettingsProfilePage;
 	
@@ -47,6 +74,9 @@ public class BeanPublication implements Serializable {
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
+	/** Constructor del bean. Inicializa los beans inyectados:
+	 * {@link BeanLogin} y {@link BeanSettingsProfilePage}
+	 */
 	@PostConstruct
 	public void init() {
 		includePubsByContacts=false;
@@ -58,6 +88,7 @@ public class BeanPublication implements Serializable {
 				beanSettingsProfilePage.getNumPublicationsPerPage();
 	}
 	
+	/** Inicializa el objeto {@link BeanLogin} inyectado */
 	private void initBeanLogin() {
 		// Buscamos el BeanLogin en la sesion.
 		beanLogin = null;
@@ -71,13 +102,7 @@ public class BeanPublication implements Serializable {
 		}
 	}
 
-	/**
-	 * Inicializa el BeanSettingsProfile perteneciente a esta clase.</br>
-	 * Si el BeanSettingsProfile ya fue inicializado,
-	 * simplemente se obtiene del contexto de aplicacion.</br>
-	 * Si el BeanSettingsProfile no existe en el contexto de aplicacion,
-	 * se crea y se guarda en sesion bajo la clave 'beanSettingsProfile'.
-	 */
+	/** Inicializa el objeto {@link BeanSettingsProfilePage} inyectado */
 	private void initBeanSettingsProfile() {
 		// Buscamos el BeanSettings en la sesion.
 		beanSettingsProfilePage = null;
@@ -93,6 +118,7 @@ public class BeanPublication implements Serializable {
 		}
 	}
 	
+	/** Destructor del bean. */
 	@PreDestroy
 	public void end(){
 		clearStatus();
@@ -103,10 +129,10 @@ public class BeanPublication implements Serializable {
 	// // // //
 	
 	/**
-	 * 
+	 * Crea una nueva publicacion.
 	 * @param user el autor de la publicacion que se introduce, necesario para
 	 * generar el nuevo objeto Publication y para para recargar
-	 * la lista de publicaciones de este bean, una vez editada
+	 * la lista {@link #visiblePubsByUser} de este bean, una vez editada.
 	 * @param includePubsByContacts define si la lista de publicaciones del bean
 	 * incluye las de los contactos del usuario dado. Util para recargar
 	 * la lista de publicaciones una vez editada.
@@ -135,9 +161,10 @@ public class BeanPublication implements Serializable {
 	}
 	
 	/**
-	 * 
+	 * Actualiza una publicacion existente.
 	 * @param user el perfil de usuario donde esta la lista de publicaciones,
-	 * util para recargar la lista de publicaciones de este bean, una vez editada.
+	 * util para recargar la lista {@link #visiblePubsByUser} de este bean,
+	 * una vez editada.
 	 * @param includePubsByContacts define si la lista de publicaciones del bean
 	 * incluye las de los contactos del usuario dado. Util para recargar
 	 * la lista de publicaciones una vez editada.
@@ -160,9 +187,10 @@ public class BeanPublication implements Serializable {
 	}
 	
 	/**
-	 * 
+	 * Elimina una publicacion existente.
 	 * @param user el perfil de usuario donde esta la lista de publicaciones,
-	 * util para recargar la lista de publicaciones de este bean, una vez editada.
+	 * util para recargar la lista {@link #visiblePubsByUser} de este bean,
+	 * una vez editada.
 	 * @param includePubsByContacts define si la lista de publicaciones del bean
 	 * incluye las de los contactos del usuario dado. Util para recargar
 	 * la lista de publicaciones una vez editada.
@@ -195,7 +223,8 @@ public class BeanPublication implements Serializable {
 	 * @return Si alsoByContacts==false:<br/>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;lista de publicaciones del usuario dado<br/>
 	 * Si alsoByContacts==true:<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;lista de publicaciones del usuario y de sus contactos
+	 * &nbsp;&nbsp;&nbsp;&nbsp;lista de publicaciones del usuario
+	 * y de sus contactos
 	 */
 	public List<Publication> getPublicationsByUser(Long userId,
 			boolean alsoByContacts, BeanActionResult beanActionResult){
@@ -216,10 +245,23 @@ public class BeanPublication implements Serializable {
 		return visiblePubsByUser;
 	}
 	
+	/**
+	 * Agrega a la lista de publicaciones mostrada las siguientes
+	 * 'n' publicaciones que aun no se han consultado (donde 'n' es
+	 * {@link #numPublicationsByUser}).
+	 * @param userId usuario de quien se consultan las publicaciones
+	 * @param alsoByContacts define si la lista de publicaciones obtenida
+	 * debe incluir las de los contactos del usuario dado.
+	 * @param beanActionResult bean que se encarga de imprimir en la vista el
+	 * resultado de la accion, exitoso o no.
+	 * @return Si alsoByContacts==false:<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;lista de publicaciones del usuario dado<br/>
+	 * Si alsoByContacts==true:<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;lista de publicaciones del usuario
+	 * y de sus contactos
+	 */
 	public List<Publication> getNextPublicationsByUser(Long userId,
 			boolean alsoByContacts, BeanActionResult beanActionResult){
-		// Este metodo es parecido al getPublicationsByUser pero sin la condicion
-		// if( publicationsByUser==null || publicationsByUser.isEmpty() )
 		if( alsoByContacts==false ){
 			loadListPublicationsByUser(userId);
 		}else{
@@ -228,6 +270,12 @@ public class BeanPublication implements Serializable {
 		return visiblePubsByUser;
 	}
 	
+	/**
+	 * Iniciaiza las propiedades {@link #visiblePubsByUser},
+	 * {@link #numPublicationsByUser} y {@link #numProcessedPubs}, consultando
+	 * la lista de publicaciones del usaurio dado.
+	 * @param userId usuario de quien se consultan las publicaciones
+	 */
 	private void loadListPublicationsByUser(Long userId){
 		if( visiblePubsByUser==null ){
 			visiblePubsByUser = new ArrayList<Publication>();
@@ -247,8 +295,9 @@ public class BeanPublication implements Serializable {
 						.getServicePublication().getPublicationsByUser(userId,
 								numProcessedPubs, numPublicationsPerPage);
 				numProcessedPubs += nextBundlePubs.size();
-				// comprobando, por cada una, si deberia ser mostrada al visiante
-				// en cuyo caso se agrega a la lista "visiblePubsByUser":
+				// comprobando, por cada una, si deberia ser mostrada
+				// al visiante, en cuyo caso se agrega a la lista
+				// "visiblePubsByUser":
 				addPubIfVisible( nextBundlePubs );
 			}
 		}catch( Exception e ){
@@ -256,6 +305,12 @@ public class BeanPublication implements Serializable {
 		}
 	}
 	
+	/**
+	 * Iniciaiza las propiedades {@link #visiblePubsByUser},
+	 * {@link #numPublicationsByUser} y {@link #numProcessedPubs}, consultando
+	 * la lista de publicaciones del usaurio dado y de sus contactos.
+	 * @param userId usuario de quien se consultan las publicaciones
+	 */
 	private void loadListPublicationsByUserAndContacts(Long userId){
 		if( visiblePubsByUser==null ){
 			visiblePubsByUser = new ArrayList<Publication>();
@@ -275,8 +330,9 @@ public class BeanPublication implements Serializable {
 						.getPublicationsByUserAndContacts(userId,
 								numProcessedPubs, numPublicationsPerPage);
 				numProcessedPubs += nextBundlePubs.size();
-				// comprobando, por cada una, si deberia ser mostrada al visiante
-				// en cuyo caso se agrega a la lista "visiblePubsByUser":
+				// comprobando, por cada una, si deberia ser mostrada
+				// al visiante, en cuyo caso se agrega a la lista
+				// "visiblePubsByUser":
 				addPubIfVisible( nextBundlePubs );
 			}
 		}catch( Exception e ){
@@ -285,10 +341,17 @@ public class BeanPublication implements Serializable {
 		}
 	}
 	
+	/**
+	 * Agrega a la lista {@link #visiblePubsByUser} aquellas publicaciones de
+	 * la lista indicada que, por su nivel de privacidad, son visibles
+	 * para el usuario que las consulta.
+	 * @param publicationsByUser lista de publicaciones que se comprueba
+	 */
 	private void addPubIfVisible(List<Publication> publicationsByUser) {
 		for( Publication pub : publicationsByUser ){
 			if( BeanUserView.shouldBeShownByPrivacityStatic(
-					beanLogin.getLoggedUser(),pub.getUser(),pub.getPrivacity())){
+					beanLogin.getLoggedUser(),pub.getUser(),
+					pub.getPrivacity())){
 				visiblePubsByUser.add(pub);
 			}
 		}
@@ -302,7 +365,7 @@ public class BeanPublication implements Serializable {
 	/**
 	 * Recorta el texto de la Publicacion
 	 * (texto predefinido en los ficheros 'events_X.properties') para obtener
-	 * la parte previa al parametro señalado con el caracter '?1'.
+	 * la parte previa al parametro se&ntilde;alado con el caracter '?1'.
 	 * Por ejemplo, si el texto de la Publicacion es:<br/>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;"ha alcanzado los ?1 comentarios"<br/>
 	 * entonces este metodo devolvera:<br/>
@@ -318,7 +381,7 @@ public class BeanPublication implements Serializable {
 	/**
 	 * Recorta el texto de la Publicacion
 	 * (texto predefinido en los ficheros 'events_X.properties') para obtener
-	 * la parte posterior al parametro señalado con el caracter '?1'.
+	 * la parte posterior al parametro se&ntilde;alado con el caracter '?1'.
 	 * Por ejemplo, si el texto de la Publicacion es:<br/>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;"ha alcanzado los ?1 comentarios"<br/>
 	 * entonces este metodo devolvera:<br/>
@@ -353,11 +416,11 @@ public class BeanPublication implements Serializable {
 	
 	/**
 	 * Dada una publicacion, y a raiz del objeto Event asociado a esta, obtiene
-	 * el modo en que debe mostrarse el valor eventValue de la publicacion.
+	 * el modo en que debe mostrarse el valor eventValue de la publicacion.<br/>
 	 * Las publicaciones pueden estar asociadas con 'eventos' predefinidos,
-	 * en cuyo caso el parametro Publication.eventValue puede hacer referencia a
-	 * un objeto Comment, Correction, o User.
-	 * @param pub Publicacion de la cual se obtiene el valor
+	 * en cuyo caso el parametro {@link Publication#eventValue}
+	 * puede hacer referencia a un objeto Comment, Correction, o User.
+	 * @param pub publicacion de la cual se obtiene el valor
 	 * @return (int) un valor entre 1 y 4
 	 * <ul><li>si se devuelve 1, el valor de la publicacion no debe mostrar
 	 * ningun enlace</li>
@@ -387,6 +450,12 @@ public class BeanPublication implements Serializable {
 		return 1;
 	}
 	
+	/**
+	 * Halla el titulo del hilo al que pertenece el post al que hace referencia
+	 * la publicacion dada.
+	 * @param pub publicacion que se consulta
+	 * @return titulo del hilo
+	 */
 	public String getThreadTitleByPost(Publication pub){
 		String result = "";
 		long eventValue = pub.getEventValue();
@@ -400,6 +469,12 @@ public class BeanPublication implements Serializable {
 		return result;
 	}
 	
+	/**
+	 * Halla el pseudonimo del usuario al que hace referencia
+	 * la publicacion dada.
+	 * @param pub publicacion que se consulta
+	 * @return pseudonimo del usuario
+	 */
 	public String getUserNick(Publication pub){
 		String result = "";
 		long eventValue = pub.getEventValue();
@@ -413,12 +488,29 @@ public class BeanPublication implements Serializable {
 		return result;
 	}
 	
+	/**
+	 * Comprueba si en la pagina personal del usuario aun no se han consultado
+	 * todas las publicaciones visibles (y por tanto, deberia seguir
+	 * mostrandose el boton de 'Ver mas').
+	 * @return
+	 * 'true' si hay publicaciones sin consultar <br/>
+	 * 'false' si ya se estan mostrando todas las publicaciones del usuario
+	 */
 	public boolean exsistOlderPublicationsByUser(){
 		// publications.size() = numero de publicaciones ya cargadas
 		// return visiblePubsByUser.size() < numPublicationsByUser;
 		return numProcessedPubs < numPublicationsByUser;
 	}
 	
+	/**
+	 * Sobreescribe las propiedades {@link #visiblePubsByUser},
+	 * {@link #numPublicationsByUser} y {@link #numProcessedPubs}
+	 * inicializandolas sin tener en cuenta su informacion actual.
+	 * @param userID usuario de quien se consultan las publicaciones
+	 * @param includePubsByContacts indica si la lista de publicaciones del bean
+	 * incluye las de los contactos del usuario dado. Util para recargar
+	 * la lista de publicaciones una vez editada.
+	 */
 	private void resetStatus(Long userID, boolean includePubsByContacts) {
 		publicationToCRUD = new Publication();
 		visiblePubsByUser = null;
@@ -429,7 +521,11 @@ public class BeanPublication implements Serializable {
 			loadListPublicationsByUserAndContacts(userID);
 		}
 	}
-	
+
+	/**
+	 * Borra el estado del Bean sobreescribiendo las propiedades del mismo
+	 * con sus valores por defecto.
+	 */
 	private void clearStatus() {
 		// Actualmente este metodo no es necesario, porque este beanPublication
 		// es ambito view, sus propiedades se inicializan a cada cambio de vista.

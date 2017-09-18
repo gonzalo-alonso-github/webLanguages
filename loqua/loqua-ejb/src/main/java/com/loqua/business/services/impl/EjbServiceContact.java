@@ -8,17 +8,37 @@ import javax.jws.WebService;
 import com.loqua.business.exception.EntityAlreadyFoundException;
 import com.loqua.business.exception.EntityNotFoundException;
 import com.loqua.business.services.impl.transactionScript.TransactionContact;
+import com.loqua.business.services.locator.*;
 import com.loqua.business.services.serviceLocal.LocalServiceContact;
 import com.loqua.business.services.serviceRemote.RemoteServiceContact;
 import com.loqua.model.Contact;
 import com.loqua.model.ContactRequest;
 import com.loqua.model.User;
 
+/**
+ * Da acceso a las transacciones correspondientes a las entidades
+ * {@link Contact} y {@link ContactRequest}. <br/>
+ * La intencion de esta 'subcapa' de EJBs no es albergar mucha logica de negocio
+ * (de ello se ocupa el modelo y el Transaction Script), sino hacer
+ * que las transacciones sean controladas por el contenedor de EJB
+ * (Wildfly en este caso), quien se ocupa por ejemplo de abrir las conexiones
+ * a la base de datos mediate un datasource y de realizar los rollback. <br/>
+ * Al ser un EJB de sesion sin estado no puede ser instanciado desde un cliente
+ * o un Factory Method, sino que debe ser devuelto mediante el registro JNDI.
+ * Forma parte del patron Service Locator y se encapsula tras las fachadas
+ * {@link LocalServiceContact} y {@link RemoteServiceContact},
+ * que heredan de {@link ServiceContact}, producto de
+ * {@link LocatorLocalEjbServices} o {@link LocatorRemoteEjbServices}
+ * @author Gonzalo
+ */
 @Stateless
 @WebService(name="ServiceContact")
 public class EjbServiceContact
 		implements LocalServiceContact, RemoteServiceContact {
 	
+	/** Objeto de la capa de negocio que realiza la logica relativa a las
+	 * entidades {@link Contact} y {@link ContactRequest},
+	 * incluyendo procedimientos 'CRUD' de dichas entidades */
 	private static final TransactionContact transactionContact = 
 			new TransactionContact();
 	

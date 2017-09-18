@@ -12,13 +12,20 @@ import javax.faces.context.FacesContext;
 import com.loqua.infrastructure.Factories;
 import com.loqua.model.User;
 
+/**
+ * Bean encargado de realizar todas las operaciones
+ * relativas al manejo de la clasificacion de puntos de usuarios.
+ * @author Gonzalo
+ */
 public class BeanUserClasification implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
+	/** Indica la lista clasificatoria de los 5 usuarios mas proximos
+	 * al usuario logueado, incluyendolo */
 	Map<Integer, User> smallClasificationByLoggedUser;
 	
-	// Inyeccion de dependencia
+	/** Inyeccion de dependencia del {@link BeanLogin} */
 	@ManagedProperty(value="#{beanLogin}")
 	private BeanLogin beanLogin;
 	
@@ -26,12 +33,14 @@ public class BeanUserClasification implements Serializable{
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
+	/** Constructor del bean. Inicializa el bean inyectado {@link BeanLogin} */
 	@PostConstruct
 	public void init() {
 		initBeanLogin();
 		initSmallClasificationByLoggedUser();
 	}
 	
+	/** Inicializa el objeto {@link BeanLogin} inyectado */
 	private void initBeanLogin() {
 		// Buscamos el BeanLogin en la sesion.
 		beanLogin = null;
@@ -45,6 +54,7 @@ public class BeanUserClasification implements Serializable{
 		}
 	}
 
+	/** Inicializa el atributo {@link #smallClasificationByLoggedUser} */
 	private void initSmallClasificationByLoggedUser(){
 		if( smallClasificationByLoggedUser==null ){
 			smallClasificationByLoggedUser = getSmallClasificationFromDB(
@@ -52,6 +62,7 @@ public class BeanUserClasification implements Serializable{
 		}
 	}
 	
+	/** Destructor del bean. */
 	@PreDestroy
 	public void end(){}
 	
@@ -59,6 +70,13 @@ public class BeanUserClasification implements Serializable{
 	// METODOS
 	// // // //
 	
+	/**
+	 * Halla la lista clasificatoria de los 5 usuarios mas proximos
+	 * al usuario indicado.
+	 * @param user usuario cuya clasificacion se desea consultar
+	 * @return lista de User mas proximos al usuario dado
+	 * en la clasificacion de puntos
+	 */
 	public Map<Integer, User> getSmallClasificationByUser(User user){
 		if( beanLogin.getLoggedUser().getId()==user.getId() ){
 			return getSmallClasificationByLoggedUser();
@@ -67,6 +85,14 @@ public class BeanUserClasification implements Serializable{
 		}
 	}
 
+	/**
+	 * Refactoriza parte del codigo del metodo
+	 * {@link #getSmallClasificationByUser}, consultando la clasificacion
+	 * en el caso de que el usuario dado no sea el mismo que ha iniciado sesion
+	 * @param user usuario cuya clasificacion se desea consultar
+	 * @return lista de User mas proximos al usuario dado
+	 * en la clasificacion de puntos
+	 */
 	private Map<Integer, User> getSmallClasificationFromDB(User user) {
 		Map<Integer, User> mapClasification = new HashMap<Integer, User>();
 		mapClasification = Factories.getService().getServiceUser()
@@ -74,6 +100,14 @@ public class BeanUserClasification implements Serializable{
 		return mapClasification;
 	}
 	
+	/**
+	 * Comprueba si el usuario que esta en la posicion indicada de la
+	 * clasifiacion esta el en ultimo lugar.
+	 * @param position posicion de un usuario en la clasificacion de puntos
+	 * @return
+	 * 'true' si el usuario es el ultimo clasificado <br/>
+	 * 'false' si el usuario no es el ultimo clasificado
+	 */
 	public boolean isTheVeryLastUser( int position ){
 		int numRegisteredUsers = Factories.getService().getServiceUser()
 				.getNumRegisteredUsersAndAdminFromDB(); // FromCache()
@@ -81,6 +115,10 @@ public class BeanUserClasification implements Serializable{
 		return false;
 	}
 	
+	/**
+	 * Actualiza el atributo {@link #smallClasificationByLoggedUser};
+	 * esto es, la clasificacion mostrada en la pagina
+	 */
 	public void reloadSmallLoggedUserClasification(){
 		smallClasificationByLoggedUser=null;
 		smallClasificationByLoggedUser = getSmallClasificationFromDB(

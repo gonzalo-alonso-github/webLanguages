@@ -1,10 +1,26 @@
 package com.loqua.model.compoundkeys;
 
+import com.loqua.model.Correction;
+import com.loqua.model.CorrectionAgree;
+import com.loqua.model.User;
+
 import java.io.Serializable;
 
-@SuppressWarnings("serial")
+/**
+ * Representa la clave primaria de la entidad {@link CorrectionAgree}
+ * @author Gonzalo
+ */
 public class CorrectionAgreeKey implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
+	
+	/** Clave primaria de la entidad {@link Correction}
+	 * a la que esta asociado el objeto CorrectionAgree
+	 */
 	Long correction;
+	/** Clave primaria de la entidad {@link User}
+	 * a la que esta asociado el objeto CorrectionAgree
+	 */
 	Long user;
 	
 	@Override

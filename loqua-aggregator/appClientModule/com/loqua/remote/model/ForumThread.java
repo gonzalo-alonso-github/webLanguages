@@ -19,38 +19,64 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-
+/**
+ * Representa una noticia en el foro (un 'hilo'), que puede ser leida por
+ * todos los usuarios de la aplicacion (sean registrados o solo visitantes),
+ * y que permite la participacion en ella de usuarios registrados
+ * mediante de la publicacion de comentarios y correcciones
+ * @author Gonzalo
+ */
 @XmlRootElement(name = "forumThread")
 @Entity
 @Table(name="ForumThread")
 public class ForumThread implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
 	// // // // // // //
 	// ATRIBUTOS
 	// // // // // // //
+	
+	/** Identificador del objeto y clave primaria de la entidad */
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) private Long id;
+	
+	/** Campo 'guid' que identifica a la noticia en la fuente original */
 	private String guid;
+	/** Direccion URL de la noticia en la fuente original */
 	private String url;
+	/** Titulo del hilo */
 	private String title;
+	/** Texto del cuerpo del hilo, que describe la noticia */
 	private String content;
+	/** Fecha de la noticia en la fuente original */
 	private Date date;
-	private Date dateLastComment;
+	/** Fecha en la que fue creado el hilo a partir de la noticia */
 	private Date dateAggregated;
+	/** Fecha del comenario mas reciente publicado en el hilo */
+	private Date dateLastComment;
+	/** Nombre de la fuente original. <br/>
+	 * Este campo se utiliza para que persista ese dato en caso de que
+	 * la fuente original sea eliminada */
 	private String feedName;
 	
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
+	
+	/** Informacion sobre la puntuacion del hilo en el foro */
 	@OneToOne(mappedBy = "forumThread")
 	private ForumThreadInfo forumThreadInfo;
 	
+	/** Fuente de la que se ha descargado la noticia a partir de la cual
+	 * se ha generado el hilo */
 	@ManyToOne @JoinColumn(name="feed_id")
 	private Feed feed;
 	
+	/** Lista de participaciones en el hilo (comentarios y correcciones) */
 	@OneToMany(mappedBy="forumThread")
 	private Set<ForumPost> forumPosts = new HashSet<ForumPost>();
 	
+	/** Lista de votaciones recibidas del hilo */
 	@OneToMany(mappedBy="forumThread")
 	private Set<ForumThreadVoter> forumThreadVoters = 
 		new HashSet<ForumThreadVoter>();
@@ -59,11 +85,17 @@ public class ForumThread implements Serializable {
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public ForumThread(){
 		forumThreadInfo = new ForumThreadInfo();
 		forumThreadInfo.setForumThread(this);
 	}
 	
+	/**
+	 * Constructor que recibe las entidades asociadas a esta
+	 * @param threadInfo objeto ForumThreadInfo asociado al ForumThread
+	 * @param feed objeto Feed asociado al ForumThread
+	 */
 	public ForumThread( ForumThreadInfo threadInfo, Feed feed ){
 		this.forumThreadInfo = threadInfo;
 		threadInfo.setForumThread(this);
@@ -78,8 +110,8 @@ public class ForumThread implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	/**
@@ -101,7 +133,7 @@ public class ForumThread implements Serializable {
 		return this;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  * Thread <--> 1 Feed
 	 */
 	public Feed getFeed() {
@@ -118,7 +150,7 @@ public class ForumThread implements Serializable {
 		return this;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 Thread <--> * ForumPosts
 	 */
 	@XmlTransient
@@ -129,7 +161,7 @@ public class ForumThread implements Serializable {
 		return forumPosts;
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * ThreadVoter <--> 1 Thread
 	 */
 	@XmlTransient
@@ -143,28 +175,45 @@ public class ForumThread implements Serializable {
 	// // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (METODOS)
 	// // // // // // // // // // // // //
-	/** Relacion entre entidades:<br>
+	
+	/* Relacion entre entidades:
 	 *  1 ThreadInfo <--> * ForumPosts
 	 */
-	public void addForumPost(ForumPost p){
-		forumPosts.add(p);
-		p._setForumThread(this);
+	
+	/** Agrega una participacion (comentario o correccion) a la lista de ellas
+	 * que posee el hilo del foro
+	 * @param forumPost objeto ForumPost que se agrega
+	 */
+	public void addForumPost(ForumPost forumPost){
+		forumPosts.add(forumPost);
+		forumPost._setForumThread(this);
 	}
-	public void removeForumPost(ForumPost p){
-		forumPosts.remove(p);
-		p._setForumThread(null);
+	/** Elimina una participacion (comentario o correccion) de la lista de ellas
+	 * que posee el hilo del foro
+	 * @param forumPost objeto ForumPost que se elimina
+	 */
+	public void removeForumPost(ForumPost forumPost){
+		forumPosts.remove(forumPost);
+		forumPost._setForumThread(null);
 	}
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * ThreadVoters <--> 1 Thread
 	 */
-	public void addForumThreadVoter(ForumThreadVoter tv){
-		forumThreadVoters.add(tv);
-		tv._setForumThread(this);
+	
+	/** Agrega una votacion a la lista de ellas que posee el hilo del foro
+	 * @param forumThreadVoter objeto ForumThreadVoter que se agrega
+	 */
+	public void addForumThreadVoter(ForumThreadVoter forumThreadVoter){
+		forumThreadVoters.add(forumThreadVoter);
+		forumThreadVoter._setForumThread(this);
 	}
-	public void removeForumThreadVoter(ForumThreadVoter tv){
-		forumThreadVoters.remove(tv);
-		tv._setForumThread(null);
+	/** Elimina una votacion de la lista de ellas que posee el hilo del foro
+	 * @param forumThreadVoter objeto ForumThreadVoter que se elimina
+	 */
+	public void removeForumThreadVoter(ForumThreadVoter forumThreadVoter){
+		forumThreadVoters.remove(forumThreadVoter);
+		forumThreadVoter._setForumThread(null);
 	}
 	
 	// // // // // // //
@@ -174,8 +223,8 @@ public class ForumThread implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
 	@XmlElement

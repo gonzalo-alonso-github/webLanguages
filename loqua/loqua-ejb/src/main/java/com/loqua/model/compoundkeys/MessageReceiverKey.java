@@ -1,10 +1,26 @@
 package com.loqua.model.compoundkeys;
 
+import com.loqua.model.Message;
+import com.loqua.model.MessageReceiver;
+import com.loqua.model.User;
+
 import java.io.Serializable;
 
-@SuppressWarnings("serial")
+/**
+ * Representa la clave primaria de la entidad {@link MessageReceiver}
+ * @author Gonzalo
+ */
 public class MessageReceiverKey implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
+	
+	/** Clave primaria de la entidad {@link Message}
+	 * a la que esta asociado el objeto MessageReceiver
+	 */
 	Long message;
+	/** Clave primaria de la entidad {@link User}
+	 * a la que esta asociado el objeto MessageReceiver
+	 */
 	Long user;
 	
 	@Override

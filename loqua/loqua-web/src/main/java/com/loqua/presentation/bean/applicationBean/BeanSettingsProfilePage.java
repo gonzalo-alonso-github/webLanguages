@@ -20,31 +20,20 @@ import com.loqua.presentation.logging.LoquaLogger;
  */
 public class BeanSettingsProfilePage implements Serializable {
 	
-	/**
-	 * Numero de version de la clase serializable.
-	 * @see Serializable#serialVersionUID
-	 */
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
-	/**
-	 * Numero maximo de publicaciones mostradas en cada pagina del perfil.
-	 */
+	/** Numero maximo de publicaciones mostradas en cada pagina del perfil */
 	private static final int DEFAULT_NUM_PUBS_PER_PAGE = 15;
 	
-	/**
-	 * Numero maximo de notificaciones mostradas.
-	 */
+	/** Numero maximo de notificaciones mostradas */
 	private static final int DEFAULT_NUM_NOTIFICATIONS = 30;
 	
-	/**
-	 * Mapa de pares clave-valor &lt;String, Integer&gt; donde cada elemento
+	/** Mapa de pares clave-valor &lt;String, Integer&gt; donde cada elemento
 	 * representa una propiedad especificada
-	 * en el fichero 'profile.properties'.
+	 * en el fichero 'profile.properties'
 	 */
 	private Map<String, Integer> mapProfileProperties;
 
@@ -52,16 +41,13 @@ public class BeanSettingsProfilePage implements Serializable {
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
-	/**
-	 * Construccion del bean.
-	 */
+	/** Constructor del bean. Inicializa el atributo
+	 * {@link #mapProfileProperties} */
 	public BeanSettingsProfilePage() {
 		loadMapProfileProperties();
 	}
 
-	/**
-	 * Destruccion del bean
-	 */
+	/** Destructor del bean */
 	@PreDestroy
 	public void end(){}
 	
@@ -104,15 +90,12 @@ public class BeanSettingsProfilePage implements Serializable {
 		}
 	}
 	
-	// // // // // // //
-	// GETTERS & SETTERS
-	// // // // // // //
-	
 	/**
 	 * Comprueba que la propiedad 'numberOfPublicationsPerPage'
-	 * del fichero 'profile.properties' esta inicializada con un valor aceptable,
-	 * y si es asi devuelve su valor.<br/>
-	 * Si no es asi, devuelve el valor por defecto: DEFAULT_NUM_PUBS_PER_PAGE.
+	 * del fichero 'profile.properties' esta inicializada
+	 * con un valor aceptable, y si es asi devuelve su valor.<br/>
+	 * Si no es asi, devuelve el valor por defecto:
+	 * {@link #DEFAULT_NUM_PUBS_PER_PAGE}.
 	 * @return
 	 * numero maximo de publicaciones que se cargan de cada vez
 	 * en las paginas del perfil.
@@ -130,9 +113,10 @@ public class BeanSettingsProfilePage implements Serializable {
 	
 	/**
 	 * Comprueba que la propiedad 'numberOfNotifications'
-	 * del fichero 'profile.properties' esta inicializada con un valor aceptable,
-	 * y si es asi devuelve su valor.<br/>
-	 * Si no es asi, devuelve el valor por defecto: DEFAULT_NUM_NOTIFICATIONS.
+	 * del fichero 'profile.properties' esta inicializada
+	 * con un valor aceptable, y si es asi devuelve su valor.<br/>
+	 * Si no es asi, devuelve el valor por defecto:
+	 * {@link #DEFAULT_NUM_NOTIFICATIONS}.
 	 * @return
 	 * numero maximo de notificaciones mostradas.
 	 */

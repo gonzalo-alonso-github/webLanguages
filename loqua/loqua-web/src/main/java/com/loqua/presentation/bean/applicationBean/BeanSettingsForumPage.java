@@ -20,48 +20,33 @@ import com.loqua.presentation.logging.LoquaLogger;
  */
 public class BeanSettingsForumPage implements Serializable {
 	
-	/**
-	 * Numero de version de la clase serializable.
-	 * @see Serializable#serialVersionUID
-	 */
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Manejador de logging
-	 */
+	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
-	/**
-	 * Numero maximo de noticias mostradas en cada pagina del foro.
-	 */
+	/** Numero maximo de noticias mostradas en cada pagina del foro */
 	private static final int DEFAULT_NUM_NEWS_PER_PAGE = 20;
 	
-	/**
-	 * Numero maximo de comentarios mostrados en cada hilo (noticia) del foro.
+	/** Numero maximo de comentarios mostrados en cada hilo (noticia) del foro
 	 */
 	private static final int DEFAULT_NUM_COMMENTS_PER_NEWTHREAD = 20;
 	
-	/**
-	 * Mapa de pares clave-valor &lt;String, Integer&gt; donde cada elemento
-	 * representa una propiedad especificada
-	 * en el fichero 'forum.properties'.
-	 */
+	/** Mapa de pares clave-valor &lt;String, Integer&gt; donde cada elemento
+	 * representa una propiedad especificada en el fichero 'forum.properties' */
 	private static Map<String, Integer> mapForumProperties;
 
 	// // // // // // // // // // // //
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
-	/**
-	 * Construccion del bean.
-	 */
+	/** Constructor del bean. Inicializa el atributo
+	 * {@link #mapForumProperties} */
 	public BeanSettingsForumPage() {
 		loadMapForumProperties();
 	}
 
-	/**
-	 * Destruccion del bean
-	 */
+	/** Destructor del bean */
 	@PreDestroy
 	public void end(){}
 	
@@ -70,8 +55,8 @@ public class BeanSettingsForumPage implements Serializable {
 	// // // //
 	
 	/**
-	 * Llena la lista de propiedades utilizadas en las vistas relativas al foro,
-	 * a partir de los datos del fichero 'forum.properties'.
+	 * Carga la lista de propiedades utilizadas en las vistas
+	 * relativas al foro, a partir de los datos del fichero 'forum.properties'.
 	 */
 	private void loadMapForumProperties() {
 		mapForumProperties = new HashMap<String, Integer>();
@@ -103,36 +88,24 @@ public class BeanSettingsForumPage implements Serializable {
 		}
 	}
 	
-	// // // // // // //
-	// GETTERS & SETTERS
-	// // // // // // //
-	
 	/**
 	 * Comprueba que la propiedad 'numberOfNewThreadsPerPage'
 	 * del fichero 'forum.properties' esta inicializada con un valor aceptable,
 	 * y si es asi devuelve su valor.<br/>
-	 * Si no es asi, devuelve el valor por defecto: DEFAULT_NUM_NEWS_PER_PAGE.
+	 * Si no es asi, devuelve el valor por defecto:
+	 * {@link #DEFAULT_NUM_NEWS_PER_PAGE}.
 	 * @return
 	 * numero maximo de noticias mostradas en cada pagina del foro.
 	 */
 	public int getNumNewsPerPage() {
-		Integer result = DEFAULT_NUM_NEWS_PER_PAGE;
-		if( mapForumProperties != null
-				&& ! mapForumProperties.isEmpty() 
-				&& mapForumProperties.get("numberOfNewThreadsPerPage")!=null ){
-			result = mapForumProperties.get("numberOfNewThreadsPerPage");
-			if( result<5 || result>40 ) result = DEFAULT_NUM_NEWS_PER_PAGE;
-		}
-		return result;
+		return getNumNewsPerPageStatic();
 	}
 	
 	/**
-	 * Comprueba que la propiedad 'numberOfNewThreadsPerPage'
-	 * del fichero 'forum.properties' esta inicializada con un valor aceptable,
-	 * y si es asi devuelve su valor.<br/>
-	 * Si no es asi, devuelve el valor por defecto: DEFAULT_NUM_NEWS_PER_PAGE.
+	 * Es la version estatica del metodo {@link #getNumNewsPerPage}.
 	 * @return
-	 * numero maximo de noticias mostradas en cada pagina del foro.
+	 * numero maximo de noticias mostradas en cada pagina del foro
+	 * @see #getNumNewsPerPage
 	 */
 	public static int getNumNewsPerPageStatic() {
 		Integer result = DEFAULT_NUM_NEWS_PER_PAGE;
@@ -150,30 +123,19 @@ public class BeanSettingsForumPage implements Serializable {
 	 * del fichero 'forum.properties' esta inicializada con un valor aceptable,
 	 * y si es asi devuelve su valor.<br/>
 	 * Si no es asi, devuelve el valor por defecto:
-	 * DEFAULT_NUM_COMMENTS_PER_NEWTHREAD.
+	 * {@link #DEFAULT_NUM_COMMENTS_PER_NEWTHREAD}.
 	 * @return
 	 * numero maximo de comentarios mostrados en cada hilo (noticia) del foro.
 	 */
 	public int getNumCommentsPerPage() {
-		Integer result = DEFAULT_NUM_COMMENTS_PER_NEWTHREAD;
-		if( mapForumProperties != null
-				&& ! mapForumProperties.isEmpty() 
-				&& mapForumProperties.get("numberOfCommentsPerNewThread")
-				!=null ){
-			result = mapForumProperties.get("numberOfCommentsPerNewThread");
-			if( result<1 || result>40 ) result = DEFAULT_NUM_NEWS_PER_PAGE;
-		}
-		return result;
+		return getNumCommentsPerPageStatic();
 	}
 	
 	/**
-	 * Comprueba que la propiedad 'numberOfCommentsPerNewThread'
-	 * del fichero 'forum.properties' esta inicializada con un valor aceptable,
-	 * y si es asi devuelve su valor.<br/>
-	 * Si no es asi, devuelve el valor por defecto:
-	 * DEFAULT_NUM_COMMENTS_PER_NEWTHREAD.
+	 * Es la version estatica del metodo {@link #getNumCommentsPerPage}.
 	 * @return
-	 * numero maximo de comentarios mostrados en cada hilo (noticia) del foro.
+	 * numero maximo de comentarios mostrados en cada hilo (noticia) del foro
+	 * @see #getNumCommentsPerPage
 	 */
 	public static int getNumCommentsPerPageStatic() {
 		Integer result = DEFAULT_NUM_COMMENTS_PER_NEWTHREAD;
@@ -192,20 +154,33 @@ public class BeanSettingsForumPage implements Serializable {
 	 * @return
 	 * Mapa de pares clave-valor &lt;String, Integer&gt; donde cada elemento
 	 * representa una propiedad especificada
-	 * en el fichero 'forum.properties'.
+	 * en el fichero 'forum.properties'
 	 */
 	public Map<String, Integer> getMapForumProperties(){
 		return Collections.unmodifiableMap(mapForumProperties);
 	}
 	
-	public int getNumPagesOfThread(int totalNumberOfListElements){
+	/**
+	 * Calcula el numero de paginas que deberia mostrar un hilo del foro,
+	 * a partir del numero de comentarios que posee (recibido por parametro) y
+	 * del numero de comentarios por pagina indicado en el fichero
+	 * 'forum.properties'.
+	 * @param totalNumberOfComments numero total de comentarios de la noticia
+	 * que contiene el hilo del foro
+	 * @return el numero de paginas calculado
+	 */
+	public int getNumPagesOfThread(int totalNumberOfComments){
 		// Este metodo se usa por ejemplo en el snippet 'forum_thread.xhtml'
-		Integer numberOfListElementsPerPage = getNumCommentsPerPage();
-		int sizePaginationBar = ((int)Math.ceil(
-				(float)totalNumberOfListElements/numberOfListElementsPerPage));
-		return sizePaginationBar;
+		return getNumPagesOfThreadStatic(totalNumberOfComments);
 	}
 	
+	/**
+	 * Es la version estatica del metodo {@link #getNumPagesOfThread}.
+	 * @param totalNumberOfComments numero total de comentarios de la noticia
+	 * que contiene el hilo del foro
+	 * @return el numero de paginas calculado
+	 * @see #getNumPagesOfThread
+	 */
 	public static int getNumPagesOfThreadStatic(int totalNumberOfListElements){
 		// Este metodo se usa por ejemplo en el filtro 'FilterForumThread'
 		Integer numberOfListElementsPerPage = getNumCommentsPerPageStatic();

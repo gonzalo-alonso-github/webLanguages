@@ -13,6 +13,11 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import com.loqua.model.compoundkeys.ForumThreadVoterKey;
 
+/**
+ * Representa la votacion de un hilo del foro por parte de un usuario.
+ * Es una clase asociativa entre {@link ForumThread} y {@link User}
+ * @author Gonzalo
+ */
 @SuppressWarnings("serial")
 @XmlRootElement(name = "forumThreadVoter")
 @Entity
@@ -23,23 +28,34 @@ public class ForumThreadVoter implements Serializable {
 	// // // // // // // // // // // // // //
 	// RELACION ENTRE ENTIDADES (ATRIBUTOS)
 	// // // // // // // // // // // // // //
+	
+	/** Hilo del foro que ha recibido el voto */
 	@Id @GeneratedValue @ManyToOne private ForumThread forumThread;
+	
+	/** Usuario que vota el hilo del foro */
 	@Id @GeneratedValue @ManyToOne private User user;
 	
 	// // // // // // //
 	// CONSTRUCTORES
 	// // // // // // //
 	
+	/** Constructor sin parametros de la clase */
 	public ForumThreadVoter(){}
 	
-	public ForumThreadVoter(User u, ForumThread t){
-		user = u;
-		u._getForumThreadVoters().add( this );
+	/**
+	 * Constructor que recibe las entidades asociadas a esta
+	 * @param user objeto User asociado al ForumThreadVoter
+	 * @param forumThread objeto ForumThread asociado al ForumThreadVoter
+	 */
+	public ForumThreadVoter(User user, ForumThread forumThread){
+		this.user = user;
+		user._getForumThreadVoters().add( this );
 		
-		forumThread = t;
-		t._getForumThreadVoters().add( this );
+		this.forumThread = forumThread;
+		forumThread._getForumThreadVoters().add( this );
 	}
-	
+
+	/** Desasigna de esta entidad a las entidades asociadas */
 	public void unlink(){
 		user._getForumThreadVoters().remove( this );
 		forumThread._getForumThreadVoters().remove( this );
@@ -55,11 +71,11 @@ public class ForumThreadVoter implements Serializable {
 	/* A la hora de acceder a una propiedad de una clase o de un bean,
 	JSF requiere que exista un getter y un setter de dicha propiedad,
 	y ademas los setter deben devolver obligatoriamente 'void'.
-	Por tanto si se quiere crear setters que implementen 'method chainning'
-	(que hagan 'return this') no deben modificarse los setter convencionales,
+	Por tanto si se quiere crear setters que implementen 'interfaces fluidas'
+	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/** Relacion entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * ForumThreadVoters <--> 1 ForumThread 
 	 */
 	public User getUser() {

@@ -21,7 +21,17 @@ import javax.servlet.http.HttpSession;
 import com.loqua.model.User;
 
 /**
- * Servlet Filter implementation class LoginFilter
+ * Define el filtro que se aplica sobre todas las paginas exclusivas
+ * de usuarios registrados no administradores.
+ * Este filtro impide que ningun usuario de otro tipo acceda a dichas paginas.
+ * <br/>
+ * El ciclo de JSF es interceptado por el Filtro antes de que el navegador
+ * muestre la pagina sobre la que este se aplica, y se ejecuta inmediatamene
+ * despues de los manejadores de navegacion (NavigationHandler) y de vista
+ * (ViewHandler). <br/>
+ * Puesto que se definen varios filtros sobre las mismas paginas, es coveniente
+ * indicar, en el fichero web.xml, el orden en que se aplican.
+ * @author Gonzalo
  */
 @WebFilter(
 		dispatcherTypes = { DispatcherType.REQUEST },
@@ -40,20 +50,14 @@ import com.loqua.model.User;
 				name="userIndex",
 				value="/pages/registeredUser/profile_me.xhtml")
 		})
-
-
 public class FilterAuthorizationRegisteredUser implements Filter {
 
-	// Necesitamos acceder a los parametros de inicializacion en
-	// el metodo doFilter, asi que necesitamos la variable
-	// config que se inicializara en init()
+	/** Se utliza para acceder a los parametros de inicializacion
+	 * definidos en las anotaciones de esta clase */
 	FilterConfig config = null;
 
-	/**
-	 * Default constructor.
-	 */
-	public FilterAuthorizationRegisteredUser() {
-	}
+	/** Constructor sin parametros de la clase */
+	public FilterAuthorizationRegisteredUser() {}
 
 	/**
 	 * @see Filter#destroy()
@@ -74,10 +78,10 @@ public class FilterAuthorizationRegisteredUser implements Filter {
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		// Si el metodo termina despues de hacer 'chain.doFilter',
-		// se permite el acceso a la pagina requerida (no se redirige a otra)
-		// Si el metodo termina despues de hacer 'res.sendRedirect',
-		// no se permite el acceso a la pagina requerida (se redirige a otra)
+		/* Si el metodo termina despues de hacer 'chain.doFilter',
+		se permite el acceso a la pagina requerida (no se redirige a otra)
+		Si el metodo termina despues de hacer 'res.sendRedirect',
+		no se permite el acceso a la pagina requerida (se redirige a otra) */
 		
 		// Si no es peticion HTTP no se filtra
 		if (!(request instanceof HttpServletRequest)){
@@ -105,23 +109,11 @@ public class FilterAuthorizationRegisteredUser implements Filter {
 		if( loggedUser == null ){
 			// Si el usuario no esta autenticado redirecciona a pagina de inicio
 			res.sendRedirect(req.getContextPath() + anonymousIndex);
-			// COMENTAR EL SIGUIENTE TRY-CATCH Y SU CONTENIDO (NO HACER INVALIDATE AQUI)
-			/*
-			try{
-				if( req.getSession(false)!=null ) session.invalidate();
-			}catch (IllegalStateException e){}
-			*/
 			return;
 		}
 		if( loggedUser.getRole().equals(User.ADMINISTRATOR) ){
 			// Si usuario es de rol ADMIN, redirecciona a pagina de inicio
 			res.sendRedirect(req.getContextPath() + adminIndex);
-			/*
-			// Y elimina la sesion iniciada:
-			try{
-				if( req.getSession(false)!=null ) session.invalidate();
-			}catch (IllegalStateException e){}
-			*/
 			return;
 		}
 		if( isDeactivated(loggedUser, req) ){
@@ -142,11 +134,12 @@ public class FilterAuthorizationRegisteredUser implements Filter {
 		    return;
 		}
 		if( userRepeatedlyLogged(loggedUser, req) ){
-			// El usuario, tras loguearse, abre un segundo navegador o dispositivo
-			// donde vuelve a loguearse con la misma cuenta.
-			// El usuario, con el primer navegador o dispositivo, intenta
-			// navegar por la pagina: entonces entrara en este condicional:
-			// pues se debera anular esta sesion y dejar solo la mas reciente...
+			/* El usuario, tras loguearse,
+			abre un segundo navegador o dispositivo
+			donde vuelve a loguearse con la misma cuenta.
+			El usuario, con el primer navegador o dispositivo, intenta
+			navegar por la pagina: entonces entrara en este condicional:
+			pues se debera anular esta sesion y dejar solo la mas reciente: */
 			// Elimina al usuario de las listas y mapas:
 			deleteUserFromMemory(loggedUser, session.getId(), req);
 			// Redirecciona a pagina de aviso de multisesion:
@@ -160,6 +153,19 @@ public class FilterAuthorizationRegisteredUser implements Filter {
 		chain.doFilter(request, response);
 	}
 	
+	/**
+	 * Comprueba si el usuario ha sido desactivado mientras tenia
+	 * una sesion iniciada. En el momento en que eso sucede, el
+	 * {@link BeanUserEditProfile} guarda en la lista 'DEACTIVATED_USERS'
+	 * (almacenada en el contexto de aplicacion) el identificador del usuario.
+	 * Por tanto este metodo accede a dicha lista para realizar
+	 * la comprobacion.
+	 * @param loggedUser usuario que se verifica
+	 * @param req peticion HTTP
+	 * @return
+	 * 'true' si el usuario esta desactivado <br/>
+	 * 'false' si el usuario no esta desactivado
+	 */
 	private boolean isDeactivated(User loggedUser, HttpServletRequest req){
 		// Obtener, del contexto Aplicacion, la lista "DEACTIVATED_USERS":
 		@SuppressWarnings("unchecked")
@@ -176,6 +182,15 @@ public class FilterAuthorizationRegisteredUser implements Filter {
 		return false;
 	}
 	
+	/**
+	 * Comprueba si la pagina de perfil que visita el usuario es la suya propia,
+	 * o si es el perfil de otro usuario.
+	 * @param loggedUser usuario que se verifica
+	 * @param req peticion HTTP
+	 * @return
+	 * 'true' si el usuario esta visitando su propio perfil <br/>
+	 * 'false' si el usuario esta visitando un perfil ajeno
+	 */
 	private boolean visitOwnUserProfile(
 			HttpServletRequest req, Long loggedUserId){
 		// req.getServletPath() = /pages/registeredUser/(...).xhtml
@@ -195,7 +210,17 @@ public class FilterAuthorizationRegisteredUser implements Filter {
 		return false;
 	}
 	
-	private boolean userRepeatedlyLogged(User loggedUser,HttpServletRequest req){
+	/**
+	 * Comprueba el usuario ya tenia iniciada una sesion en otro navegador 
+	 * o dispositivo
+	 * @param loggedUser usuario que se verifica
+	 * @param req peticion HTTP
+	 * @return
+	 * 'true' si el usuario ya tenia una sesion iniciada <br/>
+	 * 'false' si el usuario no tiene otra sesion iniciada
+	 */
+	private boolean userRepeatedlyLogged(User loggedUser,
+			HttpServletRequest req){
 		// Obtener, del contexto Aplicacion, el Map "LOGGED_USERS":
 		Map<Long, List<HttpSession>> mapLoggedUsers = getMapLoggedUsers(req);
 		if(mapLoggedUsers==null || mapLoggedUsers.isEmpty()){return false;}
@@ -212,9 +237,8 @@ public class FilterAuthorizationRegisteredUser implements Filter {
 		userPendingToCloseSessions.remove(userPendingToCloseSessions.size()-1);
 		// Si entre ellas encuentra la sesion en cuestion no se pasa el filtro:
 		
-		// lo logico, en vez de este for, seria hacer el return true si...
 		// if( userPendingToCloseSessions.contains(req.getSession(false)) )
-		// pero no funciona ese 'contains': siempre devuelve false
+		// siempre devuelve false, por tanto hay que comprobarlo con un bucle:
 		for(HttpSession s : userPendingToCloseSessions){
 			if( s.getId().equals(req.getSession(false).getId()) ){
 				return true;
@@ -223,6 +247,13 @@ public class FilterAuthorizationRegisteredUser implements Filter {
 		return false;
 	}
 	
+	/**
+	 * Elimina todo rastro de la sesion del usuario en las variables del
+	 * contexto de la aplicacion
+	 * @param loggedUser usuario cuyos datos se eliminan
+	 * @param currentSessionID sesion actual del usuario
+	 * @param req peticion HTTP
+	 */
 	private void deleteUserFromMemory(User loggedUser, String currentSessionID,
 			HttpServletRequest req){
 		deleteUserFromLoggedUsersMap(loggedUser, currentSessionID, req);
@@ -230,6 +261,14 @@ public class FilterAuthorizationRegisteredUser implements Filter {
 		//decrementOnlineUsers(loggedUser, req);
 	}
 	
+	/**
+	 * Elimina los datos guardados del usuario en la variable de contexto
+	 * 'LOGGED_USERS', que es un Map cuya clave es el identificador del usuario
+	 * y cuyo 'value' es su lista de sesiones
+	 * @param loggedUser usuario cuyos datos se eliminan
+	 * @param currentSessionID sesion actual del usuario
+	 * @param req peticion HTTP
+	 */
 	private void deleteUserFromLoggedUsersMap(User loggedUser,
 			String currentSessionID, HttpServletRequest req) {
 		// mapLoggedUsers = Map cuya 'key' es un User.id
@@ -255,6 +294,13 @@ public class FilterAuthorizationRegisteredUser implements Filter {
 		req.getServletContext().setAttribute("LOGGED_USERS",mapLoggedUsers);
 	}
 	
+	/**
+	 * Elimina los datos guardados del usuario en la variable de contexto
+	 * 'DEACTIVATED_USERS', que es una lista donde se almacenan los usuarios
+	 * que, con su sesion iniciada, han sido desactivados
+	 * @param loggedUser usuario cuyos datos se eliminan
+	 * @param req peticion HTTP
+	 */
 	private void deleteUserFromDeactivatedUsersList(
 			User loggedUser, HttpServletRequest req) {
 		@SuppressWarnings("unchecked")
@@ -266,9 +312,14 @@ public class FilterAuthorizationRegisteredUser implements Filter {
 					"DEACTIVATED_USERS", listOfUsersIDs);
 		}
 	}
+	
 	/*
-	private void decrementOnlineUsers(
-			User loggedUser, HttpServletRequest req) {
+	 * Decrementa el valor de la variable de contexto
+	 * 'NUM_LOGGED_USERS', que indica e numero de usuarios con sesion iniciada
+	 * @param loggedUser usuario cuyos datos se eliminan
+	 * @param currentSessionID sesion actual del usuario
+	 * @param req peticion HTTP
+	private void decrementOnlineUsers(HttpServletRequest req) {
 		Integer onlineUsers = (Integer) req.getServletContext()
 				.getAttribute("NUM_LOGGED_USERS");
 		if( onlineUsers!=null ){
@@ -278,6 +329,13 @@ public class FilterAuthorizationRegisteredUser implements Filter {
 	}
 	*/
 	
+	/**
+	 * Halla del contexto de aplicacion el Map que almacena todas las sesiones
+	 * de usuarios activas
+	 * @param req peticion HTTP
+	 * @return un Map cuya clave es el identificador del usuario y cuyo valor
+	 * es la lista de sesiones que tiene iniciadas
+	 */
 	@SuppressWarnings("unchecked")
 	private Map<Long, List<HttpSession>> getMapLoggedUsers(
 			HttpServletRequest req){
