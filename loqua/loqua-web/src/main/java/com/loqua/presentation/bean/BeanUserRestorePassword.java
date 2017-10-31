@@ -48,7 +48,7 @@ public class BeanUserRestorePassword implements Serializable{
 	/** Parametro 'confirm' recibido en la URL. Es una cadena aleatoria
 	 * (de 26 caracteres) que permite identificar al usuario que accede
 	 * a la URL de confirmacion de la restauracion de su contrase&ntilde;a.
-	 * <br/>
+	 * <br>
 	 * Se utiliza en la vista 'password_restore_confirm.xhtml',
 	 * donde se inicializa mediante el &lt;f:viewParam&gt; que invoca
 	 * al metodo set del atributo. */
@@ -122,7 +122,7 @@ public class BeanUserRestorePassword implements Serializable{
 	 * @param beanActionResult el bean que mostrara en la vista
 	 * el resultado de la accion
 	 * @return
-	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br>
 	 * Si se produce alguna excepcion, devuelve la regla de navegacion
 	 * que redirige a la pagina de error desconocido
 	 * ('errorUnexpectedAnonymous').
@@ -160,7 +160,7 @@ public class BeanUserRestorePassword implements Serializable{
 	 * Envia al email del usuario un correo que muestra un enlace para que 
 	 * confirme su cambio de contrase&ntilde;a.
 	 * @return
-	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br>
 	 * Si se produce alguna excepcion, devuelve la regla de navegacion
 	 * que redirige a la pagina de error desconocido ('errorUnexpected').
 	 * @throws EntityAlreadyFoundException
@@ -209,11 +209,10 @@ public class BeanUserRestorePassword implements Serializable{
 	 * @param beanActionResult el bean que mostrara en la vista
 	 * el resultado de la accion
 	 * @return
-	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br>
 	 * Si se produce alguna excepcion, devuelve la regla de navegacion
 	 * que redirige a la pagina que indica que la URL es desconocida
 	 * ('errorUnknownUrl').
-	 * @see #sendEmailForEditEmailSecondStep
 	 */
 	public String confirmRestorePassword(BeanActionResult beanActionResult) {
 		beanActionResult.setFinish(false);
@@ -269,8 +268,9 @@ public class BeanUserRestorePassword implements Serializable{
 	 * Cambia el estado del objeto {@link ChangePassword} indicado
 	 * estableciendo a 'true' el valor de
 	 * su propiedad {@link ChangePassword#confirmed}
-	 * @param passwordChange objeto {@link ChangePassword} que se actualiza
-	 * @throws EntityNotFoundException
+	 * @param passwordRestore objeto {@link ChangePassword} que se actualiza
+	 * @param beanActionResult el bean que mostrara en la vista
+	 * el resultado de la accion
 	 */
 	private void setPasswordRestoreToConfirmed(
 			ChangePassword passwordRestore, BeanActionResult beanActionResult){

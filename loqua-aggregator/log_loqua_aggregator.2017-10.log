@@ -1,0 +1,13 @@
+30 oct 2017 - 16:24:17 [INFO ] debugAggregator - SchedulerCrawler: 'execute()': Schedule job every hour (0 0 * * * ?)
+30 oct 2017 - 16:24:17 [INFO ] debugAggregator - SchedulerCrawler: 'execute()': Starting Scheduler...
+30 oct 2017 - 17:00:03 [INFO ] debugAggregator - Gatherer: 'processRssByListOfFeeds()': The Feed 'Diario Hoy' has not generated any new Thread at this job
+30 oct 2017 - 17:00:04 [INFO ] debugAggregator - Gatherer: 'processRssByListOfFeeds()': The Feed 'Diario Hoy' has not generated any new Thread at this job
+30 oct 2017 - 17:00:05 [INFO ] debugAggregator - Gatherer: 'processRssByListOfFeeds()': The Feed 'Diario Hoy' has not generated any new Thread at this job
+30 oct 2017 - 17:00:07 [INFO ] debugAggregator - Gatherer: 'processRssByListOfFeeds()': The Feed 'BBC' has not generated any new Thread at this job
+30 oct 2017 - 17:00:07 [INFO ] debugAggregator - Gatherer: 'processRssByListOfFeeds()': The Feed 'BBC' has not generated any new Thread at this job
+30 oct 2017 - 17:00:10 [INFO ] debugAggregator - Gatherer: 'processRssByListOfFeeds()': The Feed 'BBC - Française' has not generated any new Thread at this job
+30 oct 2017 - 17:00:10 [INFO ] debugAggregator - Gatherer: 'processRssByListOfFeeds()': The Feed 'BBC - Française' has not generated any new Thread at this job
+30 oct 2017 - 17:00:11 [INFO ] debugAggregator - Gatherer: 'processRssByListOfFeeds()': The Feed 'Le Parisien' has not generated any new Thread at this job
+30 oct 2017 - 17:00:11 [INFO ] debugAggregator - Gatherer: 'processRssByListOfFeeds()': The Feed 'Pour la Science' has not generated any new Thread at this job
+30 oct 2017 - 18:00:05 [INFO ] debugAggregator - SchedulerCrawler: 'execute()': Schedule job every hour (0 0 * * * ?)
+30 oct 2017 - 18:00:05 [INFO ] debugAggregator - SchedulerCrawler: 'execute()': Starting Scheduler...

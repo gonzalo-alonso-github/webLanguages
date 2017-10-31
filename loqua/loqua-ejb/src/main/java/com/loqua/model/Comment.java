@@ -52,7 +52,7 @@ public class Comment extends ForumPost implements Serializable {
 	@OneToMany(mappedBy="comment")
 	private Set<CommentVoter> commentVoters = new HashSet<CommentVoter>();
 	
-	/** Lista de comentarios citados por este comentario. <br/> En esta version
+	/** Lista de comentarios citados por este comentario. <br> En esta version
 	 * de la aplicacion solo se permite que cada comentario cite a un solo
 	 * comentario, por tanto esta lista tiene a lo sumo un solo elemento.
 	 * Sin embargo si se espera permitirlo en proximas versiones, por eso

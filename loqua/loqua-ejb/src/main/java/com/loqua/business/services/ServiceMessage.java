@@ -4,12 +4,13 @@ import java.util.List;
 
 import com.loqua.business.exception.EntityNotFoundException;
 import com.loqua.model.Message;
+import com.loqua.model.MessageReceiver;
 import com.loqua.model.User;
 
 /**
  * Define la fachada que encapsula el acceso al objeto EJB que maneja
  * las transacciones de las entidades
- * {@link 'Message'} y {@link 'MessageReceiver'}
+ * {@link Message} y {@link MessageReceiver}
  * @author Gonzalo
  */
 public interface ServiceMessage {
@@ -44,7 +45,6 @@ public interface ServiceMessage {
 	 * @param userReceiverID atributo 'id' del User que se consulta
 	 * @return cantidad de Message cuyo atributo 'receiver' coincide
 	 * con el User dado y cuyo atributo 'read' es 'false
-	 * @throws EntityNotFoundException
 	 */
 	Integer getNumUnreadMessagesReceivedByUser(Long userReceiverID);
 

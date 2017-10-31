@@ -110,7 +110,7 @@ public class BeanUserEditProfile implements Serializable{
 	 * @param beanActionResult el bean que mostrara en la vista
 	 * el resultado de la accion
 	 * @return
-	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br>
 	 * Si se produce alguna excepcion, devuelve la regla de navegacion
 	 * que redirige a la pagina de error desconocido ('errorUnexpected').
 	 */
@@ -159,7 +159,7 @@ public class BeanUserEditProfile implements Serializable{
 	 * la lista de lenguajes pacticados ({@link #listPracticingLanguagesIDs})
 	 * @return
 	 * 'true' si la lista de lenguajes maternos no contiene ningun elemento
-	 * de la lista de lenguajes pacticados <br/>
+	 * de la lista de lenguajes pacticados <br>
 	 * 'false' si la lista de lenguajes maternos ya contiene algun elemento
 	 * de la lista de lenguajes pacticados
 	 */
@@ -184,11 +184,8 @@ public class BeanUserEditProfile implements Serializable{
 			List<Long> practicedLanguagesIDs) throws
 			EntityAlreadyFoundException, EntityNotFoundException {
 		User user = beanLogin.getLoggedUser();
-		// Crear los UserPracticedLanguages pertinentes en bdd:
-		Factories.getService().getServiceLanguage().createUserPracticedLanguage(
-				user, practicedLanguagesIDs,listPracticingLanguagesIDs);
-		// Eliminar los UserPracticedLanguages pertinentes en bdd:
-		Factories.getService().getServiceLanguage().deleteUserPracticedLanguage(
+		// Actualizar los UserPracticedLanguages pertinentes en bdd:
+		Factories.getService().getServiceLanguage().updatePracticedLanguages(
 				user, practicedLanguagesIDs,listPracticingLanguagesIDs);
 		// Actualizar el mapPracticingLanguages de beanUserData
 		updatePracticingLanguagesInSession();
@@ -206,11 +203,8 @@ public class BeanUserEditProfile implements Serializable{
 			List<Long> nativeLanguagesIDs) throws
 			EntityAlreadyFoundException, EntityNotFoundException {
 		User user = beanLogin.getLoggedUser();
-		// Crear los UserNativeLanguages pertinentes en bdd:
-		Factories.getService().getServiceLanguage().createUserNativeLanguage(
-				user, nativeLanguagesIDs,listNativeLanguagesIDs);
-		// Eliminar los UserNativeLanguages pertinentes en bdd:
-		Factories.getService().getServiceLanguage().deleteUserNativeLanguage(
+		// Actualizar los UserNativeLanguages pertinentes en bdd:
+		Factories.getService().getServiceLanguage().updateNativeLanguages(
 				user, nativeLanguagesIDs,listNativeLanguagesIDs);
 		// Actualizar el mapNativeLanguages de beanUserData
 		updateNativeLanguagesInSession();
@@ -304,11 +298,11 @@ public class BeanUserEditProfile implements Serializable{
 	// // // // // // // // // // // // // // // // // //
 	
 	/**
-	 * Actualiza la imagen del perfil del usuario con sesion iniciada. <br/>
+	 * Actualiza la imagen del perfil del usuario con sesion iniciada. <br>
 	 * Este metodo permite que un usuario dado pueda cambiar
 	 * su propia imagen en su pagina del perfil.
 	 * @param beanUserView objeto {@link BeanUserView} cuyo atributo
-	 * {@link BeanUserView#imageProfile} indica la nueva imagen introducida
+	 * {@link BeanUserView#user} contiene la nueva imagen introducida
 	 * por el usuario en la vista
 	 * @param beanActionResult el bean que mostrara en la vista
 	 * el resultado de la accion
@@ -343,11 +337,11 @@ public class BeanUserEditProfile implements Serializable{
 	}
 	
 	/**
-	 * Actualiza la imagen del perfil del usuario cuyo perfil se visita. <br/>
+	 * Actualiza la imagen del perfil del usuario cuyo perfil se visita. <br>
 	 * Este metodo permite que un usuario dado (previsiblemente un
 	 * administrador) pueda cambiar la imagen del perfil ajeno que consulta.
 	 * @param beanUserView objeto {@link BeanUserView} cuyo atributo
-	 * {@link BeanUserView#imageProfile} indica la nueva imagen introducida
+	 * {@link BeanUserView#user} indica la nueva imagen introducida
 	 * por el usuario en la vista
 	 * @param beanActionResult el bean que mostrara en la vista
 	 * el resultado de la accion
@@ -474,7 +468,7 @@ public class BeanUserEditProfile implements Serializable{
 	 * @param user usuario que se actualiza
 	 * @return Si la actualizacion se produce con existo, devuelve la regla
 	 * de navegacion que redirige a la pagina de inicio
-	 * ('successChangeUserStatus'). <br/>
+	 * ('successChangeUserStatus'). <br>
 	 * Si se produce alguna excepcion, devuelve la regla de navegacion
 	 * que redirige a la pagina de error desconocido ('errorUnexpected').
 	 */

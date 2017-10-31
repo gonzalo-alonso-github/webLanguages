@@ -54,6 +54,7 @@ public class ThreadJPA {
 	METODOS DE CREATE/DELETE/UPDATE
 		restCreateForumThread
 		createThreadVoter
+		deleteThreadVoter (solo para test)
 		updateAllDataByThread
 		updateDataByThread
 	*/
@@ -82,8 +83,14 @@ public class ThreadJPA {
 	/** Mensaje de la excepcion producida al repetirse la entidad 'ThreadVoter'
 	 * en la base de datos */
 	private static final String THREADVOTER_ALREADY_PERSISTED_EXCEPTION=
-			"EntityAlreadyPersistedException: 'ThreadVoter' entity already"
+			"EntityAlreadyPersistedException: 'ForumThreadVoter' entity already"
 			+ " found at Persistence layer";
+	
+	/** Mensaje de la excepcion producida al repetirse la entidad 'ThreadVoter'
+	 * en la base de datos */
+	private static final String THREADVOTER_NOT_PERSISTED_EXCEPTION=
+			"EntityNotPersistedException: 'ForumThreadVoter' entity not found"
+					+ " at Persistence layer";
 	
 	/**
 	 * Realiza la consulta JPQL 'Thread.getThreadById'
@@ -574,7 +581,7 @@ public class ThreadJPA {
 	 * @throws EntityAlreadyPersistedException
 	 * @throws Exception
 	 */
-	public void restCreateForumThread(ForumThread threadToCreate)
+	public ForumThread restCreateForumThread(ForumThread threadToCreate)
 			throws EntityAlreadyPersistedException, Exception{
 		try{
 			/* Feed feed = JPA.getManager().find(
@@ -592,6 +599,7 @@ public class ThreadJPA {
 			throw new /*PersistenceRuntimeException*/Exception(
 					PERSISTENCE_GENERAL_EXCEPTION, ex);
 		}
+		return threadToCreate;
 	}
 	
 	/*
@@ -618,6 +626,28 @@ public class ThreadJPA {
 		}
 	}
 	*/
+	
+	/**
+	 * Elimina de la base de datos el objeto ForumThread indicado.
+	 * @param threadId identificador del ForumThread que se elimina
+	 * @throws EntityNotPersistedException
+	 */
+	public void deleteForumThread(Long threadId) 
+			throws EntityNotPersistedException {
+		try{
+			JPA.getManager()
+				.createNamedQuery("Thread.deleteForumThread")
+				.setParameter(1, threadId)
+				.executeUpdate();
+		}catch( NoResultException ex ){
+			throw new EntityNotPersistedException(
+					THREADVOTER_NOT_PERSISTED_EXCEPTION, ex);
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+	}
 	
 	/**
 	 * Genera un objeto ForumThreadVoter a partir de los parametros recibidos
@@ -651,6 +681,31 @@ public class ThreadJPA {
 		}catch( EntityExistsException ex ){
 			throw new EntityAlreadyPersistedException(
 					THREADVOTER_ALREADY_PERSISTED_EXCEPTION, ex);
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+	}
+	
+	/**
+	 * Elimina de la base de datos el objeto TheadVoter
+	 * que asocia al User y al ForumThread indicados.
+	 * @param userId el User al que esta asociado el ForumTheadVoter
+	 * @param thread ForumThread al que esta asociado el ForumTheadVoter
+	 * @throws EntityNotPersistedException
+	 */
+	public void deleteThreadVoter(Long userId, ForumThread thread) 
+			throws EntityNotPersistedException {
+		try{
+			JPA.getManager()
+				.createNamedQuery("Thread.deleteVotersOfThread")
+				.setParameter(1, userId)
+				.setParameter(2, thread.getId())
+				.executeUpdate();
+		}catch( NoResultException ex ){
+			throw new EntityNotPersistedException(
+					THREADVOTER_NOT_PERSISTED_EXCEPTION, ex);
 		}catch( RuntimeException ex ){
 			//HibernateException,IllegalArgumentException,ClassCastException...
 			throw new PersistenceRuntimeException(

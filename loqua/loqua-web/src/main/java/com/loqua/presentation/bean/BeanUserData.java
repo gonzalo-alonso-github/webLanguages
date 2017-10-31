@@ -24,10 +24,10 @@ import com.loqua.presentation.logging.LoquaLogger;
 /**
  * Administra los datos del usuario logueado que son manejados durante
  * toda la sesion, a diferencia del {@link BeanUserView},
- * que persiste durante el ambito de vista. <br/>
+ * que persiste durante el ambito de vista. <br>
  * Los datos que este bean administra son las listas de lenguages y las imagenes
  * de usuario, cuyo manejo, por su complejidad, conviene separar de otros beans
- * de sesion. <br/>
+ * de sesion. <br>
  * Ademas de eso, este bean se encarga de efectuar operaciones relativas
  * a las consultas de usuarios en general, por ejemplo devolver el numero de
  * usuarios registrados en la aplicacion.
@@ -91,7 +91,7 @@ public class BeanUserData implements Serializable{
 	
 	/**
 	 * Si el usuario ha iniciado sesion, inicializa sus listas de lenguages
-	 * practicados y de lenguages maternos.<br/>
+	 * practicados y de lenguages maternos.<br>
 	 * Si el usuario es anonimo, comprueba si el lenguage del navegador esta
 	 * presente en la tabla 'Language' de la base de datos, y si es asi lo carga
 	 * en una lista de un solo elemento; si no es asi la lista quedara vacia. 
@@ -142,7 +142,7 @@ public class BeanUserData implements Serializable{
 	/**
 	 * Agrega al {@link #mapPracticingLanguages} (de tipo
 	 * Map&lt;Long, Language&gt;) el objeto {@link Language}
-	 * que corresponde al Locale del navegador. <br/>
+	 * que corresponde al Locale del navegador. <br>
 	 * Pero si el locale del navegador no se correspode con ningun
 	 * {@link Language} de la base de datos, se establece por defecto a ingles.
 	 */
@@ -248,7 +248,7 @@ public class BeanUserData implements Serializable{
 	 * Convierte la lista dada de objetos {@link Language} en un
 	 * Map&lt;Long, Language&gt;, y lo utiliza para sobreescribir el valor del
 	 * atributo {@link #mapNativeLanguages}
-	 * @param practicingLanguages lista de lenguajes nativos del usuario
+	 * @param nativeLanguages lista de lenguajes nativos del usuario
 	 */
 	public void setListNativeLanguages(List<Language> nativeLanguages){
 		Map<Long,Language> mapLanguages = new HashMap<Long,Language>();

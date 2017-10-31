@@ -26,6 +26,7 @@ f:viewAction action="#{beanCorrection.onLoad()}"
 	<div id="general_header">	
 		<ui:param name="titleHeader" value="#{msgs.titleForumIndex}" />
 		<ui:include src="/snippets/general/menu_horizontal/menu_with_searcherTranslator.xhtml" />
+		<ui:include src="/snippets/general/menu_horizontal/menu_elements/menu_elements_modal_windows.xhtml" />
 	</div>
 	
 	<!-- Cuerpo bajo la barra de cabecera. Esta estructurado en 2 columnas, que son: -->
@@ -133,11 +134,11 @@ f:viewAction action="#{beanCorrection.onLoad()}"
 									class="forum_correction_sentence_div"
 									style="display:inline; word-wrap: break-word;"
 									>#{sentenceOfList}</div>
-							<!-- OJO: Por I.Explorer, no conviene separar la etiqueta de inicio y cierre de ese div en lineas de codigo distintas
+							<!-- Por I.Explorer, no conviene separar la etiqueta de inicio y cierre de ese div en lineas de codigo distintas
 							porque con I.Explorer, al hacer doble click en el texto del div y borrarlo, quedan espacios en blanco -->
 							<h:inputHidden id="#{'auxiliarInput'.concat(index)}"
 								name="#{'auxiliarInput'.concat(index)}"
-								value="#{beanCorrection.listSentencesToCorrect[ index ]}"/>
+								value="#{beanCorrection.listSentencesToCorrect[index]}"/>
 							</div>
 						</c:forEach>
 						

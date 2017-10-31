@@ -20,7 +20,7 @@ import com.loqua.persistence.exception.EntityNotPersistedException;
 /**
  * Da acceso a los procedimientos, dirigidos a la capa de persistencia,
  * correspondientes a las transacciones de las entidades
- * {@link Publication} y {@link PublicationReceiver}.<br/>
+ * {@link Publication} y {@link PublicationReceiver}.<br>
  * Este paquete de clases implementa el patron Transaction Script y
  * es el que, junto al modelo, concentra gran parte de la logica de negocio
  * @author Gonzalo
@@ -67,8 +67,8 @@ public class TransactionPublication {
 	}
 
 	/**
-	 * Elimina del sistema dado todas las publicaciones
-	 * enviadas y recibidas por un usuario. <br/>
+	 * Elimina del sistema todas las publicaciones
+	 * enviadas y recibidas por un usuario. <br>
 	 * No es necesario llamar a un metodo que se encargue
 	 * especificamente de eliminar los objetos PublicationReceiver, ya que estos
 	 * se eliminan automaticamente al haber borrado sus Publication asociados
@@ -299,10 +299,9 @@ public class TransactionPublication {
  	 * en la clasificacion de puntos
 	 * @param eventValue indica la posicion, en la clasificacion de puntos,
 	 * que se comprueba si ha sido alcanzada por el usuario
-	 * @param eventType atributo homonimo del Event del Achievement que se consulta
 	 * @param userId atributo 'id' del User que se consulta
 	 * @return
-	 * true: si el usuario ha alcanzado el logro <br/>
+	 * true: si el usuario ha alcanzado el logro <br>
 	 * false: si el usuario aun no ha alcanzado el logro
 	 */
 	public boolean achievementTopUsersAlreadyPassedByUser(
@@ -328,7 +327,7 @@ public class TransactionPublication {
 	 * realizados por el usuario
 	 * @param userId atributo 'id' del User que se consulta
 	 * @return
-	 * true: si el usuario ha alcanzado el logro <br/>
+	 * true: si el usuario ha alcanzado el logro <br>
 	 * false: si el usuario aun no ha alcanzado el logro
 	 */
 	public boolean achievementNumCommentsAlreadyPassedByUser(
@@ -354,7 +353,7 @@ public class TransactionPublication {
 	 * realizadas por el usuario
 	 * @param userId atributo 'id' del User que se consulta
 	 * @return
-	 * true: si el usuario ha alcanzado el logro <br/>
+	 * true: si el usuario ha alcanzado el logro <br>
 	 * false: si el usuario aun no ha alcanzado el logro
 	 */
 	public boolean achievementNumCorrectionsAlreadyPassedByUser(

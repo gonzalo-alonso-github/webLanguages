@@ -15,17 +15,15 @@ import com.loqua.business.services.serviceLocal.LocalServiceComment;
 import com.loqua.business.services.serviceRemote.RemoteServiceComment;
 import com.loqua.model.Comment;
 import com.loqua.model.CommentQuoteTo;
-import com.loqua.model.ForumThread;
-import com.loqua.model.User;
 
 /**
  * Da acceso a las transacciones correspondientes a las entidades
- * {@link Comment} y {@link CommentQuoteTo}. <br/>
+ * {@link Comment} y {@link CommentQuoteTo}. <br>
  * La intencion de esta 'subcapa' de EJBs no es albergar mucha logica de negocio
  * (de ello se ocupa el modelo y el Transaction Script), sino hacer
  * que las transacciones sean controladas por el contenedor de EJB
  * (Wildfly en este caso), quien se ocupa por ejemplo de abrir las conexiones
- * a la base de datos mediate un datasource y de realizar los rollback. <br/>
+ * a la base de datos mediate un datasource y de realizar los rollback. <br>
  * Al ser un EJB de sesion sin estado no puede ser instanciado desde un cliente
  * o un Factory Method, sino que debe ser devuelto mediante el registro JNDI.
  * Forma parte del patron Service Locator y se encapsula tras las fachadas
@@ -83,10 +81,9 @@ public class EjbServiceComment
 	}
 	
 	@Override
-	public Comment sendComment(ForumThread thread, String text, String code,
-			User user)
+	public Comment sendComment(Comment comment)
 			throws EntityAlreadyFoundException, EntityNotFoundException {
-		return transactionComment.sendComment(thread, text, code, user);
+		return transactionComment.sendComment(comment);
 	}
 	
 	@Override
@@ -101,9 +98,8 @@ public class EjbServiceComment
 	}
 	
 	@Override
-	public Comment quoteComment(Comment commentToQuote, String text,
-			String code, User user)
+	public Comment quoteComment(Comment commentToQuote, Comment commentToCreate)
 			throws EntityAlreadyFoundException, EntityNotFoundException {
-		return transactionComment.quoteComment(commentToQuote,text,code,user);
+		return transactionComment.quoteComment(commentToQuote,commentToCreate);
 	}
 }

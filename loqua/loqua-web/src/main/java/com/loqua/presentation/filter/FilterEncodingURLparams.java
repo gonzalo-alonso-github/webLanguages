@@ -19,7 +19,7 @@ import javax.servlet.http.HttpSession;
  * y que comprueba si la URL ha sido codificada (por ejemplo, que el caracter
  * '#', utilizado para indicar un ancla en la URL, sea codificado a '%23').
  * En tal caso la descodifica de nuevo, para evitar que los demas filtros
- * tengan problemas a la hora de trabajar con la 'query string' de la URL.<br/>
+ * tengan problemas a la hora de trabajar con la 'query string' de la URL.<br>
  * Puesto que se definen varios filtros sobre las mismas paginas, es coveniente
  * indicar, en el fichero web.xml, el orden en que se aplican.
  * @author Gonzalo
@@ -97,7 +97,7 @@ public class FilterEncodingURLparams implements Filter {
 	 * el parametro 'sessionId'.
 	 * @param req la peticion HTTP
 	 * @return
-	 * 'true' si la URL presenta el parametro 'sessionId' <br/>
+	 * 'true' si la URL presenta el parametro 'sessionId' <br>
 	 * 'false' si la URL no tiene el parametro 'sessionId'
 	 */
 	private boolean existsSessionIdInURL(HttpServletRequest req) {
@@ -144,7 +144,7 @@ public class FilterEncodingURLparams implements Filter {
 	 * contenga caracteres especiales propios de una expresion regular.
 	 * Este metodo es adecuado si, por ejemplo, se desea usar "replaceFirst"
 	 * para reemplazar una cadena original que contenga tales caracteres. 
-	 * Ejemplo:<br/><i>sampleURL.replaceFirst(escapeRegExp("?param=value"),"")</i>.
+	 * Ejemplo:<br><i>sampleURL.replaceFirst(escapeRegExp("?param=value"),"")</i>.
 	 * (Por el contrario, no es necesario hacer eso con el metodo "replace").
 	 * @param regExp cadena de texto que puede contener caracteres propios de
 	 * una expresion regular

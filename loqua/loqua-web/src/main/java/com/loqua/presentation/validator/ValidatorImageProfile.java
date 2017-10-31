@@ -85,7 +85,7 @@ public class ValidatorImageProfile implements Validator {
 	 * usuario a traves del componente InputFile de OmniFaces
 	 * @return
 	 * 'true' si la extension coincide con alguna de las indicadas
-	 * en el fichero 'users.properties' <br/>
+	 * en el fichero 'users.properties' <br>
 	 * 'false' si la extension no coincide con ninguna de las indicadas
 	 * en el fichero 'users.properties'
 	 */
@@ -111,7 +111,7 @@ public class ValidatorImageProfile implements Validator {
 	 * 'users.properties'
 	 * @return
 	 * 'true' si la anchura y la altura no superan lo limites definidos
-	 * en el fichero 'users.properties' <br/>
+	 * en el fichero 'users.properties' <br>
 	 * 'false' si la anchura o la altura sobrepasan lo limites definidos
 	 * en el fichero 'users.properties'
 	 */

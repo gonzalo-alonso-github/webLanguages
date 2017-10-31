@@ -42,7 +42,7 @@ public interface ServiceForumThread {
 	 * los ForumThread que se desean consultar
 	 * @return lista de ForumThread que pertenecen a los Language
 	 * y al FeedCategory dados
-	List<ForumThread> getAllThreadsByLanguagesAndCategoryFromDB(
+	List<ForumThread> getAllThreadsByLanguagesAndCategory(
 			List<Long> listLanguagesIDs, Long categoryId);
 	*/
 	
@@ -59,7 +59,7 @@ public interface ServiceForumThread {
 	 * y al FeedCategory dados, aplicando el offset y el limite de elementos
 	 * indicado
 	 */
-	List<ForumThread> getThreadsByLanguagesAndCategoryFromDB(
+	List<ForumThread> getThreadsByLangsAndCategory(
 			List<Language> listLanguages, Long categoryId,
 			Integer offset, int limitNumThreads);
 	
@@ -73,7 +73,7 @@ public interface ServiceForumThread {
 	 * @return cantidad de ForumThread que pertenecen a los Language
 	 * y al FeedCategory dados
 	 */
-	Integer getNumThreadsByLanguagesAndCategoryFromDB(
+	Integer getNumThreadsByLanguagesAndCategory(
 			List<Language> listLanguages, Long categoryId);
 	
 	/*
@@ -81,7 +81,7 @@ public interface ServiceForumThread {
 	 * @param categoryId atributo 'id' del FeedCategory al que pertenecen
 	 * los ForumThread que se desean consultar
 	 * @return lista de ForumThread que pertenecen al FeedCategory dado
-	 * List<ForumThread> getAllThreadsByCategoryFromDB(Long categoryId); */
+	 * List<ForumThread> getAllThreadsByCategory(Long categoryId); */
 	
 	/**
 	 * Halla todos los hilos del foro pertenecientes a la categoria dada,
@@ -93,7 +93,7 @@ public interface ServiceForumThread {
 	 * @return lista de ForumThread que pertenecen al FeedCategory dado,
 	 * aplicando el offset y el limite maximo recibidos por parametro
 	 */
-	List<ForumThread> getThreadsByCategoryFromDB(Long categoryId,
+	List<ForumThread> getThreadsByCategory(Long categoryId,
 			Integer offset, int limitNumThreads);
 	
 	/**
@@ -110,7 +110,7 @@ public interface ServiceForumThread {
 	 * cuyo ForumThreadInfo asociado tiene los mayores valores
 	 * del atributo 'countVotes'
 	 */
-	List<ForumThread> getMostValuedThreadsOfTheMonthFromDB();
+	List<ForumThread> getMostValuedThreadsOfTheMonth();
 	
 	/**
 	 * Halla los hilos del foro que tienen mas comentarios de usuarios
@@ -144,7 +144,7 @@ public interface ServiceForumThread {
 	 * @param userId atributo 'id' del User que se consulta
 	 * @param threadId atributo 'id' del ForumThread que se consulta
 	 * @return
-	 * true: si el usuario ya ha puntuado el hilo del foro <br/>
+	 * true: si el usuario ya ha puntuado el hilo del foro <br>
 	 * false: si el usuario aun no ha puntuado el hilo del foro
 	 */
 	boolean threadAlreadyVotedByUser(Long userId, Long threadId)
@@ -157,8 +157,9 @@ public interface ServiceForumThread {
 	 * @throws EntityAlreadyFoundException
 	 * @throws Exception
 	 */
-	void restCreateForumThread(ForumThread threadToCreate)
+	ForumThread restCreateForumThread(ForumThread threadToCreate)
 			throws EntityAlreadyFoundException, Exception;
+	
 	/*
 	 * Agrega a la base de datos los objetos ForumThread dados
 	 * @param threadsToCreate lista de ForumThread que se desean guardar
@@ -166,6 +167,14 @@ public interface ServiceForumThread {
 	 * @throws Exception
 	 * void restCreateForumThreadsByList(List<ForumThread> threads)
 			throws EntityAlreadyFoundException, Exception;*/
+	
+	/**
+	 * Elimina del sistema el objeto ForumThead indicado
+	 * @param threadId identificador del objeto ForumTheadVoter que se elimina
+	 * @throws EntityNotFoundException
+	 */
+	public void deleteForumThreadForTest(Long threadId)
+			throws EntityNotFoundException;
 	
 	/*
 	 * Actualiza en el sistema el objeto ForumThread dado
@@ -195,7 +204,17 @@ public interface ServiceForumThread {
 	 */
 	ForumThread voteThread(Long userId, ForumThread threadToVote)
 			throws EntityAlreadyFoundException, EntityNotFoundException;
-
+	
+	/**
+	 * Elimina del sistema el objeto TheadVoter que asocia
+	 * al User y al ForumThread indicados.
+	 * @param userId el User al que esta asociado el ForumTheadVoter
+	 * @param thread ForumThread al que esta asociado el ForumTheadVoter
+	 * @throws EntityNotFoundException
+	 */
+	public void deleteThreadVoterForTest(Long userId, ForumThread thread)
+			throws EntityNotFoundException;
+	
 	/**
 	 * Incremeta el numero de visitas recibidas por un hilo del foro
 	 * @param threadToUpdate objeto ForumThread que se actualiza

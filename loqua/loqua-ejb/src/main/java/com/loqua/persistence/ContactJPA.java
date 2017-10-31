@@ -107,14 +107,14 @@ public class ContactJPA {
 	 * @throws EntityNotPersistedException
 	 */
 	public ContactRequest getContactRequestByBothUsers(
-			Long userReceiverId, Long userSenderId)
+			Long userSenderId, Long userReceiverId)
 			throws EntityNotPersistedException {
 		ContactRequest result = new ContactRequest();
 		try{
 			result = (ContactRequest) JPA.getManager()
 				.createNamedQuery("Contact.getContactRequestByBothUsers")
-				.setParameter(1, userReceiverId)
-				.setParameter(2, userSenderId)
+				.setParameter(1, userSenderId)
+				.setParameter(2, userReceiverId)
 				.getSingleResult();
 		}catch( NoResultException ex ){
 			throw new EntityNotPersistedException(

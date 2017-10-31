@@ -69,8 +69,8 @@
 	<named-query name="Contact.getContactRequestByBothUsers">
 		<query>
 			select c from ContactRequest c
-			where c.userReceiver.id = ?1
-			and c.userSender.id = ?2
+			where c.userSender.id = ?1
+			and c.userReceiver.id = ?2
 		</query>
 	</named-query>
 	<named-query name="Contact.getContactRequestsReceivedByUser">
@@ -174,6 +174,17 @@
 	</named-query>
 	<named-query name="Correction.deleteById">
 		<query>delete from Correction c where c.id=?1</query>
+	</named-query>
+	<named-query name="Correction.deleteAgreement">
+		<query>delete from CorrectionAgree ca
+		where ca.user.id=?1 and ca.correction.id=?2 </query>
+	</named-query>
+	<named-query name="Correction.setApprovedFalse">
+		<query>
+			update Correction c
+			set c.approved = false
+			where c.id = ?1
+		</query>
 	</named-query>
 	
 	<!-- COUNTRY -->
@@ -466,6 +477,17 @@
 		<query>
 			select t from ForumThread t
 			where t.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Thread.deleteForumThread">
+		<query>
+			delete from ForumThread t where t.id = ?1
+		</query>
+	</named-query>
+	<named-query name="Thread.deleteVotersOfThread">
+		<query>
+			delete from ForumThreadVoter tv
+			where tv.user.id = ?1 and tv.forumThread.id = ?2
 		</query>
 	</named-query>
 			
@@ -788,6 +810,11 @@
 			where p.id =?1
 		</query>
 	</named-query>
+	<named-query name="User.deleteUser">
+		<query>
+			delete from User u where u.id =?1
+		</query>
+	</named-query>
 	
 	<!-- CHANGE_PASSWORD AND CHANGE_EMAIL -->
 	
@@ -835,4 +862,58 @@
 		</query>
 	</named-query>
 	
+	<!-- SUGGESTION --> 
+	
+	<named-query name="Suggestion.getSuggestionById">
+		<query>select s from Suggestion s where s.id = ?1</query>
+	</named-query>
+	
+	<named-query name="Suggestion.getSuggestionsByDecimalCode">
+		<query>
+			select s from Suggestion s
+			where s.decimalWrongText = ?1 or s.decimalCorrectText = ?1
+			and(
+				(s.generatedByAdmin = true)
+				or
+				s.id IN (select s2.id from Suggestion s2 where s2.correction.approved=true)
+			)
+		</query>
+	</named-query>
+	<named-query name="Suggestion.getNumTotalSuggestionsByDecimalCode">
+		<query>
+			select count(s.id) from Suggestion s
+			where s.decimalWrongText = ?1 or s.decimalCorrectText = ?1
+			and(
+				(s.generatedByAdmin = true)
+				or
+				s.id IN (select s2.id from Suggestion s2 where s2.correction.approved=true)
+			)
+		</query>
+	</named-query>
+	
+	<named-query name="Suggestion.getAllSuggestionsByLang">
+		<query>
+			select s from Suggestion s where s.language = ?1
+			and(
+				(s.generatedByAdmin = true)
+				or
+				s.id IN (select s2.id from Suggestion s2 where s2.correction.approved=true)
+			)
+		</query>
+	</named-query>
+	
+	<named-query name="Suggestion.getNumTotalSuggestionsByLang">
+		<query>
+			select count(s.id) from Suggestion s where s.language = ?1
+			and(
+				(s.generatedByAdmin = true)
+				or
+				s.id IN (select s2.id from Suggestion s2 where s2.correction.approved=true)
+			)
+		</query>
+	</named-query>
+	
+	<named-query name="Suggestion.deleteById">
+		<query>delete from Suggestion s where s.id=?1</query>
+	</named-query>
 </entity-mappings>

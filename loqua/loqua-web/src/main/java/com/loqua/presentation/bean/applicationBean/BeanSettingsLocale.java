@@ -1,6 +1,5 @@
 package com.loqua.presentation.bean.applicationBean;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Collections;
@@ -51,8 +50,7 @@ public class BeanSettingsLocale implements Serializable {
 	
 	/**
 	 * Carga el Map de lenguajes de la clase a partir de los datos presentes
-	 * en el fichero 'locales.properties'. 
-	 * @throws IOException
+	 * en el fichero 'locales.properties'.
 	 */
 	private void loadMapLanguagesFromProperties() {
 		mapLanguages = new HashMap<String, String>();

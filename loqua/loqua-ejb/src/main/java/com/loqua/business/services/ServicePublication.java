@@ -6,12 +6,13 @@ import com.loqua.business.exception.EntityAlreadyFoundException;
 import com.loqua.business.exception.EntityNotFoundException;
 import com.loqua.model.Event;
 import com.loqua.model.Publication;
+import com.loqua.model.PublicationReceiver;
 import com.loqua.model.User;
 
 /**
  * Define la fachada que encapsula el acceso al objeto EJB que maneja
  * las transacciones de las entidades
- * {@link 'Publication'} y {@link 'PublicationReceiver'}
+ * {@link Publication} y {@link PublicationReceiver}
  * @author Gonzalo
  */
 public interface ServicePublication {
@@ -35,7 +36,7 @@ public interface ServicePublication {
 	
 	/**
 	 * Elimina del sistema dado todas las publicaciones
-	 * enviadas y recibidas por un usuario. <br/>
+	 * enviadas y recibidas por un usuario. <br>
 	 * No es necesario llamar a un metodo que se encargue
 	 * especificamente de eliminar los objetos PublicationReceiver, ya que estos
 	 * se eliminan automaticamente al haber borrado sus Publication asociados

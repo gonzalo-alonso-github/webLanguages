@@ -28,7 +28,7 @@ import com.loqua.presentation.logging.LoquaLogger;
  * todas las operaciones relativas al manejo de la pagina
  * de registro de usuarios. No solo incluye el dar de alta al nuevo usuario,
  * sino tambien el proceso previo de verificar la accion mediante el envio de
- * un email de confirmacion. <br/>
+ * un email de confirmacion. <br>
  * Al ser un bean de ambito de peticion ('request'),
  * todo el estado de esta clase se resetea ante cada peticion.
  * @author Gonzalo
@@ -40,19 +40,19 @@ public class BeanUserRegister implements Serializable{
 	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
-	/** Datos introducidos por el usuario que se registra. <br/> Para completar
+	/** Datos introducidos por el usuario que se registra. <br> Para completar
 	 * la informacion que se da de alta, sera necesario inicializar tambien
 	 * otros atributos del User asignandoles valores por defecto; de ello
 	 * se encarga el metodo {@link #generateUser}. */
 	private User userToRegister;
 	
-	/** Dato del sexo del usuario, introducido al registrarse. <br/> */
+	/** Dato del sexo del usuario, introducido al registrarse. <br> */
 	private String radioBtnGender = null;
 	
 	/** Parametro 'confirm' recibido en la URL. Es una cadena aleatoria
 	 * (de 26 caracteres) que permite identificar
 	 * al usuario que accede a la URL de confirmacion de su registro
-	 * en la aplicacion. <br/>
+	 * en la aplicacion. <br>
 	 * Se utiliza en la vista 'register_confirm.xhtml', donde se inicializa
 	 * mediante el &lt;f:viewParam&gt; que invoca al metodo set del atributo. */
 	private String urlConfirm;
@@ -138,12 +138,12 @@ public class BeanUserRegister implements Serializable{
 	// // // // // // // // // // // // // // //
 	
 	/**
-	 * Indica, mediante el objeto {@link #beanActionResult}, el resultado
+	 * Indica, mediante el objeto {@link BeanActionResult}, el resultado
 	 * de la accion de invocar al metodo {@link #sendEmailForRegister}.
 	 * @param beanActionResult el bean que mostrara en la vista
 	 * el resultado de la accion
 	 * @return
-	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br>
 	 * Si se produce alguna excepcion, devuelve la regla de navegacion
 	 * que redirige a la pagina de error desconocido ('errorRegister' o
 	 * 'errorUnexpected').
@@ -185,7 +185,7 @@ public class BeanUserRegister implements Serializable{
 	 * y cuya cuenta sera activada
 	 * @return
 	 * Si la accion se produce sin ningun error, retorna la cadena 'noError'.
-	 * <br/>  Si se alcanza el limite de registros de usuarios permitidos
+	 * <br>  Si se alcanza el limite de registros de usuarios permitidos
 	 * en cierto lapso de tiempo, se devuelve la cadena 'limitTooRegistrations'
 	 */
 	private String sendEmailForRegister(User userToRegister){
@@ -203,9 +203,6 @@ public class BeanUserRegister implements Serializable{
 		String uri = req.getRequestURL().toString();
 		String url = uri.substring(0, uri.length()-req.getRequestURI().length())
 				+ req.getContextPath() + "/";
-		// Aqui bastaria que 'content' sea un simple String y no List<String>,
-		// pero para facilitar la uniformidad del codigo, este metodo
-		// se asemeja al de BeanRestorePassword.sendEmailForPasswordRestore
 		content = bundle.getString("mailContentRegister01")
 				+ "\n\n" + bundle.getString("mailContentAdviceRemove")
 				+ "\n\n" + bundle.getString("mailContentRegister02")
@@ -221,7 +218,7 @@ public class BeanUserRegister implements Serializable{
 	
 	/**
 	 * Inicializa los datos por defecto que el usuario que se da de alta
-	 * no introduce en la vista. <br/>
+	 * no introduce en la vista. <br>
 	 * Son datos relativos al estado del usuario
 	 * que normalmente no se le permiten editar directamente, salvo el atributo
 	 * {@link User#locale}, que el usuario puede modificar al cambiar el idioma
@@ -269,10 +266,10 @@ public class BeanUserRegister implements Serializable{
 	 * @param beanActionResult el bean que mostrara en la vista
 	 * el resultado de la accion
 	 * @return
-	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br>
 	 * Si el usuario ya habia confirmado su regisro, devuelve la regla
 	 * de navegacion que redirige a la pagina que indica que la accion ya fue
-	 * realizada ('errorAlreadyPerformed'). <br/>
+	 * realizada ('errorAlreadyPerformed'). <br>
 	 * Si se produce alguna excepcion, devuelve la regla de navegacion
 	 * que redirige a la pagina que indica que la URL es desconocida
 	 * ('errorUnexpectedAnonymous').

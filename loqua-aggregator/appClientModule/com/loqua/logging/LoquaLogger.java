@@ -31,38 +31,50 @@ public class LoquaLogger {
 	// METODOS
 	// // // //
 	
-	/** Invoca al 'logger' para efectuar un mensaje de nivel 'trace' */
+	/** Invoca al 'logger' para efectuar un mensaje de nivel 'trace'.
+	 * @param msgLog mensaje que se muestra en la salida
+	 */
 	public void trace(String msgLog){
 		if( loggerDebug.isTraceEnabled() ){
 			loggerDebug.trace(triggerName + ": " + msgLog);
 		}
 	}
 	
-	/** Invoca al 'logger' para efectuar un mensaje de nivel 'debug' */
+	/** Invoca al 'logger' para efectuar un mensaje de nivel 'debug'.
+	 * @param msgLog mensaje que se muestra en la salida
+	 */
 	public void debug(String msgLog){
 		if( loggerDebug.isDebugEnabled() ){
 			loggerDebug.debug(triggerName + ": " + msgLog);
 		}
 	}
 	
-	/** Invoca al 'logger' para efectuar un mensaje de nivel 'info' */
+	/** Invoca al 'logger' para efectuar un mensaje de nivel 'info'.
+	 * @param msgLog mensaje que se muestra en la salida
+	 */
 	public void info(String msgLog){
 		if( loggerDebug.isInfoEnabled() ){
 			loggerDebug.info(triggerName + ": " + msgLog);
 		}
 	}
 	
-	/** Invoca al 'logger' para efectuar un mensaje de nivel 'warn' */
+	/** Invoca al 'logger' para efectuar un mensaje de nivel 'warn'.
+	 * @param msgLog mensaje que se muestra en la salida
+	 */
 	public void warn(String msgLog){
 		loggerDebug.warn(triggerName + ": " + msgLog);
 	}
 	
-	/** Invoca al 'logger' para efectuar un mensaje de nivel 'error' */
+	/** Invoca al 'logger' para efectuar un mensaje de nivel 'error'.
+	 * @param msgLog mensaje que se muestra en la salida
+	 */
 	public void error(String msgLog){
 		loggerDebug.error(triggerName + ": " + msgLog);
 	}
 	
-	/** Invoca al 'logger' para efectuar un mensaje de nivel 'fatal' */
+	/** Invoca al 'logger' para efectuar un mensaje de nivel 'fatal'.
+	 * @param msgLog mensaje que se muestra en la salida
+	 */
 	public void fatal(String msgLog){
 		loggerDebug.fatal(triggerName + ": " + msgLog);
 	}
@@ -71,8 +83,9 @@ public class LoquaLogger {
 	// GETTERS & SETTERS
 	// // // // // // //
 	
-	/** Devuelve el 'logger' que se ha establecido para
-	 * efectuar la salida de los mensajes de log */
+	/** Halla el 'logger' que se ha establecido para
+	 * efectuar la salida de los mensajes de log
+	 * @return el objeto Logger de la clase */
 	public static Logger getLoggerDebug() {
 		return loggerDebug;
 	}

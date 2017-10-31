@@ -10,6 +10,7 @@ import com.loqua.business.exception.EntityAlreadyFoundException;
 import com.loqua.business.exception.EntityNotFoundException;
 import com.loqua.business.services.ServiceUser;
 import com.loqua.business.services.impl.transactionScript.TransactionUser;
+import com.loqua.business.services.impl.utils.security.MapOccurrCounterByDate;
 import com.loqua.business.services.locator.LocatorLocalEjbServices;
 import com.loqua.business.services.locator.LocatorRemoteEjbServices;
 import com.loqua.business.services.serviceLocal.LocalServiceUser;
@@ -22,12 +23,12 @@ import com.loqua.model.UserInfoPrivacity;
 /**
  * Da acceso a las transacciones correspondientes a las entidades
  * {@link User}, {@link UserInfo}, {@link UserInfoPrivacity}
- * y {@link PrivacityData}.<br/>
+ * y {@link PrivacityData}.<br>
  * La intencion de esta 'subcapa' de EJBs no es albergar mucha logica de negocio
  * (de ello se ocupa el modelo y el Transaction Script), sino hacer
  * que las transacciones sean controladas por el contenedor de EJB
  * (Wildfly en este caso), quien se ocupa por ejemplo de abrir las conexiones
- * a la base de datos mediate un datasource y de realizar los rollback. <br/>
+ * a la base de datos mediate un datasource y de realizar los rollback. <br>
  * Al ser un EJB de sesion sin estado no puede ser instanciado desde un cliente
  * o un Factory Method, sino que debe ser devuelto mediante el registro JNDI.
  * Forma parte del patron Service Locator y se encapsula tras las fachadas
@@ -105,8 +106,8 @@ public class EjbServiceUser
 	}
 	
 	@Override
-	public void createUser(User user) throws EntityAlreadyFoundException {
-		transactionUser.createUser(user);
+	public User createUser(User user) throws EntityAlreadyFoundException {
+		return transactionUser.createUser(user);
 	}
 	
 	@Override
@@ -165,7 +166,7 @@ public class EjbServiceUser
 	}
 	
 	@Override
-	public MapEntityCounterByDate getNumLastRegistrationsFromDB(){
+	public MapOccurrCounterByDate getNumLastRegistrationsFromDB(){
 		return transactionUser.getNumLastRegistrationsFromDB();
 	}
 	
@@ -180,7 +181,16 @@ public class EjbServiceUser
 	}
 
 	@Override
-	public void deleteUserAccount(User user) throws EntityNotFoundException {
-		transactionUser.deleteUserAccount(user);
+	public User deleteUserAccount(User user) throws EntityNotFoundException {
+		return transactionUser.deleteUserAccount(user);
+	}
+	
+	// // // // // // // // // // // // // // // // // //
+	// METODOS PARA ELIMINAR DEFINITIVAMENTE UN USUARIO
+	// // // // // // // // // // // // // // // // // //
+	
+	@Override
+	public void deleteUser(User user) throws EntityNotFoundException {
+		transactionUser.deleteUser(user);
 	}
 }

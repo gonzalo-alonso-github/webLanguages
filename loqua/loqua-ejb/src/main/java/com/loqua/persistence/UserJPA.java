@@ -11,7 +11,7 @@ import javax.persistence.NoResultException;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-import com.loqua.business.services.impl.MapEntityCounterByDate;
+import com.loqua.business.services.impl.utils.security.MapOccurrCounterByDate;
 import com.loqua.model.PrivacityData;
 import com.loqua.model.User;
 import com.loqua.model.UserInfo;
@@ -63,7 +63,7 @@ public class UserJPA {
 	/**
 	 * Realiza la consulta JPQL 'User.getUserById'
 	 * @param userId atributo 'id' del User que se consulta
-	 * @return User cuyo atributo 'id' coincide con el parametro dado
+	 * @return objeto User cuyo atributo 'id' coincide con el parametro dado
 	 * @throws EntityNotPersistedException
 	 */
 	public User getUserById(Long userId) throws EntityNotPersistedException {
@@ -229,14 +229,15 @@ public class UserJPA {
 	
 	/**
 	 * Agrega a la base de datos el User recibido por parametro, ademas de
-	 * su UserInfo, UserInfoPrivacity y PrivacityData asociados
+	 * su UserInfo, UserInfoPrivacity y PrivacityData asociados.
 	 * @param userToCreate User que se desea guardar
+	 * @return el usuario agregado
 	 * @throws EntityAlreadyPersistedException
 	 */
-	public void create(User userToCreate)
+	public User create(User userToCreate)
 			throws EntityAlreadyPersistedException {
 		try{
-			verifyUserRemovedNotAlreadyExists(userToCreate);
+			verifyUserNotAlreadyExists(userToCreate);
 			JPA.getManager().persist( userToCreate );
 			JPA.getManager().persist( userToCreate.getPrivacityData() );
 			JPA.getManager().persist( userToCreate.getUserInfo() );
@@ -251,6 +252,7 @@ public class UserJPA {
 			throw new PersistenceRuntimeException(
 					PERSISTENCE_GENERAL_EXCEPTION, ex);
 		}
+		return userToCreate;
 	}
 	
 	/**
@@ -301,7 +303,7 @@ public class UserJPA {
 	 * @param userToCreate User cuyo email se comprueba
 	 * @throws EntityAlreadyPersistedException
 	 */
-	private void verifyUserRemovedNotAlreadyExists(User userToCreate) 
+	private void verifyUserNotAlreadyExists(User userToCreate) 
 			throws EntityAlreadyPersistedException {
 		User repeated = null;
 		try{
@@ -343,20 +345,20 @@ public class UserJPA {
 	}
 	
 	/**
-	 * Genera una instancia de MapEntityCounterByDate y carga dicho Map
+	 * Genera una instancia de {@link MapOccurrCounterByDate} y carga dicho Map
 	 * realizando varias consultas a la base de datos.
 	 * La intencion es restringir el numero de registros de usuarios, como
 	 * medida de seguridad
-	 * @return una instancia de MapEntityCounterByDate que almacena la 
+	 * @return una instancia de MapOccurrCounterByDate que almacena la 
 	 * cantidad de registros de usuario en la aplicacion a lo largo de
 	 * distintos lapsos de tiempo (el Map clasifica
 	 * los siguientes lapsos: por minuto, por cinco minutos, por cuarto de hora,
 	 * por hora, por dia, por semana y por mes)
 	 * @throws EntityNotPersistedException
 	 */
-	public MapEntityCounterByDate getNumLastRegistrations() 
+	public MapOccurrCounterByDate getNumLastRegistrations() 
 			throws EntityNotPersistedException {
-		MapEntityCounterByDate result = new MapEntityCounterByDate();
+		MapOccurrCounterByDate result = new MapOccurrCounterByDate();
 		Date periodToSearch = new Date();
 		long currentDateLong = periodToSearch.getTime();
 		long lastMinute = currentDateLong-60000;
@@ -593,7 +595,7 @@ public class UserJPA {
 	/**
 	 * Elimina de la base de datos el objeto UserInfo, UserInfoPrivacity,
 	 * y PrivacityData del User dado
-	 * @param user User que se desea eliminar
+	 * @param user User asociado a la informacion que se desea eliminar
 	 * @throws EntityNotPersistedException
 	 */
 	public void deleteUserAccount(User user) throws EntityNotPersistedException{
@@ -612,6 +614,30 @@ public class UserJPA {
 			JPA.getManager()
 				.createNamedQuery("User.deletePrivacityData")
 				.setParameter(1, user.getPrivacityData().getId())
+				.executeUpdate();
+		}catch( NoResultException ex ){
+			throw new EntityNotPersistedException(
+					USER_NOT_PERSISTED_EXCEPTION, ex);
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+	}
+	
+	/**
+	 * Elimina de la base de datos el objeto User dado
+	 * @param user User que se desea eliminar
+	 * @throws EntityNotPersistedException
+	 */
+	public void deleteUser(User user) throws EntityNotPersistedException{
+		try{
+			/* UserInfo userInfoToRemove = 
+					Jpa.getManager().find(UserInfo.class, ui.getId());
+			Jpa.getManager().remove(userInfoToRemove); */
+			JPA.getManager()
+				.createNamedQuery("User.deleteUser")
+				.setParameter(1, user.getId())
 				.executeUpdate();
 		}catch( NoResultException ex ){
 			throw new EntityNotPersistedException(

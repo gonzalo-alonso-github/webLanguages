@@ -36,12 +36,12 @@ public class BeanComment implements Serializable{
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	/** Parametro 'comment' recibido en la URL, que indica el identificador
-	 * del comentario que se desea editar o citar. <br/>
+	 * del comentario que se desea editar o citar. <br>
 	 * Se inicializa en la vista 'forum_thread_comment.xhtml',
 	 * mediante el &lt;f:viewParam&gt; que invoca al metodo set del atributo. */
 	private String commViewParam;
 	
-	/** Es el comentario que va a crear/editar/citar. <br/>
+	/** Es el comentario que va a crear/editar/citar. <br>
 	 * Se inicializa en la vista 'forum_thread_comment.xhtml',
 	 * mediante el &lt;f:viewParam&gt; que invoca al metodo set del atributo
 	 * {@link #commViewParam}. */
@@ -86,8 +86,8 @@ public class BeanComment implements Serializable{
 	
 	/** Inicializa los atributos {@link #textCodeComment}
 	 * y {@link #plainTextComment} para que el componente summernote
-	 * de las vistas muestre el texto que se edita.<br/>
-	 * Va destinado a ser invocado desde la la seccion '<f:metadata>'
+	 * de las vistas muestre el texto que se edita.<br>
+	 * Va destinado a ser invocado desde la la seccion 'f:metadata'
 	 * de la vista forum_thread_comment.xhtml. */
 	public void onLoad() {
 		if( actionType==2 ){
@@ -253,7 +253,7 @@ public class BeanComment implements Serializable{
 	 * Comprueba si un comentario ya ha sido votado por el usuario logueado
 	 * @param comment comentario que se comprueba
 	 * @return
-	 * 'true' si el comentario ya ha sido votado <br/>
+	 * 'true' si el comentario ya ha sido votado <br>
 	 * 'false' si el comentario aun no ha sido votado
 	 */
 	public boolean commentAlreadyVotedByUser(Comment comment){
@@ -320,10 +320,23 @@ public class BeanComment implements Serializable{
 	private String createComment(ForumThread thread)
 			throws EntityAlreadyFoundException, EntityNotFoundException{
 		compilePlainTextComment();
-		Comment comm = Factories.getService().getServiceComment().sendComment(
-				thread, plainTextComment, textCodeComment,
-				beanLogin.getLoggedUser());
-		return getCommandLinkToPostStatic(comm);
+		Comment commentToCreate = generateComment(thread);
+		Comment commentResult = Factories.getService().getServiceComment()
+				.sendComment(commentToCreate);
+		return getCommandLinkToPostStatic(commentResult);
+	}
+	
+	/**
+	 * Genera un objeto {@link Comment} a partir de los datos del bean.
+	 * @param thread el hilo del foro al que pertenece el comentario
+	 * que se genera
+	 * @return el objeto Comment generado
+	 */
+	private Comment generateComment(ForumThread thread){
+		Comment comment = new Comment();
+		comment.setTextThis(plainTextComment).setTextHtmlThis(textCodeComment)
+			.setUserThis(beanLogin.getLoggedUser()).setForumThreadThis(thread);
+		return comment;
 	}
 	
 	/**
@@ -354,10 +367,11 @@ public class BeanComment implements Serializable{
 	private String quoteComment(ForumThread thread)
 			throws EntityAlreadyFoundException, EntityNotFoundException{
 		compilePlainTextComment();
-		Comment comm = Factories.getService().getServiceComment().quoteComment(
-				commentToCRUD, plainTextComment, textCodeComment,
-				beanLogin.getLoggedUser());
-		return getCommandLinkToPostStatic(comm);
+		Comment commentToCreate = generateComment(thread);
+		// Aqui 'commentToCRUD' es el comentario que se va a citar
+		Comment commentResult = Factories.getService().getServiceComment()
+				.quoteComment(commentToCRUD, commentToCreate);
+		return getCommandLinkToPostStatic(commentResult);
 	}
 	
 	/**
@@ -461,6 +475,8 @@ public class BeanComment implements Serializable{
 	 * por el usuario en el componente Summernote de la vista.
 	 * @param textCode codigo HTML del texto introducido por el usuario en
 	 * el componente Summernote de la vista
+	 * @return el texto, en formato HTML, introducido por el usuaio en el
+	 * componente Summernote
 	 */
 	private String verifyTextCodeSummernote(String textCode){
 		if( textCode!=null ){

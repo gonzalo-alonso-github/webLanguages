@@ -34,7 +34,7 @@ public class ValidatorPassword implements Validator {
 	<li>Parentesis (Brackets): '(' y ')'</li>
 	<li>Corchetes (Square Brackets): '[' y ']'</li>
 	<li>Llaves (Curly Brackets) '{' y '}'</li>
-	<li>Signos Menor y Mayor (Less and Greater): '<' y '>'</li>
+	<li>Signos Menor y Mayor (Less and Greater): '&lt;' y '&gt;'</li>
 	</ul> */
 	private static final String PASSWORD_PATTERN = 
 			"("
@@ -80,7 +80,7 @@ public class ValidatorPassword implements Validator {
 	 * tiene una longitud aceptable.
 	 * @return
 	 * 'true' si la longitud de la cadena recibida esta entre
-	 * los 8 y los 15 caracteres (ambos incluidos como valores validos) <br/>
+	 * los 8 y los 15 caracteres (ambos incluidos como valores validos) <br>
 	 * 'false' si la longitud de la cadena recibida
 	 * no alcanza los 8 caracteres, o sobrepasa los 15 caracteres
 	 */
@@ -95,7 +95,7 @@ public class ValidatorPassword implements Validator {
 	 * Comprueba si la contrase&ntilde;a indicada en el UIComponent
 	 * cumple el formato indicado en el atributo {@link #PASSWORD_PATTERN}
 	 * @return
-	 * 'true' si la contrase&ntilde;a cumple el formato indicado <br/>
+	 * 'true' si la contrase&ntilde;a cumple el formato indicado <br>
 	 * 'false' si la contrase&ntilde;a no cumple el formato indicado
 	 */
 	private boolean validateRegex() {
@@ -107,8 +107,9 @@ public class ValidatorPassword implements Validator {
 	}
 	
 	/**
-	 * Devuelve la contrase&ntilde;a indicada en el UIComponent
+	 * Halla la contrase&ntilde;a indicada en el UIComponent
 	 * (sera cadena vacia si no ha sido inicializada).
+	 * @return la contrase&ntilde;a introducida
 	 */
 	public static String getPassword(){
 		return password;

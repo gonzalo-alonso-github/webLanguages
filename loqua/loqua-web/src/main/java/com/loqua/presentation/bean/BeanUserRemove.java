@@ -33,7 +33,7 @@ public class BeanUserRemove implements Serializable{
 	/** Parametro 'confirm' recibido en la URL. Es una cadena aleatoria
 	 * (de 26 caracteres) que permite identificar
 	 * al usuario que accede a la URL de confirmacion de la eliminacion
-	 * de su cuenta. <br/>
+	 * de su cuenta. <br>
 	 * Se utiliza en la vista 'removeAccount_confirm.xhtml', donde se inicializa
 	 * mediante el &lt;f:viewParam&gt; que invoca al metodo set del atributo. */
 	private String urlConfirm;
@@ -98,14 +98,14 @@ public class BeanUserRemove implements Serializable{
 	// // // // // // // // // // // // // // // // // // // //
 	
 	/**
-	 * Indica, mediante el objeto {@link #beanActionResult}, el resultado
+	 * Indica, mediante el objeto {@link BeanActionResult}, el resultado
 	 * de la accion de invocar al metodo {@link #sendEmailForRemoveUser}.
 	 * @param beanUserView objeto {@link BeanUserView} cuyo atributo
 	 * {@link BeanUserView#user} indica el usuario cuya cuenta sera eliminada.
 	 * @param beanActionResult el bean que mostrara en la vista
 	 * el resultado de la accion
 	 * @return
-	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br>
 	 * Si se produce alguna excepcion, devuelve la regla de navegacion
 	 * que redirige a la pagina de error desconocido ('errorUnexpected').
 	 * @see #sendEmailForRemoveUser
@@ -131,10 +131,6 @@ public class BeanUserRemove implements Serializable{
 	 * Envia al email del usuario un correo que muestra un enlace para que 
 	 * confirme la eliminacion de su cuenta.
 	 * @param userToRemove usuario cuya cuenta sera eliminada
-	 * @return
-	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
-	 * Si se produce alguna excepcion, devuelve la regla de navegacion
-	 * que redirige a la pagina de error desconocido ('errorUnexpected').
 	 * @throws EntityNotFoundException
 	 */
 	private void sendEmailForRemoveUser(User userToRemove) 
@@ -175,7 +171,7 @@ public class BeanUserRemove implements Serializable{
 	 * @param beanActionResult el bean que mostrara en la vista
 	 * el resultado de la accion
 	 * @return
-	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br>
 	 * Si se produce alguna excepcion, devuelve la regla de navegacion
 	 * que redirige a la pagina que indica que la URL es desconocida
 	 * ('errorUnknownUrl').
@@ -194,7 +190,7 @@ public class BeanUserRemove implements Serializable{
 					beanActionResult.setMsgActionResult(
 							"errorAlreadyPerformed");
 				}else{
-					updateUser( userToRemove, beanActionResult );
+					removeUserData( userToRemove, beanActionResult );
 					if( beanLogin.getLoggedUser()!=null 
 							&& beanLogin.getLoggedUser().equals(userToRemove) ){
 						beanLogin.close();
@@ -237,12 +233,9 @@ public class BeanUserRemove implements Serializable{
 	 * @param beanActionResult el bean que mostrara en la vista
 	 * el resultado de la accion
 	 */
-	private void updateUser(User user, BeanActionResult beanActionResult)
-			throws Exception{
+	private void removeUserData(User user, BeanActionResult beanActionResult){
 		try{
-			user.removeUserData();
 			deleteUserAccount(user);
-			Factories.getService().getServiceUser().updateDataByUser(user);
 		} catch (Exception e) {
 			beanActionResult.setMsgActionResult("errorUnknownUrl");
 			log.error("Unexpected Exception at 'updateUser()'");

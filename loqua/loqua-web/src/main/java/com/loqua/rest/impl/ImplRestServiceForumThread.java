@@ -61,4 +61,23 @@ public class ImplRestServiceForumThread implements RestServiceForumThread{
 			log.error("Exception at 'createForumThreadsByList()'");
 		}
 	}
+	
+	@Override
+	public void deleteForumThreadsByList(List<ForumThread> threadsToDelete){
+		// En una sola peticion REST nos envian toda la lista de threads
+		// (es mejor que hacer una peticion REST por cada thread)
+		try{
+			// Recorre la lista haciendo 1 transaccion delete por cada 'thread'
+			/* Si en lugar de recorrer aqui la lista la enviasemos al EJB,
+			entonces en caso de producirse una excepcion
+			el rollback descartaria todos los threads de dicha lista.
+			Pero de esta manera, como al EJB solo se le envia un thread,
+			solo se descartaria ese en concreto. */
+			for( ForumThread threadToDelete : threadsToDelete ){
+				service.deleteForumThreadForTest(threadToDelete.getId());
+			}
+		}catch(Exception e){
+			log.error("Exception at 'deleteForumThreadsByList()'");
+		}
+	}
 }

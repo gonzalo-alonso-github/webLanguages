@@ -89,7 +89,7 @@ public class BeanSettingsActionLimits implements Serializable {
 	/**
 	 * Comprueba que la propiedad indicada del fichero
 	 * 'numActionsAtPeriod.properties' esta inicializada con un valor aceptable,
-	 * y si es asi devuelve su valor.<br/>
+	 * y si es asi devuelve su valor.<br>
 	 * Si no es asi, devuelve el valor por defecto: 0.
 	 * @param action nombre de la propiedad que describe una accion que,
 	 * en el fichero 'numActionsAtPeriod.properties',

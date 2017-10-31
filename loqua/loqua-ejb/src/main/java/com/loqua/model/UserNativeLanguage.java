@@ -92,7 +92,7 @@ public class UserNativeLanguage implements Serializable {
 	// RELACION ENTRE ENTIDADES (GETTERS & SETTERS)
 	// // // // // // // // // // // // // //
 	
-	/** Relaci�n entre entidades:<br>
+	/* Relacion entre entidades:
 	 *  1 User <--> * UserNativeLanguage <--> 1 Language 
 	 */
 	public User getUser() {

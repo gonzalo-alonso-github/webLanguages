@@ -16,7 +16,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.http.Part;
 
-import com.loqua.business.services.impl.ManagementBlobs;
+import com.loqua.business.services.impl.utils.externalAccounts.ManagementBlobs;
 import com.loqua.model.Country;
 import com.loqua.model.User;
 import com.loqua.presentation.bean.BeanUserView;
@@ -34,10 +34,6 @@ import com.loqua.presentation.logging.LoquaLogger;
 @ApplicationScoped
 public class BeanUserImages implements Serializable {
 	
-	/**
-	 * Numero de version de la clase serializable.
-	 * @see Serializable#serialVersionUID
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	/** Manejador de logging */
@@ -115,7 +111,7 @@ public class BeanUserImages implements Serializable {
      * segun su nivel de privacidad, no es visible para el usuario
      * que la consulta. En tal caso no hay que hacer una acceso a base de datos
      * (repositorio remoto de Azure)
-     * para hallar la imagen, sino que se devuelve la imagen por defecto.<br/>
+     * para hallar la imagen, sino que se devuelve la imagen por defecto.<br>
      * En caso contrario, no quedaria mas remedio que hallar la imagen adecuada
      * accediendo a la base de datos; entonces de ello se encargara otro metodo
      * y aqui se devuelve null.
@@ -288,7 +284,7 @@ public class BeanUserImages implements Serializable {
 	 * guardado en el repositorio remoto de Azure.
 	 * @param country objeto Country que representa al pais cuya bandera se
 	 * consulta
-	 * @return la imagen hallada
+	 * @return la imagen hallada, o valor 'null' si no es accesible
 	 */
 	private byte[] getCountryImage(Country country) {
 		if( country==null ) return null;

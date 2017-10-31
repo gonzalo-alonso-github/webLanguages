@@ -24,11 +24,11 @@ import com.loqua.presentation.util.VerifierAjaxRequest;
  * Define el filtro, que se aplica sobre la pagina de
  * 'profile_contacts_user.xhtml',
  * y que comprueba si son correctos los parametros enviados en la URL
- * (la 'query string'). <br/>
+ * (la 'query string'). <br>
  * El ciclo de JSF es interceptado por el Filtro antes de que el navegador
  * muestre la pagina sobre la que este se aplica, y se ejecuta inmediatamene
  * despues de los manejadores de navegacion (NavigationHandler) y de vista
- * (ViewHandler). <br/>
+ * (ViewHandler). <br>
  * Puesto que se definen varios filtros sobre esta misma pagina, es coveniente
  * indicar, en el fichero web.xml, el orden en que se aplican.
  * @author Gonzalo
@@ -160,7 +160,7 @@ public class FilterProfileContacts implements Filter {
 	 * @param loggedUser el usuario que accede a la pagina
 	 * @return
 	 * 'true' si el parametro 'user' de la URL corresponde a un usuario
-	 * no eliminado <br/>
+	 * no eliminado <br>
 	 * 'false' si el parametro 'user' de la URL no corresponde a un usuario
 	 * no eliminado
 	 */

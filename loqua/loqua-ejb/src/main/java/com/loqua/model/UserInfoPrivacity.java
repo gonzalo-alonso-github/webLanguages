@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * Representa la informacion sobre los datos estrictamente personales
- * de un usuario. <br/><br/>
+ * de un usuario. <br><br>
  * En lugar de albergar esta informacion en {@link User} esta entidad
  * corresponde a la tabla UserInfoPrivacity, que almacena datos
  * que no son de acceso ni referentes al estado del usuario
@@ -101,8 +101,8 @@ public class UserInfoPrivacity implements Serializable {
 	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/**
-	 * Relacion entre entidades:<br>
+	/*
+	 * Relacion entre entidades:
 	 *  1 UserInfoPrivacity <--> 1 User
 	 */
 	/*@XmlTransient*/@XmlElement

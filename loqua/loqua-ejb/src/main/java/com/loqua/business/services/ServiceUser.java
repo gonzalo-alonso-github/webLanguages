@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.loqua.business.exception.EntityAlreadyFoundException;
 import com.loqua.business.exception.EntityNotFoundException;
-import com.loqua.business.services.impl.MapEntityCounterByDate;
+import com.loqua.business.services.impl.utils.security.MapOccurrCounterByDate;
 import com.loqua.model.PrivacityData;
 import com.loqua.model.User;
 import com.loqua.model.UserInfo;
@@ -34,7 +34,6 @@ public interface ServiceUser {
 	 * @param email atributo homonimo del User que se consulta
 	 * @return objeto User cuyo atributo 'email' coincide
 	 * con el parametro dado
-	 * @throws EntityNotFoundException
 	 */
 	User getUserNotRemovedByEmail(String email);
 	
@@ -44,7 +43,6 @@ public interface ServiceUser {
 	 * @param nick atributo homonimo del User que se consulta
 	 * @return objeto User cuyo atributo 'nick' coincide con el
 	 * parametro recibido y cuyo atributo 'removed' es 'false'
-	 * @throws EntityNotFoundException
 	 */
 	User getUserNotRemovedByNick(String nick);
 	
@@ -57,7 +55,6 @@ public interface ServiceUser {
 	 * dado, y cuyo atributo 'password', una vez descifrado,
 	 * coincide con el parametro indicado, y cuyo atributo 'removed'
 	 * es 'false' o bien tenga 'role' igual a 'ADMINISTRATOR'
-	 * @throws EntityNotFoundException
 	 */
 	public User getUserToLogin(String email, String password);	
 	
@@ -87,11 +84,12 @@ public interface ServiceUser {
 	void resetLoginFails(User userToUpdate) throws EntityNotFoundException;
 
 	/**
-	 * Agrega un nuevo usuario al sistema
+	 * Agrega un nuevo usuario al sistema.
 	 * @param userToCreate User que se desea agregar
+	 * @return el usuario agregado
 	 * @throws EntityAlreadyFoundException
 	 */
-	void createUser(User userToCreate) throws EntityAlreadyFoundException;
+	User createUser(User userToCreate) throws EntityAlreadyFoundException;
 	
 	/**
 	 * Actualiza en el sistema el objeto User dado, ademas
@@ -116,7 +114,7 @@ public interface ServiceUser {
 	 * @return atributo 'locale' del User que se recibe por parametro
 	 * @throws EntityNotFoundException
 	 */
-	String getLocaleByUser(User loggedUser) throws EntityNotFoundException;
+	String getLocaleByUser(User userToUpdate) throws EntityNotFoundException;
 
 	/**
 	 * Consulta usuarios segun su atributo 'urlConfirm'
@@ -172,7 +170,7 @@ public interface ServiceUser {
 	 * lapsos de tiempo
 	 * @return
 	 * Si la accion se produce sin ningun error, retorna la cadena 'noError'.
-	 * <br/>
+	 * <br>
 	 * Si se alcanza el limite de registros de usuarios permitidos
 	 * en cierto lapso de tiempo, se devuelve la cadena 'limitTooRegistrations'
 	 */
@@ -187,7 +185,7 @@ public interface ServiceUser {
 	 * (el Map clasifica los siguientes lapsos: por minuto, por cinco minutos,
 	 * por cuarto de hora, por hora, por dia, por semana y por mes)
 	 */
-	MapEntityCounterByDate getNumLastRegistrationsFromDB();
+	MapOccurrCounterByDate getNumLastRegistrationsFromDB();
 
 	/**
 	 * Envia al usuario dado un correo electronico con un enlace para que pueda
@@ -201,15 +199,23 @@ public interface ServiceUser {
 			String subject) throws EntityNotFoundException;
 	
 	/**
-	 * Elimina del sistema los datos privados de un usuario.<br/>
+	 * Elimina del sistema los datos privados de un usuario.<br>
 	 * No se eliminan las participaciones del usuario en el foro
-	 * ni los 'votos' que haya dado a las participaciones de otros. <br/>
+	 * ni los 'votos' que haya dado a las participaciones de otros. <br>
 	 * Tampoco se elimina como destinatario de sus mensajes recibidos,
 	 * aunque si se elimina como destinatario de las publicaciones recibidas,
 	 * y tambien se eliminan los mensajes que el envio
 	 * y las publicaciones/notificaciones creadas/logradas por el
 	 * @param user User que se desea eliminar
+	 * @return el usuario eliminado
 	 * @throws EntityNotFoundException
 	 */
-	void deleteUserAccount(User user) throws EntityNotFoundException;
+	User deleteUserAccount(User user) throws EntityNotFoundException;
+	
+	/**
+	 * Elimina del sistema el usuario indicado (objeto User).
+	 * @param user User que se desea eliminar
+	 * @throws EntityNotFoundException
+	 */
+	void deleteUser(User user) throws EntityNotFoundException;
 }

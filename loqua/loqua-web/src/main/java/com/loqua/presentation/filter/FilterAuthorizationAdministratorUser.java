@@ -18,16 +18,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.loqua.presentation.bean.BeanUserEditProfile;
+
 import com.loqua.model.User;
 
 /**
  * Define el filtro que se aplica sobre todas las paginas exclusivas
  * de usuarios de tipo administrador. Este filtro impide que ningun usuario
- * que no sea administrador acceda a dichas paginas. <br/>
+ * que no sea administrador acceda a dichas paginas. <br>
  * El ciclo de JSF es interceptado por el Filtro antes de que el navegador
  * muestre la pagina sobre la que este se aplica, y se ejecuta inmediatamene
  * despues de los manejadores de navegacion (NavigationHandler) y de vista
- * (ViewHandler). <br/>
+ * (ViewHandler). <br>
  * Puesto que se definen varios filtros sobre las mismas paginas, es coveniente
  * indicar, en el fichero web.xml, el orden en que se aplican.
  * @author Gonzalo
@@ -152,7 +154,7 @@ public class FilterAuthorizationAdministratorUser implements Filter {
 	
 	/**
 	 * Comprueba si el usuario ha sido desactivado mientras tenia
-	 * una sesion iniciada. En el momento en que eso sucede, el
+	 * una sesion iniciada. En el momento en que eso sucede, el bean
 	 * {@link BeanUserEditProfile} guarda en la lista 'DEACTIVATED_USERS'
 	 * (almacenada en el contexto de aplicacion) el identificador del usuario.
 	 * Por tanto este metodo accede a dicha lista para realizar
@@ -160,7 +162,7 @@ public class FilterAuthorizationAdministratorUser implements Filter {
 	 * @param loggedUser usuario que se verifica
 	 * @param req peticion HTTP
 	 * @return
-	 * 'true' si el usuario esta desactivado <br/>
+	 * 'true' si el usuario esta desactivado <br>
 	 * 'false' si el usuario no esta desactivado
 	 */
 	private boolean isDeactivated(User loggedUser, HttpServletRequest req){
@@ -182,10 +184,10 @@ public class FilterAuthorizationAdministratorUser implements Filter {
 	/**
 	 * Comprueba si la pagina de perfil que visita el usuario es la suya propia,
 	 * o si es el perfil de otro usuario.
-	 * @param loggedUser usuario que se verifica
+	 * @param loggedUserId usuario que se verifica
 	 * @param req peticion HTTP
 	 * @return
-	 * 'true' si el usuario esta visitando su propio perfil <br/>
+	 * 'true' si el usuario esta visitando su propio perfil <br>
 	 * 'false' si el usuario esta visitando un perfil ajeno
 	 */
 	private boolean visitOwnUserProfile(
@@ -213,7 +215,7 @@ public class FilterAuthorizationAdministratorUser implements Filter {
 	 * @param loggedUser usuario que se verifica
 	 * @param req peticion HTTP
 	 * @return
-	 * 'true' si el usuario ya tenia una sesion iniciada <br/>
+	 * 'true' si el usuario ya tenia una sesion iniciada <br>
 	 * 'false' si el usuario no tiene otra sesion iniciada
 	 */
 	private boolean userRepeatedlyLogged(User loggedUser,

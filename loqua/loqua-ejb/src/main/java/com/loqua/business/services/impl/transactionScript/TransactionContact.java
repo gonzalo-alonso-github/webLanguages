@@ -19,7 +19,7 @@ import com.loqua.persistence.exception.EntityNotPersistedException;
 /**
  * Da acceso a los procedimientos, dirigidos a la capa de persistencia,
  * correspondientes a las transacciones de las entidades
- * {@link Contact} y {@link ContactRequest}. <br/>
+ * {@link Contact} y {@link ContactRequest}. <br>
  * Este paquete de clases implementa el patron Transaction Script y
  * es el que, junto al modelo, concentra gran parte de la logica de negocio
  * @author Gonzalo
@@ -66,11 +66,11 @@ public class TransactionContact {
 	 * @return lista de ContactRequest asociadas a los usuarios indicados
 	 */
 	private ContactRequest getContactRequestByBothUsers(
-			Long userReceiverId, Long userSenderId) {
+			Long userSenderId, Long userReceiverId) {
 		ContactRequest result = null;
 		try {
 			result = contactJPA.getContactRequestByBothUsers(
-					userReceiverId, userSenderId);
+					userSenderId, userReceiverId);
 		} catch (EntityNotPersistedException ex) {
 			return null;
 		}
@@ -79,7 +79,7 @@ public class TransactionContact {
 	
 	/**
 	 * Consulta las peticiones de contacto recibidas por el usuario dado
-	 * @param user atributo 'id' del User que se consulta
+	 * @param userId atributo 'id' del User que se consulta
 	 * @return lista de ContactRequest cuyo atributo 'userReceiver'
 	 * coincide con el parametro dado
 	 */
@@ -110,10 +110,10 @@ public class TransactionContact {
 	 * @param user User asociado a los Contact que se desean eliminar
 	 * @throws EntityNotFoundException
 	 */
-	public void deleteAllContactRequestsByUser(User u)
+	public void deleteAllContactRequestsByUser(User user)
 			throws EntityNotFoundException {
 		try {
-			contactJPA.deleteAllContactRequestsByUser(u);
+			contactJPA.deleteAllContactRequestsByUser(user);
 		} catch (EntityNotPersistedException ex) {
 			throw new EntityNotFoundException(ex);
 		}
@@ -187,20 +187,20 @@ public class TransactionContact {
 	 * @throws EntityAlreadyFoundException
 	 * @throws EntityNotFoundException
 	 */
-	public void acceptRequest(Long userReceiverId, Long userSenderId)
+	public void acceptRequest(Long userSenderId, Long userReceiverId)
 			throws EntityAlreadyFoundException, EntityNotFoundException {
 		ContactRequest request = getContactRequestByBothUsers(
-			userReceiverId, userSenderId);
+				userSenderId, userReceiverId);
 		try{
 			if( request==null ){ return; }
 			// Aceptar una solicitud significa:
 			// borrarla de la tabla ContactRequest
 			contactJPA.deleteRequest(request);
 			// y agregar dos entradas en la tabla Contact
-			createContact(userReceiverId, userSenderId);
+			createContact(userSenderId, userReceiverId);
 			//Una vez aceptada la solicitud se busca y elimina si esta repetida
 			ContactRequest invertedRequest = getContactRequestByBothUsers(
-					userSenderId, userReceiverId);
+					userReceiverId, userSenderId);
 			if(invertedRequest!=null) contactJPA.deleteRequest(invertedRequest);
 		} catch (EntityNotPersistedException ex) {
 			throw new EntityNotFoundException(ex);
@@ -213,10 +213,10 @@ public class TransactionContact {
 	 * @param userSenderId usuario que envia la solicitud de contacto
 	 * @throws EntityNotFoundException
 	 */
-	public void deleteRequest(Long userReceiverId, Long userSenderId)
+	public void deleteRequest(Long userSenderId, Long userReceiverId)
 			throws EntityNotFoundException {
 		ContactRequest request = getContactRequestByBothUsers(
-				userReceiverId, userSenderId);
+				userSenderId, userReceiverId);
 		try{
 			if( request!=null ){
 				request.setRejected(true);

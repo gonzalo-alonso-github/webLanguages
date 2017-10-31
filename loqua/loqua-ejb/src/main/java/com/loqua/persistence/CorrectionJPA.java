@@ -1,13 +1,11 @@
 package com.loqua.persistence;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.NoResultException;
 
-import com.loqua.model.Comment;
 import com.loqua.model.Correction;
 import com.loqua.model.CorrectionAgree;
 import com.loqua.model.CorrectionDisagree;
@@ -231,7 +229,7 @@ public class CorrectionJPA {
 	 * @param correctionId atributo 'id' de la Correction a la que pertenecen
 	 * los CorrectionAgree que se consultan
 	 * @return
-	 * true: si el usuario ha dado su recomendacion a la correccion<br/>
+	 * true: si el usuario ha dado su recomendacion a la correccion<br>
 	 * false: si el usuario aun no ha dado su recomendacion a la correccion
 	 * @throws EntityNotPersistedException
 	 */
@@ -266,7 +264,7 @@ public class CorrectionJPA {
 	 * @param correctionId atributo 'id' de la Correction a la que pertenecen
 	 * los CorrectionAgree que se consultan
 	 * @return
-	 * true: si el usuario ha dado su recomendacion a la correccion<br/>
+	 * true: si el usuario ha dado su recomendacion a la correccion<br>
 	 * false: si el usuario aun no ha dado su recomendacion a la correccion
 	 * @throws EntityNotPersistedException
 	 */
@@ -308,6 +306,28 @@ public class CorrectionJPA {
 			throw new PersistenceRuntimeException(
 					PERSISTENCE_GENERAL_EXCEPTION, ex);
 		}
+	}
+	/**
+	 * Actualiza en la base de datos el objeto Correction dado
+	 * estableciendo su atribuo 'approved' igual a 'true'
+	 * @param correctionId atributo 'id' del Correction que se actualiza
+	 * @throws EntityNotPersistedException
+	 */
+	public void setApprovedFalse(Long correctionId)
+			throws EntityNotPersistedException {
+		String namedQuery = "Correction.setApprovedFalse";
+		try{
+			JPA.getManager().createNamedQuery(namedQuery)
+					.setParameter(1, correctionId)
+					.executeUpdate();
+		}catch( NoResultException ex ){
+			throw new EntityNotPersistedException(
+				CORRECTION_NOT_PERSISTED_EXCEPTION, ex);
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}catch( Exception ex ){}
 	}
 
 	/**
@@ -370,6 +390,31 @@ public class CorrectionJPA {
 	}
 	
 	/**
+	 * Elimina de la base de datos el objeto CorrectionAgree que asocia al
+	 * usuario y la correccion indicados
+	 * @param userId usuario asociado al CorrectionAgree eliminado
+	 * @param correctionId correccion asociada al CorrectionAgree eliminado
+	 * @throws EntityNotPersistedException
+	 */
+	public void deleteAgreement(Long userId, Long correctionId)
+			throws EntityNotPersistedException{
+		try{
+			JPA.getManager()
+				.createNamedQuery("Correction.deleteAgreement")
+				.setParameter(1, userId)
+				.setParameter(2, correctionId)
+				.executeUpdate();
+		}catch( NoResultException ex ){
+			throw new EntityNotPersistedException(
+					CORRECTION_NOT_PERSISTED_EXCEPTION, ex);
+		}catch( RuntimeException ex ){
+			//HibernateException,IllegalArgumentException,ClassCastException...
+			throw new PersistenceRuntimeException(
+					PERSISTENCE_GENERAL_EXCEPTION, ex);
+		}
+	}
+	
+	/**
 	 * Genera un objeto CorrectionDisagree a partir de los parametros recibidos
 	 * y lo agrega a la base de datos
 	 * @param userId User autor del CorrectionAgree que se genera
@@ -405,26 +450,14 @@ public class CorrectionJPA {
 	/**
 	 * Genera un objeto Correction a partir de los parametros recibidos
 	 * y lo agrega a la base de datos
-	 * @param commentToCorrect Comment al que pertenece la Correction
-	 * que se genera
-	 * @param text atributo homonimo de la Correction que se genera
-	 * @param code atributo 'textHtml' de la Correction que se genera
-	 * @param user User autor de la Correction que se genera
-	 * @return la Correction que ha agregado a la base de datos
+	 * @param correction los datos de la correccion que se agrega
+	 * @return el objeto Correction agregado
 	 * @throws EntityAlreadyPersistedException
 	 * @throws EntityNotPersistedException
 	 */
-	public Correction createCorrection(Comment commentToCorrect, String text,
-			String code, User user)
+	public Correction createCorrection(Correction correction)
 			throws EntityAlreadyPersistedException, EntityNotPersistedException{
-		Correction correction = null;
 		try{
-			correction = new Correction();
-			correction.setTextThis(text).setTextHtmlThis(code)
-				.setApprovedThis(false).setCommentThis(commentToCorrect)
-				.setUserThis(user).setDateThis(new Date())
-				.setForumThreadThis(commentToCorrect.getForumThread())
-				/*.setPostType("TypeCorrection")*/;
 			JPA.getManager().persist(correction);
 			JPA.getManager().flush();
 			JPA.getManager().refresh(correction);

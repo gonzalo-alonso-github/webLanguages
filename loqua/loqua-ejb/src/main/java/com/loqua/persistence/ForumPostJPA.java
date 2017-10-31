@@ -3,6 +3,8 @@ package com.loqua.persistence;
 import javax.persistence.NoResultException;
 
 import com.loqua.model.ForumPost;
+import com.loqua.model.Comment;
+import com.loqua.model.Correction;
 import com.loqua.persistence.exception.EntityNotPersistedException;
 import com.loqua.persistence.exception.PersistenceRuntimeException;
 import com.loqua.persistence.util.JPA;

@@ -6,6 +6,7 @@ import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -36,25 +37,25 @@ public class BeanCorrection implements Serializable{
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	/** Parametro 'correction' recibido en la URL, que indica el identificador
-	 * de la correccion que se desea editar. <br/>
+	 * de la correccion que se desea editar. <br>
 	 * Se inicializa en la vista 'forum_thread_correction.xhtml',
 	 * mediante el &lt;f:viewParam&gt; que invoca al metodo set del atributo. */
 	private String corrViewParam;
 	
 	/** Parametro 'comment' recibido en la URL, que indica el identificador
-	 * del comentario que se desea corregir. <br/>
+	 * del comentario que se desea corregir. <br>
 	 * Se inicializa en la vista 'forum_thread_correction.xhtml',
 	 * mediante el &lt;f:viewParam&gt; que invoca al metodo set del atributo. */
 	private String commViewParam;
 	
-	/** Es la correccion que va a crear/editar. <br/>
+	/** Es la correccion que va a crear/editar. <br>
 	 * Se inicializa en la vista 'forum_thread_correction.xhtml',
 	 * mediante el &lt;f:viewParam&gt; que invoca al metodo set del atributo
 	 * {@link #corrViewParam}. */
 	private Correction correctionToCRUD;
 	
 	/** Es el comentario asociado a la correccion que se va a crear/editar.
-	 * <br/> Se inicializa en la vista 'forum_thread_correction.xhtml',
+	 * <br> Se inicializa en la vista 'forum_thread_correction.xhtml',
 	 * mediante el &lt;f:viewParam&gt; que invoca al metodo set del atributo
 	 * {@link #commViewParam}. */
 	private Comment commentToCorrect;
@@ -100,8 +101,8 @@ public class BeanCorrection implements Serializable{
 	
 	/** Inicializa los atributos {@link #textCodeCorrection}
 	 * y {@link #plainTextCorrection} para que el componente summernote
-	 * de las vistas muestre el texto que se edita.<br/>
-	 * Va destinado a ser invocado desde la la seccion '<f:metadata>'
+	 * de las vistas muestre el texto que se edita.<br>
+	 * Va destinado a ser invocado desde la la seccion 'f:metadata'
 	 * de la vista forum_thread_correction.xhtml. */
 	public void onLoad() {
 		if( actionType==2 ){
@@ -223,11 +224,13 @@ public class BeanCorrection implements Serializable{
 	 */
 	public boolean getUserAgreeCorrection(User user, Correction correction){
 		boolean result = false;
+		if( user==null ) return false;
 		try{
 			result = Factories.getService().getServiceCorrection()
 					.getUserAgreeCorrection(user.getId(), correction.getId());
 		}catch( Exception e ){
-			log.error("Unexpected Exception at 'getUserAgreeCorrection()'");
+			log.error("Unexpected Exception at 'getUserAgreeCorrection()':\n");
+			e.printStackTrace();
 		}
 		return result;
 	}
@@ -303,6 +306,7 @@ public class BeanCorrection implements Serializable{
 	 */
 	public boolean getUserDisagreeCorrection(User user, Correction correction){
 		boolean result = false;
+		if( user==null ) return false;
 		try{
 			result = Factories.getService().getServiceCorrection()
 					.getUserDisagreeCorrection(user.getId(), correction.getId());
@@ -340,8 +344,6 @@ public class BeanCorrection implements Serializable{
 	 * aprueba.
 	 * @param corr Correccion aprobada,
 	 * a la que se enlaza tras recargar la vista
-	 * @param page numero de pagina, dentro del hilo del foro, en la que
-	 * se muestra el comentario dado
 	 * @return enlace a la correccion dada, empleado
 	 * desde los componentes CommandLink de las vistas
 	 */
@@ -489,6 +491,9 @@ public class BeanCorrection implements Serializable{
 			// plainTextCorrection=textCodeCorrection=""; // limpiar variables
 			// beanActionResult.setMsgActionResult("errorPublishPost");
 			// return null;
+			log.error("Unexpected Exception at "
+					+ "'getCommandLinkToSendCorrection()'");
+			e.printStackTrace();
 			return "errorUnexpected";
 		}
 		if( result!=null ) beanActionResult.setSuccess(true);
@@ -507,8 +512,24 @@ public class BeanCorrection implements Serializable{
 	 */
 	private String createCorrection(ForumThread thread)
 			throws EntityAlreadyFoundException, EntityNotFoundException{
-		/* aqui no es necesario llamar a compilePlainTextCorrection();
-		porque para crear una Correction no se usa summernote */
+		fixTextOfInputs();
+		// Crear la Correccion
+		Correction corrToCreate = generateCorrection();
+		Correction corrResult = Factories.getService().getServiceCorrection()
+				.sendCorrection(corrToCreate);
+		// Crear las Sugerencias aportadas por la Correccion
+		Factories.getService().getServiceSuggestion().createSuggestions(
+				sentencesOriginalComment, sentencesToCorrect, corrResult);
+		return BeanComment.getCommandLinkToPostStatic(commentToCorrect);
+	}
+
+	/**
+	 * Une el texto de los componentes inputText del formulario de la vista,
+	 * es decir, une todas las frases introducidas por el usuario que componen
+	 * la correccion, y guarda el resultado en {@link #plainTextCorrection}.
+	 * A partir del texto unido tambien inicializa {@link #textCodeCorrection}.
+	 */
+	private void fixTextOfInputs() {
 		plainTextCorrection = "";
 		String sentence = "";
 		int iterator = 0;
@@ -527,12 +548,23 @@ public class BeanCorrection implements Serializable{
 			plainTextCorrection += escapeHtml4(sentence);
 			if( sentence.endsWith(".")==false ){ plainTextCorrection += "."; }
 		}
-		// con el set hacemos que textCodeCorrection = mismo texto, en html:
+		// una vez inicializado plainTextCorrection, se hace textCodeCorrection:
 		setTextCodeCorrection(plainTextCorrection);
-		Factories.getService().getServiceCorrection().sendCorrection(
-				commentToCorrect, plainTextCorrection, textCodeCorrection,
-				beanLogin.getLoggedUser());
-		return BeanComment.getCommandLinkToPostStatic(commentToCorrect);
+	}
+	
+	/**
+	 * Genera un objeto {@link Correction} a partir de los datos del bean.
+	 * @return el objeto Comment Correction
+	 */
+	private Correction generateCorrection(){
+		Correction correction = new Correction();
+		correction.setTextThis(plainTextCorrection)
+			.setTextHtmlThis(textCodeCorrection)
+			.setApprovedThis(false).setCommentThis(commentToCorrect)
+			.setUserThis(beanLogin.getLoggedUser()).setDateThis(new Date())
+			.setForumThreadThis(commentToCorrect.getForumThread())
+			/*.setPostType("TypeCorrection")*/;
+		return correction;
 	}
 	
 	/**
@@ -545,7 +577,7 @@ public class BeanCorrection implements Serializable{
 	 */
 	private String updateTextCorrection(ForumThread thread)
 			throws EntityAlreadyFoundException, EntityNotFoundException{
-		compilePlainTextCorrection();
+		fixTextOfSummernote();
 		Factories.getService().getServiceCorrection().updateTextCorrection(
 				correctionToCRUD, plainTextCorrection, textCodeCorrection);
 		return BeanComment.getCommandLinkToPostStatic(commentToCorrect);
@@ -651,10 +683,11 @@ public class BeanCorrection implements Serializable{
 	// // // // // // // // // // // // // // // // //
 	
 	/**
-	 * Corrige el valor del texto plano de la correccion que se guardara
-	 * en la base de datos.
+	 * Arregla los posibles saltos de linea del texto introducido
+	 * por el usuario en el componente summernote, y guarda el resultado en
+	 * {@link #plainTextCorrection}.
 	 */
-	private void compilePlainTextCorrection() {
+	private void fixTextOfSummernote() {
 		/* En la vista de editar correcciones,
 		el usuario esablece el texto de la correccion mediante un summernote.
 		Pero summernote une las palabras cuando hay saltos de linea intermedios
@@ -693,6 +726,8 @@ public class BeanCorrection implements Serializable{
 	 * por el usuario en el componente Summernote de la vista.
 	 * @param textCode codigo HTML del texto introducido por el usuario en
 	 * el componente Summernote de la vista
+	 * @return el texto, en formato HTML, introducido por el usuaio en el
+	 * componente Summernote
 	 */
 	private String verifyTextCodeSummernote(String textCode){
 		if( textCode!=null ){
@@ -753,40 +788,49 @@ public class BeanCorrection implements Serializable{
 	
 	/** Lista de frases en las que se divide el comentario original
 	 * que se va a corregir */
-	private List<String> sentencesUnmodifiable = new ArrayList<String>();
+	private List<String> sentencesOriginalComment = new ArrayList<String>();
 	/** Lista de frases del comentario, una vez corregidas por el usuario */
 	private List<String> sentencesToCorrect = new ArrayList<String>();
 	
-	/** Carga la lista {@link #sentencesUnmodifiable} */
+	/** Carga la lista {@link #sentencesOriginalComment}. <br>
+	 * Aunque la API CoreNLP provee metodos para separar las distintas frases
+	 * que componen un texto, se ha decidido hacer un metodo propio para ello,
+	 * ya que los tres unicos idiomas que se manejan en la alpicacion (ingles,
+	 * frances y espa&ntilde;ol) siguen las mismas normas en ese aspecto
+	 * (el 'punto final', el fin de exclamacion y el fin de interrogacion).
+	 */
 	public void loadSentencesToCorrect(){
 		if( commentToCorrect==null || commentToCorrect.getText()==null)
 			return;
-		// El caracter separador entre frases es el punto:
-		String regExpSinglePoint = "([\\., ]*\\. )";
+		/* Los caracteres separador entre frases son:
+		el punto, exclamacion e interrogacion. */
+		// Es importante no quitar los espacios en blanco de esta expresion:
+		String regExpSentenceFinals = "([\\.,\\!,\\?, ]*(\\.|\\!|\\?) )";
 		// El salto de linea tambien separa las frases:
 		String regExpNewParagraph = "(\\n)";
-		String regExp = regExpSinglePoint + "|" + regExpNewParagraph;
+		String regExp = regExpSentenceFinals + "|" + regExpNewParagraph;
 		String sentences[] = commentToCorrect.getText().split(regExp);
 		/*sentencesUnmodifiable = new ArrayList<String>(Arrays.asList(sentences));
 		sentencesToCorrect = new ArrayList<String>(Arrays.asList(sentences));*/
-		sentencesUnmodifiable = new ArrayList<String>();
+		sentencesOriginalComment = new ArrayList<String>();
 		sentencesToCorrect = new ArrayList<String>();
 		for( int i=0; i<sentences.length; i++ ){
 			if( ! sentences[i].trim().isEmpty() ){
-				sentencesUnmodifiable.add(sentences[i]);
+				sentencesOriginalComment.add(sentences[i]);
 				sentencesToCorrect.add(sentences[i]);
 			}
 		}
 	}
 	
 	/** Indica la frase, del comentario original, que el usuario
-	 * ha seleccionado para corregirla */
+	 * ha seleccionado para corregirla. */
 	private int selectedSentenceToCorrect;
 	
-	/** Restaura una frase corregida por el usuario; es decir, le
-	 * sobreescribe el texto que mostraba en el texto original */
+	/** Se utiliza desde el formulario de crear una correccion, para restaurar
+	 * una frase corregida por el usuario; es decir, le
+	 * sobreescribe el texto que mostraba antes de ser editada. */
 	public void resetSentence(){
-		String reset = sentencesUnmodifiable.get(selectedSentenceToCorrect);
+		String reset = sentencesOriginalComment.get(selectedSentenceToCorrect);
 		sentencesToCorrect.set(selectedSentenceToCorrect, reset);
 		
 		/* Si este metodo se llamase desde el action y no desde actionListener,

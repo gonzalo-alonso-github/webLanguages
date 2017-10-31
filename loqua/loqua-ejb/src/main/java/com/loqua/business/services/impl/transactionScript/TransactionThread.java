@@ -18,7 +18,7 @@ import com.loqua.persistence.exception.EntityNotPersistedException;
 /**
  * Da acceso a los procedimientos, dirigidos a la capa de persistencia,
  * correspondientes a las transacciones de las entidades
- * {@link ForumThread}, {@link ForumThreadInfo} y {@link ForumThreadVoter}.<br/>
+ * {@link ForumThread}, {@link ForumThreadInfo} y {@link ForumThreadVoter}.<br>
  * Este paquete de clases implementa el patron Transaction Script y
  * es el que, junto al modelo, concentra gran parte de la logica de negocio
  * @author Gonzalo
@@ -264,8 +264,8 @@ public class TransactionThread {
 		int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
 		calendar.clear();
 		calendar.set(currentYear, currentMonth, currentDay, currentHour, 0);
-		// Date que representa a la actual hora en punto menos un segundo:
-		Date currentHourDate = new Date(calendar.getTimeInMillis() - 1000);
+		// Date que representa al momento actual:
+		Date currentHourDate = new Date();
 		// Date que representa a la anterior hora en punto:
 		Date previousHourDate = new Date(calendar.getTimeInMillis()-3600000);
 		return threadJPA.getAllForumThreadsInLastHour(
@@ -277,7 +277,7 @@ public class TransactionThread {
 	 * @param userId atributo 'id' del User que se consulta
 	 * @param threadId atributo 'id' del ForumThread que se consulta
 	 * @return
-	 * true: si el usuario ya ha puntuado el hilo del foro <br/>
+	 * true: si el usuario ya ha puntuado el hilo del foro <br>
 	 * false: si el usuario aun no ha puntuado el hilo del foro
 	 */
 	public boolean threadAlreadyVotedByUser(Long userId, Long threadId){
@@ -305,10 +305,10 @@ public class TransactionThread {
 	 * @throws EntityAlreadyFoundException
 	 * @throws Exception
 	 */
-	public void restCreateForumThread(ForumThread threadToCreate)
+	public ForumThread restCreateForumThread(ForumThread threadToCreate)
 			throws EntityAlreadyFoundException, Exception{
 		try {
-			threadJPA.restCreateForumThread(threadToCreate);
+			return threadJPA.restCreateForumThread(threadToCreate);
 		} catch( EntityAlreadyPersistedException ex) {
 			throw new EntityAlreadyFoundException(ex);
 		}
@@ -328,6 +328,20 @@ public class TransactionThread {
 		}
 	}
 	*/
+	
+	/**
+	 * Elimina del sistema el objeto ForumThead indicado.
+	 * @param threadId identificador del objeto ForumTheadVoter que se elimina
+	 * @throws EntityNotFoundException
+	 */
+	public void deleteForumThread(Long threadId) 
+			throws EntityNotFoundException {
+		try {
+			threadJPA.deleteForumThread(threadId);
+		} catch (EntityNotPersistedException ex) {
+			throw new EntityNotFoundException(ex);
+		}
+	}
 	
 	/**
 	 * Actualiza en el sistema el objeto ForumThread dado
@@ -375,7 +389,7 @@ public class TransactionThread {
 		try {
 			// Primero: actualiza en bdd el ThreadInfo (numero de votos)
 			ForumThreadInfo threadInfo = threadToVote.getForumThreadInfo();
-			threadInfo.setCountVotes( threadInfo.getCountVotes()+1 );
+			threadInfo.incrementCountVotes();
 			threadToVote.setForumThreadInfo( threadInfo );
 			updateAllDataByThread( threadToVote );
 			// Segundo: genera y guarda en bdd el nuevo ThreadVoter:
@@ -384,6 +398,28 @@ public class TransactionThread {
 			return threadToVote;
 		} catch (EntityAlreadyPersistedException ex) {
 			throw new EntityAlreadyFoundException(ex);
+		} catch (EntityNotPersistedException ex) {
+			throw new EntityNotFoundException(ex);
+		}
+	}
+	
+	/**
+	 * Elimina del sistema el objeto TheadVoter que asocia
+	 * al User y al ForumThread indicados.
+	 * @param userId el User al que esta asociado el ForumTheadVoter
+	 * @param thread ForumThread al que esta asociado el ForumTheadVoter
+	 * @throws EntityNotFoundException
+	 */
+	public void deleteThreadVoter(Long userId, ForumThread thread) 
+			throws EntityNotFoundException {
+		try {
+			// Elimina el ForuThreadVoter de la bdd:
+			threadJPA.deleteThreadVoter(userId, thread);
+			// Actualiza en bdd el ThreadInfo (decrementa el numero de votos)
+			ForumThreadInfo threadInfo = thread.getForumThreadInfo();
+			threadInfo.decrementCountVotes();
+			thread.setForumThreadInfo( threadInfo );
+			updateAllDataByThread( thread );
 		} catch (EntityNotPersistedException ex) {
 			throw new EntityNotFoundException(ex);
 		}

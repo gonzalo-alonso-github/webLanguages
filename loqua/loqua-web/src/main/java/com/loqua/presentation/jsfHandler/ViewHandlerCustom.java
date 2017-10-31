@@ -12,15 +12,15 @@ import javax.faces.context.FacesContext;
  * ciertos elementos de la vista y se ejecuta automaticamente
  * en las fases 1 y 6 de JSF ("Render Response" y "Restore View").
  * En este caso se encarga unicamente de permitir que los enlaces de los
- * 'commandLink' y 'commandButton' puedan incluir un ancla; por ejemplo:
- * 'forum.xhtml?faces-redirect=true&includeViewParams=true#thread46
+ * 'commandLink' y 'commandButton' puedan incluir un ancla; por ejemplo: <br>
+ * forum.xhtml?faces-redirect=true&amp;includeViewParams=true#thread46 <br>
  * Este ViewHandlerCustom debe estar registrado en el faces-config.xhtml.
  * @author Gonzalo
  */
 public class ViewHandlerCustom extends ViewHandlerWrapper {
 	
 	/** Valor que se utiliza para nombrar la variable guardada por el componente
-	 * {@link NavigationHandler} en el FacesContext durante la peticion,
+	 * {@link NavigationHandlerCustom} en el FacesContext durante la peticion,
 	 * y que debe ser leida por ViewHandlerCustom 
 	 * (en el metodo {@link #getRedirectURL}) */
 	public static final String REDIRECT_FRAGMENT_ATTRIBUTE =

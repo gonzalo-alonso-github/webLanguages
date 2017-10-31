@@ -1,0 +1,142 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:of="http://omnifaces.org/functions">
+	
+<o:form includeViewParams="true" id="form_querySuggestions" prependId="false">
+<ui:fragment rendered="#{beanLogin.loggedUser!=null}">
+
+<article class="forum_thread">
+<div class="forum_thread_border forum_thread_post_height">
+	<div class="forum_thread_post_header general_section_padding">
+		#{msgs.titleFormSuggestion}
+	</div>
+	<div class="forum_thread_post_body">
+	
+	<!-- Introduccion de la frase que se consulta: -->
+	<div class="forum_thread_post_textBlock" style="padding-top:10px;">
+		<div class="form-group">
+			<label for="inputTextForSuggestion" class="control-label">
+			#{msgs.descriptionQueryForSuggestion}:</label>
+			<div style="margin-top:6px;">
+			<h:inputTextarea id="inputTextForSuggestion" title="#{msgs.titleSentenceForSugg}"
+					value="#{beanSuggestion.sentence}"
+					required="true" requiredMessage="#{msgs.errorTextForSuggestionRequired}"
+					class="form-control" style="overflow-y:scroll;resize:none">
+				<f:converter converterId="converterCleanSpaces" />
+				<f:validator validatorId="validatorLength" />
+					<f:attribute name="inputLabel" value="#{msgs.titleSentenceForSugg}" />
+					<f:attribute name="inputMaxLength" value="50" />
+			</h:inputTextarea>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="selectLanguageSuggestions" class="control-label general_inline-block"
+			style="padding-right:6px;">
+			#{msgs.tittleLangOfSentenceToQuery}:</label>
+			<div class="general_inline-block">
+				<h:selectOneMenu id="selectLanguageSuggestions" required="true"
+						value="#{beanSuggestion.language}"
+					class="form-control general_input_selectButton" style="height:24px; padding:0;">
+				<f:selectItems value="#{beanUtils.listLanguages}"/>		
+				</h:selectOneMenu>
+			</div>
+			<h:outputText class="general_block general_warning_red"
+				value="#{beanSuggestion.actionVerifyLanguage.msgActionResult}" />
+		</div>
+	</div>
+	
+	<!-- Sugerencia obtenida (solo se muestra si ya se ha pinchado el boton de 'Buscar') -->
+	<ui:fragment rendered="#{beanSuggestion.sentence!=null and beanSuggestion.bestSuggToReturn!=null}">
+	<div class="container-fluid" style="padding-left:0px !important; margin-left:0px !important;">
+	<div class="panel panel-default" >
+	<div class="panel-heading">
+		<h:outputText value="#{msgs.titleResultSugg}"/>
+	</div>
+	<div class="panel-body">
+		<div class="form-group">
+			<label for="outputWrongText" class="control-label">
+				#{msgs.titleResultSuggSimilarText}
+				<ui:fragment rendered="#{! beanSuggestion.bestSuggToReturn.generatedByAdmin}">
+				(<ui:fragment rendered="#{not empty beanLogin.loggedUser}">
+					<h:outputLink value="#{beanUserView.getOutputLinkToProfile(approvedCorrection.comment.user.id)}">
+						#{beanUtils.limitTextLength(16, beanSuggestion.bestSuggToReturn.correction.comment.user.nick)}
+					</h:outputLink>
+				</ui:fragment>
+				<ui:fragment rendered="#{empty beanLogin.loggedUser}">
+					#{beanUtils.limitTextLength(16, beanSuggestion.bestSuggToReturn.correction.comment.user.nick)}
+				</ui:fragment>)
+				</ui:fragment>
+			</label>	
+			<div style="margin-top:6px;">
+				<h:inputTextarea id="outputWrongText" title="txtareaSuggWrongText"
+					value="#{beanSuggestion.bestSuggToReturn.wrongText}" readonly="true"
+					class="form-control" style="overflow-y:scroll;resize:none"/>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="outputCorrectText" class="control-label">
+				#{msgs.titleResultSuggCorrectText}
+				<ui:fragment rendered="#{! beanSuggestion.bestSuggToReturn.generatedByAdmin}">
+				(<ui:fragment rendered="#{not empty beanLogin.loggedUser}">
+					<h:outputLink value="#{beanUserView.getOutputLinkToProfile(approvedCorrection.user.id)}">
+						#{beanUtils.limitTextLength(16, beanSuggestion.bestSuggToReturn.correction.user.nick)}
+					</h:outputLink>
+				</ui:fragment>
+				<ui:fragment rendered="#{empty beanLogin.loggedUser}">
+					#{beanUtils.limitTextLength(16, beanSuggestion.bestSuggToReturn.correction.user.nick)}
+				</ui:fragment>)
+				</ui:fragment>
+			</label>
+			<div style="margin-top:6px;">
+				<h:inputTextarea id="outputCorrectText" title="txtareaSuggCorrectText"
+					value="#{beanSuggestion.bestSuggToReturn.correctText}" readonly="true"
+					class="form-control" style="overflow-y:scroll;resize:none"/>
+			</div>
+		</div>
+	</div>
+	</div>
+	</div>
+	</ui:fragment>
+	<ui:fragment rendered="#{beanSuggestion.sentence!=null and beanSuggestion.bestSuggToReturn==null}">
+	<div class="forum_thread_post_textBlock" style="padding-top:10px;">
+		<div class="form-group">#{msgs.descriptionNoSuggestions}</div>
+	</div>
+	</ui:fragment>
+	</div>
+</div>
+<div class="forum_thread_post_footerForm">
+	<div>
+		<!-- Boton submit -->
+		<div class="right-side" style="text-align:right;">
+		<div class="general_inline-block">
+		<h:commandButton id="buttonQuerySuggestions"
+				class="btn btn-default btn-block general_input_button" value="#{msgs.titleQueryForSuggestion}"
+				actionListener="#{beanSuggestion.getCommandLinkBestSuggestions()}"
+				onclick="showElement('divWaitSugg');setSpinnerInLayout('spinnerWheelSugg');disableElement(this.id);">
+			<f:ajax execute="@form :form_querySuggestions" render="@form :form_querySuggestions"/>
+		</h:commandButton>
+		</div>
+		</div>
+		<!-- Animacion 'spin' con mensage de espera, o mensaje de error -->
+		<div id="divWaitSugg" class="form-group general_textCenter general_noDisplay">
+			<div class="col-xs-12 col-sm-12">
+				<h:outputText id="msgRunningSugg" value="#{msgs.descriptionWait}"/>
+				<h:panelGroup id="spinnerWheelSugg" layout="block"
+					style="margin:25px auto auto auto;"/>
+			</div>
+		</div>
+		<div class="form-group general_textCenter">
+			<h:message for="inputTextForSuggestion"/>
+		</div>
+	</div>	
+</div>	
+</article>
+
+</ui:fragment>
+</o:form>
+
+</ui:composition>

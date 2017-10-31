@@ -21,11 +21,11 @@ import com.loqua.model.User;
  * Define el filtro que se aplica sobre todas las paginas exclusivas
  * de usuarios no registrados (o 'anonimos').
  * Este filtro impide que ningun usuario de otro tipo acceda a dichas paginas.
- * <br/>
+ * <br>
  * El ciclo de JSF es interceptado por el Filtro antes de que el navegador
  * muestre la pagina sobre la que este se aplica, y se ejecuta inmediatamene
  * despues de los manejadores de navegacion (NavigationHandler) y de vista
- * (ViewHandler). <br/>
+ * (ViewHandler). <br>
  * Puesto que se definen varios filtros sobre las mismas paginas, es coveniente
  * indicar, en el fichero web.xml, el orden en que se aplican.
  * @author Gonzalo

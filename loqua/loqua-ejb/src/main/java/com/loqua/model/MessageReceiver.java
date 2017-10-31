@@ -45,7 +45,7 @@ public class MessageReceiver implements Serializable{
 	/**
 	 * Constructor que recibe las entidades asociadas a esta
 	 * @param msg objeto Message asociado al MessageReceiver
-	 * @param objeto User asociado al MessageReceiver
+	 * @param user objeto User asociado al MessageReceiver
 	 */
 	public MessageReceiver(Message msg, User user){
 		this.message = msg;

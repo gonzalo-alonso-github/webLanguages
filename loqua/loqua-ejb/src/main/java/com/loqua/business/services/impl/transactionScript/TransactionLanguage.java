@@ -19,7 +19,7 @@ import com.loqua.persistence.exception.EntityNotPersistedException;
  * Da acceso a los procedimientos, dirigidos a la capa de persistencia,
  * correspondientes a las transacciones de las entidades
  * {@link Language}, {@link UserNativeLanguage}
- * y {@link UserPracticingLanguage}.<br/>
+ * y {@link UserPracticingLanguage}.<br>
  * Este paquete de clases implementa el patron Transaction Script y
  * es el que, junto al modelo, concentra gran parte de la logica de negocio
  * @author Gonzalo
@@ -121,9 +121,9 @@ public class TransactionLanguage {
 	}
 	
 	/**
-	 * Crea las asociaciones UserNativeLanguage entre el User dado y
+	 * Actualiza las asociaciones UserNativeLanguage entre el User dado y
 	 * los Language indicados (es decir, la relacion de 'Laguage es el idioma
-	 * materno de User')
+	 * materno de User').
 	 * @param user User asociado a los Language indicados
 	 * @param originalNativeLanguagesIDs lista de lenguajes maternos del
 	 * usuario, antes de ser editada en los formularios de la pagina
@@ -132,15 +132,49 @@ public class TransactionLanguage {
 	 * @throws EntityAlreadyFoundException
 	 * @throws EntityNotFoundException
 	 */
-	public void createUserNativeLanguage( User user,
+	public void updateNativeLanguages( User user,
 			List<Long> originalNativeLanguagesIDs,
 			List<Long> editedNativeLanguagesIDs)
 			throws EntityAlreadyFoundException, EntityNotFoundException {
+		createUserNativeLanguage(user,
+				originalNativeLanguagesIDs, editedNativeLanguagesIDs);
+		deleteUserNativeLanguage(user,
+				originalNativeLanguagesIDs, editedNativeLanguagesIDs);
+	}
+	
+	/**
+	 * Crea las asociaciones UserNativeLanguage entre el User dado y
+	 * los Language indicados (es decir, la relacion de 'Laguage es el idioma
+	 * materno de User').
+	 * @param user User asociado a los Language indicados
+	 * @param originalNativeLanguagesIDs lista de lenguajes maternos del
+	 * usuario, antes de ser editada en los formularios de la pagina
+	 * @param editedNativeLanguagesIDs lista de lenguajes maternos del
+	 * usuario, despues de ser editada en los formularios de la pagina
+	 * @throws EntityAlreadyFoundException
+	 * @throws EntityNotFoundException
+	 */
+	private void createUserNativeLanguage( User user,
+			List<Long> originalNativeLanguagesIDs,
+			List<Long> editedNativeLanguagesIDs)
+			throws EntityAlreadyFoundException, EntityNotFoundException {
+		/* La vista presenta los lenguajes maternos
+		como una lista desplegable de componentes check.
+		(Un componente check puede estar en 'estado' marcado o desmarcado).
+		- editedNativeLanguagesIDs = lista elementos cuyo 'estado' ha sido
+		editado por el usuario.
+		- originalNativeLanguagesIDs = lista elementos que originalmente estaban
+		en 'estado' marcado, antes de editar la lista desplegable.
+		Es decir, "editedNativeLanguages.removeAll(originalNativeLanguages)"
+		devolvera la lista de lenguajes que el usuario ha pasado de
+		'estado' desmarcado a marcado.
+		Es decir, son los lenguages que el usuario selecciona como maternos. */
 		try {
 			List<Long> languagesIDsToUpdate = 
 					new ArrayList<Long>(editedNativeLanguagesIDs);
 			languagesIDsToUpdate.removeAll(originalNativeLanguagesIDs);
 			
+			// Agrega los lenguajes que el usuario selecciona como maternos:
 			for( Long languageId : languagesIDsToUpdate ){
 				//Language lang = getLanguageByIdFromCache(languageId);
 				Language lang = languageJPA.getLanguageById(languageId);
@@ -164,15 +198,27 @@ public class TransactionLanguage {
 	 * usuario, despues de ser editada en los formularios de la pagina
 	 * @throws EntityNotFoundException
 	 */
-	public void deleteUserNativeLanguage(User user,
+	private void deleteUserNativeLanguage(User user,
 			List<Long> originalNativeLanguagesIDs,
 			List<Long> editedNativeLanguagesIDs)
 			throws EntityNotFoundException {
+		/* La vista presenta los lenguajes maternos
+		como una lista desplegable de componentes check.
+		(Un componente check puede estar en 'estado' marcado o desmarcado).
+		- editedNativeLanguagesIDs = lista elementos cuyo 'estado' ha sido
+		editado por el usuario.
+		- originalNativeLanguagesIDs = lista elementos que originalmente estaban
+		en 'estado' marcado, antes de editar la lista desplegable.
+		Es decir, "originalNativeLanguages.removeAll(editedNativeLanguages)"
+		devolvera la lista de lenguajes que el usuario ha pasado de estado
+		marcado a desmarcado.
+		Es decir, son los lenguages que el usuario elimina de su lista. */
 		try {
 			ArrayList<Long> languagesIDsToDelete = 
 					new ArrayList<Long>(originalNativeLanguagesIDs);
 			languagesIDsToDelete.removeAll(editedNativeLanguagesIDs);
 			
+			// Elimina los lenguajes que el usuario elimina de su lista:
 			for( Long languageId : languagesIDsToDelete ){
 				//Language lang = getLanguageByIdFromCache(languageId);
 				Language lang = languageJPA.getLanguageById(languageId);
@@ -181,6 +227,28 @@ public class TransactionLanguage {
 		} catch (EntityNotPersistedException ex) {
 			throw new EntityNotFoundException(ex);
 		}
+	}
+	
+	/**
+	 * Actualiza las asociaciones UserPracticedLanguage entre el User dado y
+	 * los Language indicados (es decir, la relacion de 'Laguage es el idioma
+	 * practicado por User').
+	 * @param user User asociado a los Language indicados
+	 * @param originalPracticedLanguagesIDs lista de lenguajes practicados del
+	 * usuario, antes de ser editada en los formularios de la pagina
+	 * @param editedPracticedLanguagesIDs lista de lenguajes practicados del
+	 * usuario, despues de ser editada en los formularios de la pagina
+	 * @throws EntityAlreadyFoundException
+	 * @throws EntityNotFoundException
+	 */
+	public void updatePracticedLanguages( User user,
+			List<Long> originalPracticedLanguagesIDs,
+			List<Long> editedPracticedLanguagesIDs)
+			throws EntityAlreadyFoundException, EntityNotFoundException {
+		createUserPracticedLanguage(user,
+				originalPracticedLanguagesIDs, editedPracticedLanguagesIDs);
+		deleteUserPracticedLanguage(user,
+				originalPracticedLanguagesIDs, editedPracticedLanguagesIDs);
 	}
 	
 	/**
@@ -195,15 +263,28 @@ public class TransactionLanguage {
 	 * @throws EntityAlreadyFoundException
 	 * @throws EntityNotFoundException
 	 */
-	public void createUserPracticedLanguage(User user,
+	private void createUserPracticedLanguage(User user,
 			List<Long> originalPracticedLanguagesIDs,
 			List<Long> editedPracticedLanguagesIDs)
 			throws EntityAlreadyFoundException, EntityNotFoundException {
+		/* La vista presenta los lenguajes practicados
+		como una lista desplegable de componentes check.
+		(Un componente check puede estar en 'estado' marcado o desmarcado).
+		- editedPracticedLanguagesIDs = lista elementos cuyo 'estado' ha sido
+		editado por el usuario.
+		- originalPracticedLanguagesIDs = lista elementos que originalmente
+		estaban en 'estado' marcado, antes de editar la lista desplegable.
+		Es decir, 
+		"editedPracticedLanguages.removeAll(originalPracticedLanguages)"
+		devolvera la lista de lenguajes que el usuario ha pasado de estado
+		desmarcado a marcado.
+		Es decir, son los lenguages que el usuario elige como practicados. */
 		try {
 			List<Long> languagesIDsToUpdate = 
 					new ArrayList<Long>(editedPracticedLanguagesIDs);
 			languagesIDsToUpdate.removeAll(originalPracticedLanguagesIDs);
 			
+			// Agrega los lenguajes que el usuario elige como practicados:
 			for( Long languageId : languagesIDsToUpdate ){
 				//Language lang = getLanguageByIdFromCache(languageId);
 				Language lang = languageJPA.getLanguageById(languageId);
@@ -227,15 +308,28 @@ public class TransactionLanguage {
 	 * el usuario, despues de ser editada en los formularios de la pagina
 	 * @throws EntityNotFoundException
 	 */
-	public void deleteUserPracticedLanguage(User user,
+	private void deleteUserPracticedLanguage(User user,
 			List<Long> originalPracticedLanguagesIDs,
 			List<Long> editedPracticedLanguagesIDs) 
 			throws EntityNotFoundException {
+		/* La vista presenta los lenguajes practicados
+		como una lista desplegable de componentes check.
+		(Un componente check puede estar en 'estado' marcado o desmarcado).
+		- editedPracticedLanguagesIDs = lista elementos cuyo 'estado' ha sido
+		editado por el usuario.
+		- originalPracticedLanguagesIDs = lista elementos que originalmente
+		estaban en 'estado' marcado, antes de editar la lista desplegable.
+		Es decir, 
+		"originalPracticedLanguages.removeAll(editedPracticedLanguages)"
+		devolvera la lista de lenguajes que el usuario ha pasado de estado
+		marcado a desmarcado.
+		Es decir, son los lenguages que el usuario elimina de su lista. */
 		try {
 			ArrayList<Long> languagesIDsToDelete = 
 					new ArrayList<Long>(originalPracticedLanguagesIDs);
 			languagesIDsToDelete.removeAll(editedPracticedLanguagesIDs);
 			
+			// Elimina los lenguajes que el usuario elimina de su lista:
 			for( Long languageId : languagesIDsToDelete ){
 				// Language lang = getLanguageByIdFromCache(languageId);
 				Language lang = languageJPA.getLanguageById(languageId);

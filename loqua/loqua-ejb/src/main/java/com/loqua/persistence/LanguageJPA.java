@@ -321,7 +321,7 @@ public class LanguageJPA {
 	 * @param user User asociado al UserPracticingLanguage que se elimina
 	 * @param language Language asociado al UserPracticingLanguage
 	 * que se elimina
-	 * @throws EntityAlreadyPersistedException
+	 * @throws EntityNotPersistedException
 	 */
 	public void deleteUserPracticedLanguage(User user, Language language)
 			throws EntityNotPersistedException {

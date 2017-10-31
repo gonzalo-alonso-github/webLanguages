@@ -168,6 +168,10 @@
 	visibility:hidden;
 }
 
+.general_error_red, .general_warning_red{
+	color: red;
+}
+
 .general_darkenImg {
 	background: white;
 	cursor:pointer;
@@ -205,6 +209,10 @@
 
 .general_glyphicon-spacing{
 	padding-right: 8px;
+}
+
+.general_block{
+	display: block;
 }
 
 .general_inline-block{

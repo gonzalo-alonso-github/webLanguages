@@ -11,6 +11,7 @@
 	<f:viewParam name="thread" value="#{beanForumThread.currentThreadId}" />
 	<f:viewParam name="comment" value="#{beanComment.commViewParam}" />
 	<f:viewAction action="#{beanComment.onLoad()}" />
+	<f:viewAction action="#{beanSuggestion.onLoad(beanForumThread.currentThreadId)}" />
 </f:metadata>
 
 <!-- scripts y css propios de esta pagina -->

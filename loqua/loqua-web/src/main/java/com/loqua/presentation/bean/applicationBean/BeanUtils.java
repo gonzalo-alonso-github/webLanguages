@@ -1,13 +1,20 @@
 package com.loqua.presentation.bean.applicationBean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PreDestroy;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
+import com.loqua.model.Language;
 import com.loqua.model.User;
+import com.loqua.presentation.bean.BeanLogin;
+import com.loqua.presentation.bean.BeanSettingsSession;
+import com.loqua.presentation.bean.BeanTranslator;
 
 /**
  * Bean de ambito de aplicacion que contiene metodos pueden ser accedidos
@@ -37,20 +44,20 @@ public class BeanUtils implements Serializable {
 	
 	/**
 	 * Recorta una cadena de texto limitando su longitud al numero de
-	 * caracteres indicado.<br/>
+	 * caracteres indicado.<br>
 	 * El efecto generado por este metodo sobre una cadena de texto en HTML
 	 * equivale a aplicar sobre ella el siguiente estilo CSS:
 	 * style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;".
 	 * Este metodo es necesario porque hay ocasiones en que dicho estilo CSS
 	 * no genera efecto: eso sucede cuando se intenta aplicarlo sobre
 	 * una expresion EL de JSF. Un ejemplo en xhtml:
-	 * <br/>El texto de la 'variableEL' se vera recortado,
-	 * que es la forma esperada:<br/>
+	 * <br>De la siguiente manera el texto de la 'variableEL' se vera recortado,
+	 * que es la forma esperada:<br>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;#{ beanUtils.limitTextLength( 10, variableEL ) }
-	 * <br/>El texto de la 'variableEL' se vera completo,
-	 * que es la forma no deseada:<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&ltdiv style="white-space:nowrap; overflow:hidden;
-	 * text-overflow:ellipsis;"&gt #{variableEL} &lt/div&gt
+	 * <br>De la siguiente manera el texto de la 'variableEL' se veria completo,
+	 * que es la forma no deseada:<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&lt;div style="white-space:nowrap;
+	 * overflow:hidden; text-overflow:ellipsis;"&gt; #{variableEL} &lt;/div&gt;
 	 * @param limit limite maximo de caracteres permitidos en el texto dado,
 	 * contando espacios en blanco
 	 * @param text texto que se va a recortar
@@ -71,10 +78,10 @@ public class BeanUtils implements Serializable {
 	 * BeanPublication.getUserPublicationPart1,
 	 * que envia por parametro uno de los valores predefinidos en los ficheros
 	 * 'events_X.properties'. De forma que puede darse el siguiente ejemplo:
-	 * dado el texto<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;"has alcanzado los ?1 comentarios"<br/>
-	 * entonces este metodo devolvera:<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;"has alcanzado los"<br/>
+	 * dado el texto<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;"has alcanzado los ?1 comentarios"<br>
+	 * entonces este metodo devolvera:<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;"has alcanzado los"<br>
 	 * @param textToPart Texto que se recorta
 	 * @return Texto previo a la aparicion del caracter '?1'
 	 */
@@ -94,10 +101,10 @@ public class BeanUtils implements Serializable {
 	 * BeanPublication.getUserPublicationPart2,
 	 * que envia por parametro uno de los valores predefinidos en los ficheros
 	 * 'events_X.properties'. De forma que puede darse el siguiente ejemplo:
-	 * dado el texto<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;"has alcanzado los ?1 comentarios"<br/>
-	 * entonces este metodo devolvera:<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;"comentarios"<br/>
+	 * dado el texto<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;"has alcanzado los ?1 comentarios"<br>
+	 * entonces este metodo devolvera:<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;"comentarios"<br>
 	 * @param textToPart Texto que se recorta
 	 * @return Texto posterior a la aparicion del caracter '?1'
 	 */
@@ -116,8 +123,8 @@ public class BeanUtils implements Serializable {
 	 * limite; de lo contrario se devolvera el valor dado.
 	 * @param limit limite maximo
 	 * @param value valor que se comprueba
-	 * @return Si value <= limit, devuelve el 'value' en formato String.<br/>
-	 * Si value > limit, devuelve el 'limit' precedido del signo '&gt;'
+	 * @return Si value &lt;= limit, devuelve el 'value' en formato String.<br>
+	 * Si value &gt; limit, devuelve el 'limit' precedido del signo '&gt;'
 	 */
 	public String limitNumericValue(int limit, int value){
 		if( value<=limit ){
@@ -179,7 +186,7 @@ public class BeanUtils implements Serializable {
 	
 	/**
 	 * Busca en el Map&lt;String,Object&gt; de la sesion el usuario logueado.
-	 * <br/>Para obtener el usuario logueado evita utilizar a {@link BeanLogin},
+	 * <br>Para obtener el usuario logueado evita utilizar a {@link BeanLogin},
 	 * que es de ambito de sesion y por tanto no conviente invocarlo desde
 	 * este BeanUtils, que es de ambito de aplicacion.
 	 * @return
@@ -204,6 +211,29 @@ public class BeanUtils implements Serializable {
 		int result = 0;
 		if( application.containsKey("NUM_LOGGED_USERS") ){
 			result = (Integer)application.get("NUM_LOGGED_USERS");
+		}
+		return result;
+	}
+	
+	/**
+	 * Proporciona a las vistas .xhtml la lista de lenguajes
+	 * que emplea la aplicacion (los lenguajes de las noticias),
+	 * que originalmente son ingles, frances y espa&ntilde;ol.
+	 * Los elementos de dicha lista son objetos SelectItem
+	 * creados a partir de dichos lemguajes. <br>
+	 * A diferencia del metodo {@link BeanTranslator#getListLanguages}, solo se
+	 * devuelven los idiomas presentes en la tabla Language de la base de datos.
+	 * @return
+	 * Una lista de objetos SelectItem
+	 */
+	public List<SelectItem> getListLanguages() {
+		List<SelectItem> result = new ArrayList<SelectItem>();
+		List<Language> listLanguagesFromDB = BeanCache.getAllLanguagesStatic();
+		for( Language language : listLanguagesFromDB ){
+			String keyLang = language.getLocale();
+			String nameLang = 
+					BeanSettingsSession.getTranslationCountriesStatic(keyLang);
+			result.add(new SelectItem(keyLang, nameLang));
 		}
 		return result;
 	}

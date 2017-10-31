@@ -12,6 +12,7 @@ import com.loqua.model.Correction;
 import com.loqua.model.Event;
 import com.loqua.model.ForumPost;
 import com.loqua.model.Publication;
+import com.loqua.model.PublicationReceiver;
 import com.loqua.model.User;
 import com.loqua.persistence.exception.EntityAlreadyPersistedException;
 import com.loqua.persistence.exception.EntityNotPersistedException;
@@ -510,7 +511,7 @@ public class PublicationJPA {
 			JPA.getManager().createNamedQuery(namedQuery)
 					.setParameter(1, userId)
 					.executeUpdate();
-			}catch( NoResultException ex ){
+		}catch( NoResultException ex ){
 			throw new EntityNotPersistedException(
 					PUBLICATION_NOT_PERSISTED_EXCEPTION, ex);
 		}catch( RuntimeException ex ){

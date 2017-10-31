@@ -12,9 +12,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.loqua.scheduler.SchedulerCrawler;
+
 import com.loqua.logging.LoquaLogger;
-import com.loqua.remote.model.Feed;
-import com.loqua.remote.model.ForumThread;
+import com.loqua.model.Feed;
+import com.loqua.model.ForumThread;
 
 /** Convierte las noticias descargadas por el componente {@link Gatherer}
  * en objetos {@link ForumThread} y los agrupa en una lista
@@ -43,10 +45,10 @@ public class Parser {
 			"title","guid","link","pubDate","description" };
 	
 	/** Array que contiene los patrones de fecha con los que se verifica si
-	 * la fecha de las noticias esta bien formada. <br/> 
+	 * la fecha de las noticias esta bien formada. <br> 
 	 * En general todos los Feeds utilizan el mismo patron para la fecha:
-	 * "EEE, dd MMM yyyy HH:mm:ss Z". <br/>
-	 * Ejemplo: "Wed, 4 Jul 2001 12:08:56 -0700".<br/>
+	 * "EEE, dd MMM yyyy HH:mm:ss Z". <br>
+	 * Ejemplo: "Wed, 4 Jul 2001 12:08:56 -0700".<br>
 	 * Pero algunos usan "d" en lugar de "dd",
 	 * y otros (el de "Pour La Science") usan "yy" en vez de "yyyy".
 	 * Por tanto se ha elegido un patron al que todos se suelen adaptar.
@@ -166,7 +168,7 @@ public class Parser {
 	 * fuente de noticias, que contiene los datos de una noticia
 	 * @param fieldsToParse lista de campos de la noticia que se comprueban
 	 * @return
-	 * 'true' si ninguno de los campos indicados es null o esta vacio <br/>
+	 * 'true' si ninguno de los campos indicados es null o esta vacio <br>
 	 * 'false' si alguno de los campos indicados es null o esta vacio
 	 */
 	private boolean verifyNotEmptyFields(Element element,
@@ -196,7 +198,7 @@ public class Parser {
 	 * fuente de noticias, que contiene los datos de una noticia
 	 * @return
 	 * 'true' si el campo 'guid' no coincide con el de ninguna noticia anterior
-	 * <br/>
+	 * <br>
 	 * 'false' si el campo 'guid' coincide con el de alguna noticia anterior
 	 */
 	private boolean verifyNotRepeated(Element element) {
@@ -214,7 +216,7 @@ public class Parser {
 	 * @param element objeto Element, extraido de la respuesta xml de la
 	 * fuente de noticias, que contiene los datos de una noticia
 	 * @return
-	 * 'true' si la noticia no esta repetida <br/>
+	 * 'true' si la noticia no esta repetida <br>
 	 * 'false' si la noticia esta repetida
 	 */
 	private boolean verifyNotRepeatedGuid(Element element) {
@@ -250,7 +252,7 @@ public class Parser {
 	 * fuente de noticias, que contiene los datos de una noticia
 	 * @return
 	 * 'true' si el campo 'title' no coincide con el de ninguna noticia anterior
-	 * <br/>
+	 * <br>
 	 * 'false' si el campo 'title' coincide con el de alguna noticia anterior
 	 */
 	private boolean verifyNotRepeatedTitle(Element element) {

@@ -1,4 +1,4 @@
-package com.loqua.business.services.impl;
+package com.loqua.business.services.impl.utils.externalAccounts;
 
 import java.net.URI;
 
@@ -12,7 +12,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 /**
- * Administra la clave 'appId' del componente Microsoft Translator. <br/>
+ * Administra la clave 'appId' del componente Microsoft Translator. <br>
  * La clase {@link MapCredentials}, en su clave 'azure_blob', almacena la key
  * que da permiso para el uso de la API de Microsoft Translator, y tambien
  * la URL que, combinandose con aquella, genera como respuesta un 'accessToken'
@@ -25,7 +25,7 @@ public abstract class TranslatorMicrosoftKey {
 
 	/** Array que contiene la URL donde se obtiene el 'accessToken'
 	 * (en la posicion '0') y la clave de la API Translator necesaria tambien
-	 * para obtener dicho 'accessToken' (en la posicion '1'). <br/>
+	 * para obtener dicho 'accessToken' (en la posicion '1'). <br>
 	 * El 'access token' es una serie de caracteres, y con el se obtiene
 	 * la clave 'appId' para poder enviar y recibir datos del Translator */
 	private static String[] credentials = 

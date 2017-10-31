@@ -139,7 +139,7 @@ public class BeanLogin implements Serializable {
 	 * con el mismo 'email'.
 	 * @return
 	 * 'true' si aun no se ha alcanzado el numero de intentos de inicio
-	 * de sesion fallidos con el mismo 'email' <br/>
+	 * de sesion fallidos con el mismo 'email' <br>
 	 * 'false' si se alcanzo el numero de intentos de inicio
 	 * de sesion fallidos con el mismo 'email'
 	 */
@@ -168,7 +168,7 @@ public class BeanLogin implements Serializable {
 	 * {@link User#locked}) al que corresponde el 'email' introducido.
 	 * @return
 	 * 'true' si el usuario es de tipo Administrador, o bien no esta
-	 * desactivado ni bloqueado <br/>
+	 * desactivado ni bloqueado <br>
 	 * 'false' 'true' si el usuario no es de tipo Administrador, y ademas esta
 	 * desactivado o bloqueado
 	 * @throws EntityNotFoundException
@@ -203,7 +203,7 @@ public class BeanLogin implements Serializable {
 	 * Guarda en el contexto de aplicacion al usuario que, 
 	 * tras haber iniciado sesion, vuelve a iniciar sesion
 	 * con las mismas credenciales (puede suceder cuando accede desde varios
-	 * navegadores o dispositivos distintos).<br/>
+	 * navegadores o dispositivos distintos).<br>
 	 * Los filtros de autorizacion se encargaran de finalizar la sesion antigua,
 	 * gracias a la informacion que este metodo almacena en el contexto.
 	 */
@@ -222,7 +222,7 @@ public class BeanLogin implements Serializable {
 	
 	/**
 	 * Guarda en el contexto de sesion el usuario que inicia sesion con exito
-	 * (variable 'LOGGED_USER'). <br/>
+	 * (variable 'LOGGED_USER'). <br>
 	 * Tambien lo guarda en el contexto de aplicacion (en el Map 'LOGGED_USERS',
 	 * si no lo estaba ya) y ademas actualiza el numero de usuarios conectados.
 	 */
@@ -295,7 +295,7 @@ public class BeanLogin implements Serializable {
 	 * si se encuentra guardado en la variable 'LOGGED_USERS'
 	 * de contexto de aplicacion
 	 * @return
-	 * 'true' si el usuario tiene una sesion iniciada. <br/>
+	 * 'true' si el usuario tiene una sesion iniciada. <br>
 	 * 'false' si el usuario no tiene una sesion iniciada.
 	 */
 	private boolean userAlreadyLogged() {

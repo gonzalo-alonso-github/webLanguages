@@ -78,17 +78,17 @@ public class BeanPaginationBar implements Serializable{
 	
 	/**
 	 * Halla la manera en que se mostrara la barra de paginacion que se muestra
-	 * en la lista de noticias del foro (vista 'forum.xhtml'). <br/>
+	 * en la lista de noticias del foro (vista 'forum.xhtml'). <br>
 	 * Eso depende de la pagina que haya sido seleccionada por el usuario,
-	 * y del tama&ntilde;o de la barra. Ejemplos: <br/>
+	 * y del tama&ntilde;o de la barra. Ejemplos: <br>
 	 * <ul><li>Si hay 8 paginas, y el usuario selecciona la 1 o la 2,
-	 * o la 7 o la 8, la barra se mostrara asi: <br/> &nbsp;&nbsp;&nbsp;&nbsp;
+	 * o la 7 o la 8, la barra se mostrara asi: <br> &nbsp;&nbsp;&nbsp;&nbsp;
 	 * [1] [2] [3] [...] [6] [7] [8]
 	 * </li><li>Si hay 8 paginas, y el usuario selecciona la 4,
-	 * la barra se mostrara asi: <br/> &nbsp;&nbsp;&nbsp;&nbsp;
+	 * la barra se mostrara asi: <br> &nbsp;&nbsp;&nbsp;&nbsp;
 	 * [1] [...] [3] [4] [5] [...] [8]
 	 * </li><li>Si hay 8 paginas, y el usuario selecciona la 3,
-	 * la barra se mostrara asi: <br/> &nbsp;&nbsp;&nbsp;&nbsp;
+	 * la barra se mostrara asi: <br> &nbsp;&nbsp;&nbsp;&nbsp;
 	 * [1] [2] [3] [4] [...] [7] [8]
 	 * </li></ul>
 	 * @param sizePaginationBar numero maximo de paginas que incluye
@@ -110,17 +110,17 @@ public class BeanPaginationBar implements Serializable{
 	/**
 	 * Halla la manera en que se mostrara la barra de paginacion que se muestra
 	 * en la lista de comentarios de un hilo del foro
-	 * (vista 'forum_thread.xhtml'). <br/>
+	 * (vista 'forum_thread.xhtml'). <br>
 	 * Eso depende de la pagina que haya sido seleccionada por el usuario,
-	 * y del tama&ntilde;o de la barra. Ejemplos: <br/>
+	 * y del tama&ntilde;o de la barra. Ejemplos: <br>
 	 * <ul><li>Si hay 8 paginas, y el usuario selecciona la 1 o la 2,
-	 * o la 7 o la 8, la barra se mostrara asi: <br/> &nbsp;&nbsp;&nbsp;&nbsp;
+	 * o la 7 o la 8, la barra se mostrara asi: <br> &nbsp;&nbsp;&nbsp;&nbsp;
 	 * [1] [2] [3] [...] [6] [7] [8]
 	 * </li><li>Si hay 8 paginas, y el usuario selecciona la 4,
-	 * la barra se mostrara asi: <br/> &nbsp;&nbsp;&nbsp;&nbsp;
+	 * la barra se mostrara asi: <br> &nbsp;&nbsp;&nbsp;&nbsp;
 	 * [1] [...] [3] [4] [5] [...] [8]
 	 * </li><li>Si hay 8 paginas, y el usuario selecciona la 3,
-	 * la barra se mostrara asi: <br/> &nbsp;&nbsp;&nbsp;&nbsp;
+	 * la barra se mostrara asi: <br> &nbsp;&nbsp;&nbsp;&nbsp;
 	 * [1] [2] [3] [4] [...] [7] [8]
 	 * </li></ul>
 	 * @param sizePaginationBar numero maximo de paginas que incluye
@@ -169,7 +169,7 @@ public class BeanPaginationBar implements Serializable{
 	/**
 	 * Carga la lista de paginas que debe incluir
 	 * la barra de paginacion que se muestra en la lista de comentarios
-	 * de una noticia ('hilo') del foro (vista 'forum_thread.xhtml'). <br/>
+	 * de una noticia ('hilo') del foro (vista 'forum_thread.xhtml'). <br>
 	 * @param sizePaginationBar numero total de paginas que incluye la barra
 	 * @return la lista generada
 	 */

@@ -12,10 +12,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import com.loqua.scheduler.SchedulerCrawler;
+
 import com.loqua.logging.LoquaLogger;
 import com.loqua.remote.RestTarget;
-import com.loqua.remote.model.Feed;
-import com.loqua.remote.model.ForumThread;
+import com.loqua.model.Feed;
+import com.loqua.model.ForumThread;
 import com.loqua.remote.services.RestServiceFeed;
 import com.loqua.remote.services.RestServiceForumThread;;
 
@@ -111,7 +113,6 @@ public class Gatherer {
 			List<Feed> allFeeds, List<ForumThread> threadsParsedInLastJob)
 			throws Exception{
 		List<ForumThread> allThreads = new ArrayList<ForumThread>();
-		//List<ForumThread> threadsOfFeed = new ArrayList<ForumThread>();
 		java.lang.System.setProperty("java.net.preferIPv4Stack", "true");
 		DocumentBuilder builder =
 				DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -126,7 +127,6 @@ public class Gatherer {
 			// de la fuente:
 			NodeList newsOfFeed = doc.getElementsByTagName("item");
 			parser.setFeed(feed);
-			//parser.setThreadsParsedInCurrentJob(allThreads);
 			parser.parseRawNewsOfFeed( newsOfFeed );
 			allThreads = parser.getThreadsParsedInCurrentJob();
 			int numParsedThreadsOfFeed = allThreads.size()-numAllParsedThreads;

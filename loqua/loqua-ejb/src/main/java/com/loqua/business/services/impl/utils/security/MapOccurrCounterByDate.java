@@ -1,5 +1,6 @@
-package com.loqua.business.services.impl;
+package com.loqua.business.services.impl.utils.security;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +9,9 @@ import java.util.Map;
  * de cualquier eventualidad en distintos lapsos de tiempo
  * @author Gonzalo
  */
-public class MapEntityCounterByDate{
+public class MapOccurrCounterByDate implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
 	
 	/** Guarda el numero de ocurrencias
 	 * de cualquier eventualidad en cierto lapso de tiempo,
@@ -19,11 +22,11 @@ public class MapEntityCounterByDate{
 	 */
 	private Map<String, Integer> map;
 	
-	/** Constructor sin parametros. <br/>
+	/** Constructor sin parametros. <br>
 	 * Iniializa a -1 todos los valores del Map&lt;String, Integer&gt;
 	 * de la clase
 	 */
-	public MapEntityCounterByDate(){
+	public MapOccurrCounterByDate(){
 		map = new HashMap<String, Integer>();
 		setOccurrencesLastMinute(-1);
 		setOccurrencesLastFiveMinutes(-1);
@@ -40,7 +43,7 @@ public class MapEntityCounterByDate{
 	 * alterado desde su inicializacion
 	 * @return
 	 * true: si el Map&lt;String, Integer&gt; de la clase no ha sido
-	 * alterado desde su inicializacion<br/>
+	 * alterado desde su inicializacion<br>
 	 * false: si ha habido alguna escritura en el 
 	 * Map&lt;String, Integer&gt; de la clase 
 	 */

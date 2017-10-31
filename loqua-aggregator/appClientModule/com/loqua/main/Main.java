@@ -8,7 +8,7 @@ import com.loqua.scheduler.SchedulerCrawler;
 
 /** Unica clase principal del proyecto 'loqua-aggregator' */
 public class Main {
-
+	
 	/** Manejador de logging */
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
@@ -21,7 +21,7 @@ public class Main {
 	public Main() {}
 
 	/** Metodo principal de la clase */
-	public static void main(String[] args) {
+	public static void main(String args[]) {
 		new Main().run();
 	}
 	

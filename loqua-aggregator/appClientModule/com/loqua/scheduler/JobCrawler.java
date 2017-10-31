@@ -11,7 +11,7 @@ import org.quartz.JobExecutionException;
 
 import com.loqua.crawler.Gatherer;
 import com.loqua.remote.RestTarget;
-import com.loqua.remote.model.ForumThread;
+import com.loqua.model.ForumThread;
 import com.loqua.remote.services.RestServiceForumThread;
 
 /**
@@ -23,7 +23,7 @@ import com.loqua.remote.services.RestServiceForumThread;
 public class JobCrawler implements Job{
 
 	/** Invoca al componente {@link Gatherer} para descargar, procesar
-	 * y guardar las noticias de las fuentes. <br/>
+	 * y guardar las noticias de las fuentes. <br>
 	 * Implementa el metodo 'execute' de la interfaz Job de la API Quartz.
 	 * @param context contexto de ejecucion del Job programado
 	 * @throws JobExecutionException

@@ -14,7 +14,7 @@ import com.loqua.model.compoundkeys.CommentVoterKey;
 
 /**
  * Representa la votacion de un comentario por parte de un usuario.
- * Es una clase asociativa entre {@link Commet} y {@link User}
+ * Es una clase asociativa entre {@link Comment} y {@link User}
  * @author Gonzalo
  */
 @XmlRootElement(name = "commentVoter")

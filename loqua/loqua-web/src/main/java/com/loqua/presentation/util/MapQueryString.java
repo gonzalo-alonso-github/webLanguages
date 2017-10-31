@@ -21,7 +21,8 @@ public class MapQueryString {
 	 * parametro y el contenido es el valor del mismo */
 	private Map<String, String> mapQueryString = null;
 	
-	/** Constructor de la clase que inicializa el Map {@link #mapQueryString}*/
+	/** Constructor de la clase que inicializa el Map {@link #mapQueryString}.
+	 * @param req la peticion HTTP necesaria para inicializar el Map indicado */
 	public MapQueryString(HttpServletRequest req){
 		loadQueryStringMap(req);
 	}
@@ -69,7 +70,7 @@ public class MapQueryString {
 	/**
 	 * Comprueba si el Map {@link #mapQueryString} ya ha sido inicializado.
 	 * @return
-	 * 'true' si el Map no es null ni esta vacio. <br/>
+	 * 'true' si el Map no es null ni esta vacio. <br>
 	 * 'false' si el Map es null o esta vacio.
 	 */
 	public boolean loadedQueryStringMap(){

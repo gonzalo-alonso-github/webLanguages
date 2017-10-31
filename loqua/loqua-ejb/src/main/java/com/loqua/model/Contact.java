@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * Representa una relacion de contacto entre dos usuarios. <br/><br/>
+ * Representa una relacion de contacto entre dos usuarios. <br><br>
  * La relacion de contacto entre dos usuarios es reciproca,
  * a imitacion de como sucede en Facebook o Linkedin (donde un usuario es
  * contacto de otro y viceversa), y a diferencia de Twitter (donde un usuario

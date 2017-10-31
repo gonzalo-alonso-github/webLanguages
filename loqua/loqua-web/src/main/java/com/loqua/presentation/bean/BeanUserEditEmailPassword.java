@@ -39,7 +39,7 @@ public class BeanUserEditEmailPassword implements Serializable{
 	/** Parametro 'confirm' recibido en la URL. Es una cadena aleatoria
 	 * (de 26 caracteres) que permite identificar
 	 * al usuario que accede a la URL de confirmacion de su cambio
-	 * de email o contrase&ntilde;a. <br/>
+	 * de email o contrase&ntilde;a. <br>
 	 * Se utiliza en las vistas .xhtml ubicadas en la ruta
 	 * 'pages/confirmationPages/', y en ellas se inicializa
 	 * mediante el &lt;f:viewParam&gt; que invoca al metodo set del atributo. */
@@ -115,7 +115,7 @@ public class BeanUserEditEmailPassword implements Serializable{
 	 * @param beanActionResult el bean que mostrara en la vista
 	 * el resultado de la accion
 	 * @return
-	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br>
 	 * Si se produce alguna excepcion, devuelve la regla de navegacion
 	 * que redirige a la pagina de error desconocido ('errorUnexpected').
 	 * @see #sendEmailForEditEmail
@@ -161,7 +161,7 @@ public class BeanUserEditEmailPassword implements Serializable{
 	 * @param newEmail la nueva direccion de email que desea establecer
 	 * el usuario
 	 * @return
-	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br>
 	 * Si se produce alguna excepcion, devuelve la regla de navegacion
 	 * que redirige a la pagina de error desconocido ('errorUnexpected').
 	 * @throws EntityAlreadyFoundException
@@ -202,12 +202,12 @@ public class BeanUserEditEmailPassword implements Serializable{
 	 * Cambia el estado del objeto {@link ChangeEmail} (cuyo atributo
 	 * {@link ChangeEmail#urlConfirm} coincide con el parametro
 	 * 'confirm' de la URL de la vista) estableciendo a 'true' el valor de
-	 * su propiedad {@link ChangeEmail#confirmedPreviousEmail}. <br/>
+	 * su propiedad {@link ChangeEmail#confirmedPreviousEmail}. <br>
 	 * Despues de eso invoca al metodo {@link #sendEmailForEditEmailSecondStep}.
 	 * @param beanActionResult el bean que mostrara en la vista
 	 * el resultado de la accion
 	 * @return
-	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br>
 	 * Si se produce alguna excepcion, devuelve la regla de navegacion
 	 * que redirige a la pagina de error desconocido ('errorUnexpected').
 	 * @see #sendEmailForEditEmailSecondStep
@@ -254,10 +254,6 @@ public class BeanUserEditEmailPassword implements Serializable{
 	 * para que el usuario confirme su cambio de email por segunda vez.
 	 * @param emailChange el objeto {@link ChangeEmail} que se confirma por
 	 * segunda vez
-	 * @return
-	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
-	 * Si se produce alguna excepcion, devuelve la regla de navegacion
-	 * que redirige a la pagina de error desconocido ('errorUnexpected').
 	 * @throws EntityNotFoundException
 	 */
 	private void sendEmailForEditEmailSecondStep(ChangeEmail emailChange)
@@ -296,12 +292,12 @@ public class BeanUserEditEmailPassword implements Serializable{
 	 * Cambia el estado del objeto {@link ChangeEmail} (cuyo atributo
 	 * {@link ChangeEmail#urlConfirm} coincide con el parametro
 	 * 'confirm' de la URL de la vista) estableciendo a 'true' el valor de
-	 * su propiedad {@link ChangeEmail#confirmedNewEmail}. <br/>
+	 * su propiedad {@link ChangeEmail#confirmedNewEmail}. <br>
 	 * Despues de eso actualiza finalmente el email del usuario.
 	 * @param beanActionResult el bean que mostrara en la vista
 	 * el resultado de la accion
 	 * @return
-	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br>
 	 * Si se produce alguna excepcion, devuelve la regla de navegacion
 	 * que redirige a la pagina de error desconocido ('errorUnexpected').
 	 */
@@ -429,7 +425,7 @@ public class BeanUserEditEmailPassword implements Serializable{
 	 * @param beanActionResult el bean que mostrara en la vista
 	 * el resultado de la accion
 	 * @return
-	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br>
 	 * Si se produce alguna excepcion, devuelve la regla de navegacion
 	 * que redirige a la pagina de error desconocido ('errorUnexpected').
 	 * @see #sendEmailForEditPassword
@@ -466,10 +462,9 @@ public class BeanUserEditEmailPassword implements Serializable{
 	 * Envia al email del usuario un correo que muestra un enlace para que 
 	 * confirme su cambio de contrase&ntilde;a.
 	 * @param updatedUser usuario que actualiza su contrase&ntilde;a
-	 * @param newEmail la nueva contrase&ntilde;a que desea establecer
+	 * @param newPass la nueva contrase&ntilde;a que desea establecer
 	 * el usuario
-	 * @return
-	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * @return Si la accion se realiza con exito, devuelve un valor 'null'. <br>
 	 * Si se produce alguna excepcion, devuelve la regla de navegacion
 	 * que redirige a la pagina de error desconocido ('errorUnexpected').
 	 * @throws EntityAlreadyFoundException
@@ -515,7 +510,7 @@ public class BeanUserEditEmailPassword implements Serializable{
 	 * @param beanActionResult el bean que mostrara en la vista
 	 * el resultado de la accion
 	 * @return
-	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br/>
+	 * Si la accion se realiza con exito, devuelve un valor 'null'. <br>
 	 * Si se produce alguna excepcion, devuelve la regla de navegacion
 	 * que redirige a la pagina de error desconocido ('errorUnexpected').
 	 * @see #sendEmailForEditEmailSecondStep

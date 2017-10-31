@@ -97,10 +97,7 @@
             <scope>test</scope>               
         </dependency>
 
-		<!-- HASTA AQUI, TODAS ESAS DEPENDENCIAS VIENEN POR DEFECTO
-		POR HABER ELEGIDO EL ARQUETIPO wildfly-javaee7-webapp-ear-archetype
-		A COTINUACION INTRODUCIMOS LAS DEPENDENCIAS REQUERIDAS EXCLUSIVAMENTE
-		POR LA LOGICA DE ESTE PROYECTO-->
+		<!-- DEPENDENCIAS REQUERIDAS EN EL CODIGO -->
 		
 		<!-- Hibernate, para JPA -->
 		<dependency>
@@ -138,6 +135,39 @@
 		    <groupId>com.microsoft.azure</groupId>
 		    <artifactId>azure-storage</artifactId>
 		    <version>5.0.0</version>
+		</dependency>
+		
+		<!-- Language Detector de Optimaize
+		link: https://github.com/optimaize/language-detector -->
+		<dependency>
+			<groupId>com.optimaize.languagedetector</groupId>
+			<artifactId>language-detector</artifactId>
+			<version>0.6</version>
+		</dependency>
+		
+		<!-- StandFord CoreNLP, para analizar sintacticamente el texto -->
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+			<version>3.8.0</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+			<version>3.8.0</version>
+			<classifier>models</classifier>
+		</dependency>
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+			<version>3.8.0</version>
+			<classifier>models-spanish</classifier>
+		</dependency>
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+			<version>3.8.0</version>
+			<classifier>models-french</classifier>
 		</dependency>
 		
     </dependencies>

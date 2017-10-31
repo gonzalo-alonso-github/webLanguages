@@ -39,12 +39,11 @@ public class FactoriesHelper {
 	}
 
 	/**
-	 * Carga un propiedad desde fichero de propiedades
+	 * Carga una propiedad desde fichero de propiedades
 	 * Lanza runtime exception si no existe la propiedad o el fichero
-	 * 
-	 * @param file
-	 * @param property
-	 * @return
+	 * @param file nombre del fichero de propiedades
+	 * @param property nombre de la propiedad
+	 * @return el valor de la propiedad indicada
 	 */
 	private static String loadProperty(String file, String property) {
 		

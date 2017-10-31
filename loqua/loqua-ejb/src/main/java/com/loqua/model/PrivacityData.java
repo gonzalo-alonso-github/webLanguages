@@ -171,8 +171,8 @@ public class PrivacityData implements Serializable {
 	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/**
-	 * Relacion entre entidades:<br>
+	/*
+	 * Relacion entre entidades:
 	 *  1 PrivacityData <--> 1 User
 	 */
 	/*@XmlTransient*/@XmlElement

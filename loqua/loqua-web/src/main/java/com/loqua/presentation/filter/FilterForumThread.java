@@ -27,11 +27,11 @@ import com.loqua.presentation.util.VerifierAjaxRequest;
 /**
  * Define el filtro, que se aplica sobre la pagina de 'forum_thread.xhtml',
  * y que comprueba si son correctos los parametros enviados en la URL
- * (la 'query string'). <br/>
+ * (la 'query string'). <br>
  * El ciclo de JSF es interceptado por el Filtro antes de que el navegador
  * muestre la pagina sobre la que este se aplica, y se ejecuta inmediatamene
  * despues de los manejadores de navegacion (NavigationHandler) y de vista
- * (ViewHandler). <br/>
+ * (ViewHandler). <br>
  * Puesto que se definen varios filtros sobre esta misma pagina, es coveniente
  * indicar, en el fichero web.xml, el orden en que se aplican.
  * @author Gonzalo
@@ -151,7 +151,7 @@ public class FilterForumThread implements Filter {
 	 * <li>Parametro 'page': pagina del 'hilo' que se va a consultar.</li></ul>
 	 * @param req la peticion HTTP
 	 * @return
-	 * 'true' si los parametros de la url son correctos <br/>
+	 * 'true' si los parametros de la url son correctos <br>
 	 * 'false' si los parametros de la url no son correctos
 	 */
 	private boolean verifyParameters(HttpServletRequest req){
@@ -174,9 +174,10 @@ public class FilterForumThread implements Filter {
 	 * Comprueba que la url de la peticion a la pagina 'forum_thread.xhtml'
 	 * contiene el parametro 'page' y es correcto (pagina que se va a consultar
 	 * en la lista de comentarios de la noticia).
+	 * @param thread hilo del foro al que se accede en la peticion
 	 * @param req la peticion HTTP
 	 * @return
-	 * 'true' si el parametro 'page' de la url es correcto <br/>
+	 * 'true' si el parametro 'page' de la url es correcto <br>
 	 * 'false' si el parametro 'page' de la url no es correcto
 	 */
 	private boolean verifyRequestedPage(

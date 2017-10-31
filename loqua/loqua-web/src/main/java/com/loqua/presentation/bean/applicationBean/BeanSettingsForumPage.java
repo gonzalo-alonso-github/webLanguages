@@ -91,7 +91,7 @@ public class BeanSettingsForumPage implements Serializable {
 	/**
 	 * Comprueba que la propiedad 'numberOfNewThreadsPerPage'
 	 * del fichero 'forum.properties' esta inicializada con un valor aceptable,
-	 * y si es asi devuelve su valor.<br/>
+	 * y si es asi devuelve su valor.<br>
 	 * Si no es asi, devuelve el valor por defecto:
 	 * {@link #DEFAULT_NUM_NEWS_PER_PAGE}.
 	 * @return
@@ -121,7 +121,7 @@ public class BeanSettingsForumPage implements Serializable {
 	/**
 	 * Comprueba que la propiedad 'numberOfCommentsPerNewThread'
 	 * del fichero 'forum.properties' esta inicializada con un valor aceptable,
-	 * y si es asi devuelve su valor.<br/>
+	 * y si es asi devuelve su valor.<br>
 	 * Si no es asi, devuelve el valor por defecto:
 	 * {@link #DEFAULT_NUM_COMMENTS_PER_NEWTHREAD}.
 	 * @return
@@ -176,16 +176,16 @@ public class BeanSettingsForumPage implements Serializable {
 	
 	/**
 	 * Es la version estatica del metodo {@link #getNumPagesOfThread}.
-	 * @param totalNumberOfComments numero total de comentarios de la noticia
+	 * @param totalNumberOfElements numero total de comentarios de la noticia
 	 * que contiene el hilo del foro
 	 * @return el numero de paginas calculado
 	 * @see #getNumPagesOfThread
 	 */
-	public static int getNumPagesOfThreadStatic(int totalNumberOfListElements){
+	public static int getNumPagesOfThreadStatic(int totalNumberOfElements){
 		// Este metodo se usa por ejemplo en el filtro 'FilterForumThread'
-		Integer numberOfListElementsPerPage = getNumCommentsPerPageStatic();
+		Integer numberOfElementsPerPage = getNumCommentsPerPageStatic();
 		int sizePaginationBar = ((int)Math.ceil(
-				(float)totalNumberOfListElements/numberOfListElementsPerPage));
+				(float)totalNumberOfElements/numberOfElementsPerPage));
 		return sizePaginationBar;
 	}
 }

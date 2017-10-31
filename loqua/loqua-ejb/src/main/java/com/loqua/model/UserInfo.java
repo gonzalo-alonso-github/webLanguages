@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Representa la informacion sobre la puntuacion de un usuario
- * en la aplicacion. <br/><br/>
+ * en la aplicacion. <br><br>
  * En lugar de albergar esta informacion en {@link User} esta entidad
  * corresponde a la tabla UserInfo, que almacena datos
  * que no son de caracter personal, ni de acceso,
@@ -133,8 +133,8 @@ public class UserInfo implements Serializable {
 	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/**
-	 * Relacion entre entidades:<br>
+	/*
+	 * Relacion entre entidades:
 	 *  1 UserInfoPrivacity <--> 1 User
 	 */
 	/*@XmlTransient*/@XmlElement
@@ -153,7 +153,7 @@ public class UserInfo implements Serializable {
 	// // // //
 	
 	/** Incrementa el numero de comentarios publicados por el usuario
-	 * y su puntuacion mensual, anual y total
+	 * y su puntuacion mensual, anual y total.
 	 */
 	public void incrementPointsBySentComment() {
 		countComments += 1;
@@ -163,7 +163,7 @@ public class UserInfo implements Serializable {
 	}
 	
 	/** Incrementa el numero de votos recibidos en los comentarios del usuario
-	 * y su puntuacion mensual, anual y total
+	 * y su puntuacion mensual, anual y total.
 	 */
 	public void incrementVotesComments() {
 		countVotesComments += 1;
@@ -173,7 +173,7 @@ public class UserInfo implements Serializable {
 	}
 	
 	/** Incrementa el numero de votos correcciones aprobadas del usuario
-	 * y su puntuacion mensual, anual y total
+	 * y su puntuacion mensual, anual y total.
 	 */
 	public void incrementPointsByAcceptedCorrection() {
 		countCorrections += 1;
@@ -182,7 +182,8 @@ public class UserInfo implements Serializable {
 		incrementPoints(25);
 	}
 	
-	/** Incrementa la puntuacion mensual, anual y total del usuario */
+	/** Incrementa la puntuacion mensual, anual y total del usuario.
+	 * @param increment incremento de los puntos. */
 	public void incrementPoints(int increment){
 		points += increment;
 		dateLastModificationPoints = new Date();
@@ -194,18 +195,52 @@ public class UserInfo implements Serializable {
 		dateLastModificationPointsYear = new Date();
 	}
 	
+	/** Decrementa la puntuacion total del usuario.
+	 * Ademas se comprueba si es necesario decrementar tambien los puntos
+	 * mensuales o anuales del usuario, si el comentario dado habia incrementado
+	 * su puntuacion mensual o anual.
+	 * @param comment objeto Comment que, al ser eliminado,
+	 * provoca el decremento de puntuacion del usuario
+	 */
+	public void decrementPointsByDeletedComment(Comment comment) {
+		points -= 1;
+		countComments -= 1;
+		dateLastModificationPoints = new Date();
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setTime(comment.getDate());
+		int commentMonth = calendar.get(Calendar.MONTH);
+		int commentYear = calendar.get(Calendar.YEAR);
+		
+		calendar.setTime(new Date());
+		int currentMonth = calendar.get(Calendar.MONTH);
+		int currentYear = calendar.get(Calendar.YEAR);
+		
+		if( commentMonth == currentMonth ){
+			pointsMonth -= 1;
+			countCommentsMonth -= 1;
+			dateLastModificationPointsMonth = new Date();
+		}
+		if( commentYear == currentYear ){
+			pointsYear -= 1;
+			countCommentsYear -= 1;
+			dateLastModificationPointsYear = new Date();
+		}
+	}
+	
 	/** Decrementa la puntuacion total del usuario. Previsiblemente este metodo
 	 * deberia utiizarse despues de que una correccion de un comentario
 	 * que haya sido aprobada sea eliminada, o bien sea sustituida
 	 * (al aprobarse otra correccion para el mismo comentario).
 	 * Ademas se comprueba si es necesario decrementar tambien los puntos
 	 * mensuales o anuales del usuario, si la correccion dada habia incrementado
-	 * sy puntuacion mensual o anual
+	 * su puntuacion mensual o anual.
 	 * @param correction objeto Correction que, por ser eliminado o sustituido,
 	 * provoca el decremento de puntuacion del usuario
 	 */
 	public void decrementPointsByDeletedCorrection(Correction correction) {
-		points -= 1;
+		points -= 25;
+		countCorrections -= 1;
 		dateLastModificationPoints = new Date();
 		if( correction.getDateApproved()==null ){
 			// Nunca deberia alcanzar esta condicion: se llama a este metodo
@@ -224,11 +259,13 @@ public class UserInfo implements Serializable {
 		int currentYear = calendar.get(Calendar.YEAR);
 		
 		if( correctionMonth == currentMonth ){
-			pointsMonth -= 1;
+			pointsMonth -= 25;
+			countCorrectionsMonth -= 1;
 			dateLastModificationPointsMonth = new Date();
 		}
 		if( correctionYear == currentYear ){
-			pointsYear -= 1;
+			pointsYear -= 25;
+			countCorrectionsYear -= 1;
 			dateLastModificationPointsYear = new Date();
 		}
 	}

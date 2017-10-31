@@ -16,7 +16,7 @@ import javax.servlet.annotation.WebInitParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.loqua.business.services.impl.MapCredentials;
+import com.loqua.business.services.impl.utils.externalAccounts.MapCredentials;
 
 /**
  * Define el filtro que se aplica sobre los recursos REST ubicados en

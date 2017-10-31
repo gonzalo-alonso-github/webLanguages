@@ -25,7 +25,7 @@ import com.loqua.persistence.exception.EntityNotPersistedException;
 /**
  * Da acceso a los procedimientos, dirigidos a la capa de persistencia,
  * correspondientes a las transacciones de las entidades
- * {@link Comment} y {@link CommentQuoteTo}. <br/>
+ * {@link Comment} y {@link CommentQuoteTo}. <br>
  * Este paquete de clases implementa el patron Transaction Script y
  * es el que, junto al modelo, concentra gran parte de la logica de negocio
  * @author Gonzalo
@@ -59,7 +59,7 @@ public class TransactionComment {
 	
 	
 	/**
-	 * Obtiene los comentarios citados por el comentario dado. <br/>
+	 * Obtiene los comentarios citados por el comentario dado. <br>
 	 * En esta version de la aplicacion no se permite que un comentario cite
 	 * a mas de un comentario. Por eso la lista devuelta solo
 	 * contiene un elemento a lo sumo.
@@ -144,7 +144,7 @@ public class TransactionComment {
 	 * @param userId atributo 'id' del User que se consulta
 	 * @param commentId atributo 'id' del Comment que se consulta
 	 * @return
-	 * true: si el usuario dado ya ha votado el comentario indicado <br/>
+	 * true: si el usuario dado ya ha votado el comentario indicado <br>
 	 * false: si el usuario dado nunca ha votado el comentario indicado
 	 */
 	public boolean commentAlreadyVotedByUser(Long userId, Long commentId){
@@ -193,15 +193,15 @@ public class TransactionComment {
 	/**
 	 * Comprueba si es necesaria la generacion de alguna Publication tras
 	 * producirse el voto de un comentario. Las Publication se generaran en los
-	 * siguientes casos: <br/>
+	 * siguientes casos: <br>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;- El voto del comentario es el primero que recibe
-	 * el usuario autor del mismo en ese preciso comentario<br/>
+	 * el usuario autor del mismo en ese preciso comentario<br>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;- El total de votos en todos los comentarios
-	 * del usuario alcanza una cantidad multiplo de 100<br/>
+	 * del usuario alcanza una cantidad multiplo de 100<br>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;- El incremento en la puntuacion del usuario
 	 * hace que este ascienda en la clasificacion hasta el
 	 * top de los primeros 100 usuarios, o 50, o 25, o 20, o 15, o 10, o 5
-	 * o superiores <br/>
+	 * o superiores <br>
 	 * @param comment Comment que, por haber sido votado,
 	 * provoca la creacion de Publications
 	 * @throws EntityNotFoundException
@@ -230,21 +230,21 @@ public class TransactionComment {
 	 * Genera un comentario en un hilo del foro, incrementa la puntuacion
 	 * del usuario, comprueba si es preciso generar una publicacion para el
 	 * evento y actualiza todos los cambios en la base de datos
-	 * @param thread hilo del foro al que pertenece el comentario creado
-	 * @param text texto plano del comentario creado
-	 * @param code texto HTML del comentario creado
-	 * @param user User autor del comentario creado
+	 * @param comment los datos del comentario que se va a agregar
 	 * @return el Comment generado
 	 * @throws EntityAlreadyFoundException
 	 * @throws EntityNotFoundException
 	 */
-	public Comment sendComment(ForumThread thread, String text, String code,
-			User user)
+	public Comment sendComment(Comment comment)
 			throws EntityAlreadyFoundException, EntityNotFoundException {
 		try {
-			int posIndex = getNumCommentsByThread(thread.getId())+1;
-			Comment comment = commentJPA.createComment(
-					thread, posIndex, text, code, user);
+			User user = comment.getUser();
+			ForumThread thread = comment.getForumThread();
+			int posIndex = getNumCommentsByThread(thread.getId()) + 1;
+			comment.setNumVotesThis(0).setPositionIndexThis(posIndex)
+				.setDateThis(new Date())
+				/*.setPostType("TypeComment")*/;
+			comment = commentJPA.createComment(comment);
 			// Se incrementa el numero de comentarios de la noticia:
 			transactionThread.incrementCountComments(thread);
 			// Se actualiza la fecha de 'dateLastComment' de la noticia:
@@ -265,13 +265,13 @@ public class TransactionComment {
 	/**
 	 * Comprueba si es necesaria la generacion de alguna Publication tras
 	 * crear un comentario. Las Publication se generaran en los
-	 * siguientes casos: <br/>
+	 * siguientes casos: <br>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;- El usuario autor del comentario ha alcanzado
-	 * los 50/100/500/1000/(...) comentarios <br/>
+	 * los 50/100/500/1000/(...) comentarios <br>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;- El incremento en la puntuacion del usuario
 	 * hace que este ascienda en la clasificacion hasta el
 	 * top de los primeros 100 usuarios, o 50, o 25, o 20, o 15, o 10, o 5
-	 * o superiores <br/>
+	 * o superiores <br>
 	 * @param comment Comment que, por haber sido creado,
 	 * provoca la creacion de Publications
 	 * @throws EntityNotFoundException
@@ -295,8 +295,8 @@ public class TransactionComment {
 			transactionPub.generatePublication(
 					privacity, numComments.longValue(), 1L, userComment);
 		}
-		// ya se han incrementado los puntos del usuario. Y ahora ademas,
-		// si el autor llega al top-100/50/25/20/15/10/5... genera publicacion:
+		// ya se han incrementado los puntos del usuario.
+		// Si el autor llega al top-100/50/25/20/15/10/5... genera publicacion:
 		transactionUser.generatePublicationForTopUsers( userComment );
 	}
 
@@ -307,7 +307,7 @@ public class TransactionComment {
 	 * @param numComments numero de comentarios publicados por un usuario
 	 * @return
 	 * true: si el numero dado esta en la serie '50, 100, 500, 1000, 5000...'
-	 * <br/>
+	 * <br>
 	 * false: si el numero dado no esta la serie '50, 100, 500, 1000, 5000...'
 	 */
 	private boolean reachedXComments(Integer numComments) {
@@ -333,6 +333,8 @@ public class TransactionComment {
 		try {
 			transactionPub.editPubsForDeletedPost(comm);
 			commentJPA.deleteComment(comm);
+			// Se decrementan los puntos del usuario:
+			transactionUser.decrementCountComments(comm);
 		} catch (EntityNotPersistedException ex) {
 			throw new EntityNotFoundException(ex);
 		}
@@ -359,27 +361,25 @@ public class TransactionComment {
 	 * Llama al metodo {@link #sendComment} y crea una asociacion
 	 * (objeto CommentQuoteTo) entre el comentario resultante y
 	 * el comentario 'commentToQuote'
-	 * @param commentToQuote comentario que queda citado en el foro
-	 * @param text texto plano del comentario generado en el foro
-	 * @param code texto HTML del comentario generado en el foro
-	 * @param user User autor del comentario generado en el foro
+	 * @param commentToQuote comentario que queda citado por el comentario
+	 * generado
+	 * @param commentToCreate comentario que se genera
 	 * @return comentario generado en el foro, que cita al 'commentToQuote'
 	 * dado
 	 * @throws EntityAlreadyFoundException
 	 * @throws EntityNotFoundException
 	 */
-	public Comment quoteComment(
-			Comment commentToQuote, String text, String code, User user)
+	public Comment quoteComment(Comment commentToQuote,Comment commentToCreate)
 			throws EntityAlreadyFoundException, EntityNotFoundException {
 		try {
 			// Se crea el Comment llamando a sendComment:
-			Comment newComment = sendComment(
-					commentToQuote.getForumThread(), text, code, user);
+			Comment commentResult = sendComment(commentToCreate);
 			// Se crea el CommentQuoteTo (la relacion de 'cita' entre Comments):
-			commentJPA.createQuote(commentToQuote, newComment);
+			commentJPA.createQuote(commentToQuote, commentResult);
 			// Se crea la Publication necesaria:
-			generatePublicationToQuoteComm(commentToQuote, user);
-			return newComment;
+			generatePublicationToQuoteComm(
+					commentToQuote, commentToCreate.getUser());
+			return commentResult;
 		} catch (EntityAlreadyPersistedException ex) {
 			throw new EntityAlreadyFoundException(ex);
 		}

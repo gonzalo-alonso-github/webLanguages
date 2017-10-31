@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * Representa la informacion sobre la relevancia y la puntuacion de un hilo
- * del foro. <br/><br/>
+ * del foro. <br><br>
  * En lugar de albergar esta informacion en {@link ForumThread} esta entidad
  * corresponde a la tabla ForumThreadInfo, que debido al previsible
  * alto ritmo de operaciones que van a soportar sus campos, esta separada
@@ -86,8 +86,8 @@ public class ForumThreadInfo implements Serializable {
 	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/**
-	 * Relacion entre entidades:<br>
+	/*
+	 * Relacion entre entidades:
 	 *  1 ThreadInfo <--> 1 Thread
 	 */
 	@XmlTransient
@@ -113,6 +113,16 @@ public class ForumThreadInfo implements Serializable {
 	/** Incrementa el numero de comentarios del hilo */
 	public void incrementCountComments() {
 		countComments += 1;
+	}
+	
+	/** Incrementa el numero de votos del hilo */
+	public void incrementCountVotes() {
+		countVotes += 1;
+	}
+	
+	/** Decrementa el numero de votos del hilo */
+	public void decrementCountVotes() {
+		countVotes = (countVotes==0) ? 0 : countVotes-1;
 	}
 	
 	// // // // // // //

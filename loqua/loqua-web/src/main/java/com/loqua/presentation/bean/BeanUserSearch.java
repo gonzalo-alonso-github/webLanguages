@@ -98,13 +98,13 @@ public class BeanUserSearch implements Serializable{
 	/**
 	 * Inicializa el atributo {@link #user} de este Bean buscando
 	 * el usuario, segun su atributo 'email' o 'nick' indicado por
-	 * {@link #stringToSearch}, que no este en estado eliminado. <br/>
+	 * {@link #stringToSearch}, que no este en estado eliminado. <br>
 	 * Depues de eso halla el enlace necesario para redirigir la navegacion
 	 * a la pagina del perfil del usuario encontrado.
 	 * @param beanActionResult el bean que mostrara en la vista
 	 * el resultado de la accion
 	 * @return Si el usuario ha sido encontrado, devuelve la direccion URL
-	 * que conduce a su pagina de perfil. <br/>
+	 * que conduce a su pagina de perfil. <br>
 	 * De lo contrario devuelve el valor 'null'
 	 */
 	public String searchUser(BeanActionResult beanActionResult){
@@ -148,7 +148,7 @@ public class BeanUserSearch implements Serializable{
 	 * por la propiedad {@link #REGULAR_EXPRESSION_EMAIL} de esta clase.
 	 * @param email el email cuyo formato se comprueba
 	 * @return
-	 * 'true' si el email dado cumple con el formato determinado <br/>
+	 * 'true' si el email dado cumple con el formato determinado <br>
 	 * 'false' si el email dado no cumple con el formato determinado
 	 */
 	private boolean introducedWellFormedEmail(String email) {

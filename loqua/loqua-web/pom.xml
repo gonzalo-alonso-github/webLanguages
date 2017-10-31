@@ -92,10 +92,7 @@
            </exclusions>
        </dependency>
 
-		<!-- HASTA AQUI, TODAS ESAS DEPENDENCIAS VIENEN POR DEFECTO
-		POR HABER ELEGIDO EL ARQUETIPO wildfly-javaee7-webapp-ear-archetype
-		A COTINUACION INTRODUCIMOS LAS DEPENDENCIAS REQUERIDAS EXCLUSIVAMENTE
-		POR LA LOGICA DE ESTE PROYECTO-->
+		<!-- DEPENDENCIAS REQUERIDAS EN EL CODIGO -->
 		
 		<!-- JBcrypt implementación de OpenBSD, para cifrar contrasenas  -->
 		<dependency>

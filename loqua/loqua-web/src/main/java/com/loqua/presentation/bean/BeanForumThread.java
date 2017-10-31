@@ -30,13 +30,13 @@ public class BeanForumThread implements Serializable{
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	/** Parametro 'thread' recibido en la URL, que indica el identificador
-	 * del hilo del foro que se desea consultar. <br/>
+	 * del hilo del foro que se desea consultar. <br>
 	 * Se inicializa en las vistas 'forum_thread.xhtml',
 	 * 'forum_thread_comment.xhtml' o 'forum_thread_correction.xhtml',
 	 * mediante el &lt;f:viewParam&gt; que invoca al metodo set del atributo. */
 	private Long currentThreadId;
 	
-	/** Es el hilo del foro que va a consultar. <br/>
+	/** Es el hilo del foro que va a consultar. <br>
 	 * Se inicializa en las vistas 'forum_thread.xhtml',
 	 * 'forum_thread_comment.xhtml' o 'forum_thread_correction.xhtml',
 	 * mediante el &lt;f:viewParam&gt; que invoca al metodo set del atributo
@@ -44,7 +44,7 @@ public class BeanForumThread implements Serializable{
 	private ForumThread currentThread;
 	
 	/** Parametro 'page' recibido en la URL, que indica el numero de la pagina
-	 * que se desea consultar dentro del hilo del foro. <br/>
+	 * que se desea consultar dentro del hilo del foro. <br>
 	 * Se inicializa en la vista 'forum_thread.xhtml',
 	 * mediante el &lt;f:viewParam&gt; que invoca al metodo set del atributo. */
 	private Integer offsetPage;
@@ -59,21 +59,15 @@ public class BeanForumThread implements Serializable{
 	@ManagedProperty(value="#{beanLogin}")
 	private BeanLogin beanLogin;
 	
-	/** Inyeccion de dependencia del {@link BeanPaginationBar} */
-	@ManagedProperty(value="#{beanPaginationBar}")
-	private BeanPaginationBar beanPaginationBar;
-	
 	// // // // // // // // // // // //
 	// CONSTRUCTORES E INICIALIZACIONES
 	// // // // // // // // // // // //
 	
-	/** Constructor del bean. Inicializa los beans inyectados:
-	 * {@link BeanLogin} y {@link BeanPaginationBar}
+	/** Constructor del bean. Inicializa el bean inyectado: {@link BeanLogin}
 	 */
 	@PostConstruct
 	public void init() {
 		initBeanLogin();
-		initBeanPaginationBar();
 		numCommentsPerPage = BeanSettingsForumPage.getNumCommentsPerPageStatic();
 	}
 	
@@ -89,22 +83,6 @@ public class BeanForumThread implements Serializable{
 			beanLogin = new BeanLogin();
 			FacesContext.getCurrentInstance().getExternalContext().
 				getSessionMap().put("beanLogin", beanLogin);
-		}
-	}
-	
-	/** Inicializa el objeto {@link BeanPaginationBar} inyectado */
-	private void initBeanPaginationBar() {
-		// Buscamos el BeanPaginationBar en la sesion.
-		beanPaginationBar = null;
-		beanPaginationBar = (BeanPaginationBar)FacesContext.getCurrentInstance().
-				getExternalContext().getSessionMap().get("beanPaginationBar");
-		
-		// si no existe lo creamos e inicializamos:
-		if (beanPaginationBar == null) { 
-			beanPaginationBar = new BeanPaginationBar();
-			beanPaginationBar.init();
-			FacesContext.getCurrentInstance().getExternalContext().
-				getSessionMap().put("beanPaginationBar", beanPaginationBar);
 		}
 	}
 	
@@ -148,8 +126,7 @@ public class BeanForumThread implements Serializable{
 			numCommentsTotal = Factories.getService().getServiceComment()
 					.getNumCommentsByThread(currentThread.getId());
 		}catch( Exception e ){
-			log.error("Unexpected Exception at "
-					+ "'getListCommentsByThread()'");
+			log.error("Unexpected Exception at 'getListCommentsByThread()'");
 		}
 		return result;
 	}
@@ -176,7 +153,7 @@ public class BeanForumThread implements Serializable{
 	/**
 	 * Obtiene la URL necesaria para que los componentes OutpuLink de la vista
 	 * que llaman a este metodo enlacen a la pagina 'forum_thread.xhtml',
-	 * indicando en la 'query string' de la URL la noticia ('thread') dada.<br/>
+	 * indicando en la 'query string' de la URL la noticia ('thread') dada.<br>
 	 * Antes de acceder a dicha pagina se aplicara el filtro
 	 * 'FilterForumThread'.
 	 * @param threadId el 'hilo' del foro que se va a consultar
@@ -245,10 +222,10 @@ public class BeanForumThread implements Serializable{
 	 * @param threadId el 'hilo' del foro al cual pertenece el post que se va a
 	 * crear o editar en la siguiente vista (forum_thread_comment.xhtml).
 	 * @param action accion que se va a realizar en la pagina
-	 * 'forum_thread_comment.xhtml'.<br/>
-	 * Si action=1 la vista mostrara lo necesario para crear un comentario<br/>
-	 * Si action=2 la vista mostrara lo necesario para editar un comentario<br/>
-	 * Si action=3 la vista mostrara lo necesario para citar un comentario<br/>
+	 * 'forum_thread_comment.xhtml'.<br>
+	 * Si action=1 la vista mostrara lo necesario para crear un comentario<br>
+	 * Si action=2 la vista mostrara lo necesario para editar un comentario<br>
+	 * Si action=3 la vista mostrara lo necesario para citar un comentario<br>
 	 * @param commentId si se va a editar/citar un comentario, este parametro
 	 * sera el id de dicho comentario. Si se va a crear un comentario entonces
 	 * sera null.
@@ -272,7 +249,8 @@ public class BeanForumThread implements Serializable{
 	  * @param threadId  el 'hilo' del foro al cual pertenece el post
 	  * que se va a crear
 	  * @param commentId el id del comentario que se corrige
-	  * @return
+	  * @return la URL de la pagina de 'forum_thread_correction.xhtml'
+	  * con los parametros necesarios para crear una correccion
 	  */
 	public String getOutputLinkToCreateCorrection(
 			Long threadId, Long commentId){
@@ -285,7 +263,8 @@ public class BeanForumThread implements Serializable{
 	 * @param threadId  el 'hilo' del foro al cual pertenece el post
 	 * que se va a editar
 	 * @param correctionId el id de la correccion que se edita
-	 * @return
+	 * @return la URL de la pagina de 'forum_thread_correction.xhtml'
+	  * con los parametros necesarios para editar una correccion
 	 */
 	public String getOutputLinkToEditCorrection(
 			Long threadId, Long correctionId){
@@ -301,11 +280,11 @@ public class BeanForumThread implements Serializable{
 	 * @param threadId el 'hilo' del foro al cual pertenece el post que se va a
 	 * crear o editar en la siguiente vista (forum_thread_correction.xhtml).
 	 * @param action accion que se va a realizar en la pagina
-	 * 'forum_thread_correction.xhtml'.<br/>
-	 * Si action=1 la vista mostrara lo necesario para crear correccion<br/>
-	 * Si action=2 la vista mostrara lo necesario para editar correccion<br/>
+	 * 'forum_thread_correction.xhtml'.<br>
+	 * Si action=1 la vista mostrara lo necesario para crear correccion<br>
+	 * Si action=2 la vista mostrara lo necesario para editar correccion<br>
 	 * @param postId id del post que se va a crear/actualizar
-	 * @return url de la pagina de 'forum_thread_correction.xhtml'
+	 * @return la URL de la pagina de 'forum_thread_correction.xhtml'
 	 * con los parametros necesarios para realizar la accion solicitada
 	 */
 	private String getOutputLinkToCRUDCorrection(
@@ -328,7 +307,7 @@ public class BeanForumThread implements Serializable{
 	 * @param thread hilo del foro que se puntua
 	 * @param anchor el 'ancla' de la URL que identifica al hilo del foro
 	 * que puntua
-	 * @return
+	 * @return la URL de la pagina actual
 	 */
 	public String getCommandLinkToVoteThread(ForumThread thread,String anchor){
 		voteThread(thread);
@@ -358,11 +337,12 @@ public class BeanForumThread implements Serializable{
 	 * Comprueba si el usuario dado ha puntuado el hilo indicado del foro
 	 * @param thread hilo del foro que se consulta
 	 * @return
-	 * 'true' si el usuario ya ha puntuado el hilo del foro <br/>
+	 * 'true' si el usuario ya ha puntuado el hilo del foro <br>
  	 * 'false' si el usuario aun no ha puntuado el hilo del foro
 	 */
 	public boolean threadAlreadyVotedByUser(ForumThread thread){
 		boolean result = false;
+		if( beanLogin==null || beanLogin.getLoggedUser()==null ) return false;
 		Long loggedUserId = beanLogin.getLoggedUser().getId();
 		try{
 			result = Factories.getService().getServiceThread()

@@ -120,7 +120,7 @@ public class BeanSettingsUser implements Serializable {
 	/**
 	 * Comprueba que la propiedad 'profileImageLimitKB'
 	 * del fichero 'users.properties' esta inicializada con un valor aceptable,
-	 * y si es asi devuelve su valor.<br/>
+	 * y si es asi devuelve su valor.<br>
 	 * Si no es asi, devuelve el valor por defecto
 	 * {@link #DEFAULT_AVATAR_SIZE_LIMIT_KB}.
 	 * @return
@@ -146,7 +146,7 @@ public class BeanSettingsUser implements Serializable {
 	/**
 	 * Comprueba que la propiedad 'profileImageMaxWidthPx'
 	 * del fichero 'users.properties' esta inicializada con un valor aceptable,
-	 * y si es asi devuelve su valor.<br/>
+	 * y si es asi devuelve su valor.<br>
 	 * Si no es asi, devuelve el valor por defecto:.
 	 * {@link #DEFAULT_AVATAR_WIDTH}.
 	 * @return
@@ -173,7 +173,7 @@ public class BeanSettingsUser implements Serializable {
 	/**
 	 * Comprueba que la propiedad 'profileImageMaxHeightPx'
 	 * del fichero 'users.properties' esta inicializada con un valor aceptable,
-	 * y si es asi devuelve su valor.<br/>
+	 * y si es asi devuelve su valor.<br>
 	 * Si no es asi, devuelve el valor por defecto:
 	 * {@link #DEFAULT_AVATAR_HEIGHT}.
 	 * @return
@@ -200,11 +200,11 @@ public class BeanSettingsUser implements Serializable {
 	/**
 	 * Comprueba que la propiedad 'profileImageExtensions'
 	 * del fichero 'users.properties' esta inicializada con un valor aceptable,
-	 * y si es asi devuelve su valor.<br/>
+	 * y si es asi devuelve su valor.<br>
 	 * Si no es asi, devuelve el valor por defecto:
 	 * {@link #DEFAULT_AVATAR_EXTENSIONS}.
 	 * @return
-	 * lista de extensiones de imagen permitidas por defecto.<br/>
+	 * lista de extensiones de imagen permitidas por defecto.<br>
 	 * Unos ejemplos: 'image/jpeg', 'image/jpg', 'image/png', 'image/bmp'.
 	 */
 	public static List<String> getProfileImageExtensions() {
@@ -230,6 +230,7 @@ public class BeanSettingsUser implements Serializable {
 	 * Convierte la propiedad 'profileImageExtensions'
 	 * del fichero 'users.properties' en una cadena de texto mas apta
 	 * para ser mostrada en las vistas.
+	 * @return la cadena de texto convertida
 	 */
 	public static String getProfileImageExtensionsAsString() {
 		String result = "";

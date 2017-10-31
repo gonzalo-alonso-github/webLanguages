@@ -22,12 +22,12 @@ import com.loqua.model.User;
 
 /**
  * Da acceso a las transacciones correspondientes a las entidades
- * {@link Publication} y {@link PublicationReceiver}.<br/>
+ * {@link Publication} y {@link PublicationReceiver}.<br>
  * La intencion de esta 'subcapa' de EJBs no es albergar mucha logica de negocio
  * (de ello se ocupa el modelo y el Transaction Script), sino hacer
  * que las transacciones sean controladas por el contenedor de EJB
  * (Wildfly en este caso), quien se ocupa por ejemplo de abrir las conexiones
- * a la base de datos mediate un datasource y de realizar los rollback. <br/>
+ * a la base de datos mediate un datasource y de realizar los rollback. <br>
  * Al ser un EJB de sesion sin estado no puede ser instanciado desde un cliente
  * o un Factory Method, sino que debe ser devuelto mediante el registro JNDI.
  * Forma parte del patron Service Locator y se encapsula tras las fachadas
@@ -102,7 +102,8 @@ public class EjbServicePublication
 	@Override
 	public Integer getNumPublicationsByUserAndContacts(Long userId) 
 			throws EntityNotFoundException{
-		return transactionPublication.getNumPublicationsByUserAndContacts(userId);
+		return transactionPublication
+				.getNumPublicationsByUserAndContacts(userId);
 	}
 	
 	@Override

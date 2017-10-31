@@ -31,13 +31,13 @@ public class BeanForum implements Serializable{
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	/** Parametro 'category' recibido en la URL, que indica la categoria
-	 * de noticias (o 'hilos') que se desean consultar. <br/>
+	 * de noticias (o 'hilos') que se desean consultar. <br>
 	 * Se inicializa en la vista 'forum.xhtml',
 	 * mediante el &lt;f:viewParam&gt; que invoca al metodo set del atributo. */
 	private Long category;
 	
 	/** Parametro 'page' recibido en la URL, que indica el numero de la pagina
-	 * que se desea consultar dentro del hilo del foro. <br/>
+	 * que se desea consultar dentro del hilo del foro. <br>
 	 * Se inicializa en la vista 'forum_thread.xhtml',
 	 * mediante el &lt;f:viewParam&gt; que invoca al metodo set del atributo. */
 	private Integer offsetPage;
@@ -66,7 +66,7 @@ public class BeanForum implements Serializable{
 	// // // // // // // // // // // //
 	
 	/** Constructor del bean. Inicializa los beans inyectados:
-	 * {@link BeanLogin}, {@link BeanUser} y {@link BeanSettingsForumPage}
+	 * {@link BeanLogin}, {@link BeanUserData} y {@link BeanSettingsForumPage}
 	 */
 	@PostConstruct
 	public void init() {
@@ -105,7 +105,7 @@ public class BeanForum implements Serializable{
 		}
 	}
 	
-	/** Inicializa el objeto {@link BeanSettingsForum} inyectado */
+	/** Inicializa el objeto {@link BeanSettingsForumPage} inyectado */
 	private void initBeanSettingsForum() {
 		// Buscamos el BeanSettings en la sesion.
 		beanSettingsForumPage = null;
@@ -148,17 +148,18 @@ public class BeanForum implements Serializable{
 	}
 	
 	/**
-	 * Halla los ultimos hilos del foro mas recientes que pertenecen a la categoria dada
-	 * @param categoryId atributo 'name' del FeedCategory al que pertenecen
+	 * Halla los ultimos hilos del foro mas recientes que pertenecen
+	 * a la categoria dada
+	 * @param categoryId atributo 'id' del FeedCategory al que pertenecen
 	 * los ForumThread que se consultan
 	 * @return lista de los ForumThread cuya fecha es mas reciente,
 	 * segun su atributo 'date', pertenecientes al FeedCategory dado
 	 */
-	public List<ForumThread> getLastNewsByCategory(Long categoryID){
+	public List<ForumThread> getLastNewsByCategory(Long categoryId){
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		try{
 			result = Factories.getService().getServiceThread()
-					.getLastThreadsByCategoryFromDB(categoryID); //FromCache
+					.getLastThreadsByCategoryFromDB(categoryId);
 		}catch( Exception e ){
 			log.error("Unexpected Exception at "
 					+ "'getLastNewsByCategory()'");
@@ -176,7 +177,7 @@ public class BeanForum implements Serializable{
 		List<ForumThread> result = new ArrayList<ForumThread>();
 		try{
 			result = Factories.getService().getServiceThread()
-					.getMostValuedThreadsOfTheMonthFromDB();
+					.getMostValuedThreadsOfTheMonth();
 		}catch( Exception e ){
 			log.debug(
 					"Unexpected Exception at "
@@ -258,17 +259,17 @@ public class BeanForum implements Serializable{
 				// si no esta vacia, obtener las noticias mas recientes,
 				// de dichos idiomas, de la categoria elegida
 				result = Factories.getService().getServiceThread()
-						.getThreadsByLanguagesAndCategoryFromDB(
+						.getThreadsByLangsAndCategory(
 								listLanguages, category, offsetPage,
 								numNewsPerPage); //FromCache
 				numNewsTotal = Factories.getService().getServiceThread()
-						.getNumThreadsByLanguagesAndCategoryFromDB(
+						.getNumThreadsByLanguagesAndCategory(
 								listLanguages, category); //FromCache
 			}else{
 				// si esta vacia, obtener las noticias mas recientes,
 				// de cualquier idioma, de la categoria elegida
 				result = Factories.getService().getServiceThread()
-						.getThreadsByCategoryFromDB(category,offsetPage,
+						.getThreadsByCategory(category,offsetPage,
 								numNewsPerPage); //FromCache
 				numNewsTotal = Factories.getService().getServiceThread()
 						.getNumThreadsByCategoryFromDB(category); //FromCache
@@ -293,7 +294,7 @@ public class BeanForum implements Serializable{
 				// si no esta vacia, obtener las noticias mas recientes,
 				// de dichos idiomas, de la categoria elegida
 				numNewsTotal = Factories.getService().getServiceThread()
-						.getNumThreadsByLanguagesAndCategoryFromDB(
+						.getNumThreadsByLanguagesAndCategory(
 								listLanguages, category);
 			}else{
 				// si esta vacia, obtener las noticias mas recientes,
@@ -311,7 +312,7 @@ public class BeanForum implements Serializable{
 	 * Obtiene la URL necesaria para que los componentes OutpuLink de la vista
 	 * que llaman a este metodo enlacen a la pagina 'forum.xhtml',
 	 * indicando en la 'query string' de la URL la categoria se&ntilde;alada
-	 * en el atributo {@link #category}. <br/>
+	 * en el atributo {@link #category}. <br>
 	 * Antes de acceder a dicha pagina se aplicara el filtro
 	 * 'FilterForum'.
 	 * @param offset pagina del foro que se va a consultar.
@@ -325,19 +326,20 @@ public class BeanForum implements Serializable{
 	/**
 	 * Obtiene la URL necesaria para que los componentes OutpuLink de la vista
 	 * que llaman a este metodo enlacen a la pagina 'forum.xhtml',
-	 * indicando en la 'query string' de la URL la categoria dada. <br/>
+	 * indicando en la 'query string' de la URL la categoria dada. <br>
 	 * Antes de acceder a dicha pagina se aplicara el filtro
 	 * 'FilterForum'.
+	 * @param categoryId identificador de la categoria de noticias consultadas.
 	 * @param offset pagina del foro que se va a consultar.
 	 * @return la URL de la pagina de 'forum.xhtml'.
 	 */
-	public String getOutputLinkToForum(Long category, Integer offset){
+	public String getOutputLinkToForum(Long categoryId, Integer offset){
 		// Este metodo se llama desde los links de categorias del foro
 		String url = getLinkToForum();
 		String queryString = "?";
 		boolean existParams = false;
-		if( category!=null && category!=0L ){
-			queryString+="category="+category;
+		if( categoryId!=null && categoryId!=0L ){
+			queryString+="category="+categoryId;
 			existParams = true;
 		}
 		if( offset!=null && offset!=0 ){

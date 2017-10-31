@@ -27,11 +27,11 @@ import com.loqua.presentation.util.VerifierAjaxRequest;
  * Define el filtro, que se aplica sobre la pagina de
  * 'forum_thread_correction.xhtml',
  * y que comprueba si son correctos los parametros enviados en la URL
- * (la 'query string'). <br/>
+ * (la 'query string'). <br>
  * El ciclo de JSF es interceptado por el Filtro antes de que el navegador
  * muestre la pagina sobre la que este se aplica, y se ejecuta inmediatamene
  * despues de los manejadores de navegacion (NavigationHandler) y de vista
- * (ViewHandler). <br/>
+ * (ViewHandler). <br>
  * Puesto que se definen varios filtros sobre esta misma pagina, es coveniente
  * indicar, en el fichero web.xml, el orden en que se aplican.
  * @author Gonzalo
@@ -159,15 +159,15 @@ public class FilterForumThreadCorrection implements Filter {
 	 * que se va a crear o editar en la siguiente vista
 	 * (forum_thread_correction.xhtml)
 	 * </li><li>Parametro 'action': accion que se va a realizar en la pagina
-	 * 'forum_thread_correction.xhtml':<br/>
-	 * - Si action=1 la vista mostrara lo necesario para crear correccion<br/>
-	 * - Si action=2 la vista mostrara lo necesario para editar correccion<br/>
+	 * 'forum_thread_correction.xhtml':<br>
+	 * - Si action=1 la vista mostrara lo necesario para crear correccion<br>
+	 * - Si action=2 la vista mostrara lo necesario para editar correccion<br>
 	 * </li><li>Parametro 'comment': commentario del foro que se va a
 	 * editar/citar/corregir en la pagina 'forum_thread_comment.xhtml'</li></ul>
 	 * @param req la peticion HTTP
 	 * @param loggedUser el usuario que accede a la pagina
 	 * @return
-	 * 'true' si los parametros de la url son correctos <br/>
+	 * 'true' si los parametros de la url son correctos <br>
 	 * 'false' si los parametros de la url no son correctos
 	 */
 	private boolean verifyParameters(HttpServletRequest req, User loggedUser){
@@ -211,7 +211,7 @@ public class FilterForumThreadCorrection implements Filter {
 	 * a la que pertenece la correccion que se va a crear o editar).
 	 * @param req la peticion HTTP
 	 * @return
-	 * 'true' si el parametro 'thread' de la url es correcto <br/>
+	 * 'true' si el parametro 'thread' de la url es correcto <br>
 	 * 'false' si el parametro 'thread' de la url no es correcto
 	 */
 	private boolean verifyRequestedThread(HttpServletRequest req){
@@ -234,7 +234,7 @@ public class FilterForumThreadCorrection implements Filter {
 	 * y es correcto (indica el comentario que se va a corregir).
 	 * @param req la peticion HTTP
 	 * @return
-	 * 'true' si el parametro 'comment' de la url es correcto <br/>
+	 * 'true' si el parametro 'comment' de la url es correcto <br>
 	 * 'false' si el parametro 'comment' de la url no es correcto
 	 */
 	private boolean verifyRequestedComment(HttpServletRequest req){
@@ -268,7 +268,7 @@ public class FilterForumThreadCorrection implements Filter {
 	 * y es correcto (indica la correccion que se va a editar).
 	 * @param req la peticion HTTP
 	 * @return
-	 * 'true' si el parametro 'correction' de la url es correcto <br/>
+	 * 'true' si el parametro 'correction' de la url es correcto <br>
 	 * 'false' si el parametro 'correction' de la url no es correcto
 	 */
 	private boolean verifyRequestedCorrection(HttpServletRequest req){
@@ -307,7 +307,7 @@ public class FilterForumThreadCorrection implements Filter {
 	 * @param req la peticion HTTP
 	 * @param loggedUser el usuario que accede a la pagina
 	 * @return
-	 * 'true' si el usuario dado tiene permiso para corregir el comentario <br/>
+	 * 'true' si el usuario dado tiene permiso para corregir el comentario <br>
 	 * 'false' si el usuario dado no tiene permiso para corregir el comentario
 	 */
 	private boolean verifyIfCorrectingOwnComm(HttpServletRequest req,
@@ -342,7 +342,7 @@ public class FilterForumThreadCorrection implements Filter {
 	 * @param req la peticion HTTP
 	 * @param loggedUser el usuario que accede a la pagina
 	 * @return
-	 * 'true' si el usuario dado tiene permiso para editar la correccion <br/>
+	 * 'true' si el usuario dado tiene permiso para editar la correccion <br>
 	 * 'false' si el usuario dado no tiene permiso para editar la correccion
 	 */
 	private boolean verifyIfEdittingForeignCorr(HttpServletRequest req,
@@ -373,7 +373,7 @@ public class FilterForumThreadCorrection implements Filter {
 	 * @param req la peticion HTTP
 	 * @return
 	 * 'true' si la correccion que se pretende editar pertenece
-	 * al comentario indicado en la URL <br/>
+	 * al comentario indicado en la URL <br>
 	 * 'false' si la correccion que se pretende editar no pertenece
 	 * al comentario indicado en la URL
 	 */

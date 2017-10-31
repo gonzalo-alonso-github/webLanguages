@@ -69,7 +69,7 @@ public class ValidatorEmailAvailable implements Validator {
 	 * @param email direccion de email que se comprueba
 	 * @return
 	 * 'true' si la longitud de la cadena recibida no supera
-	 * los 40 caracteres <br/>
+	 * los 40 caracteres <br>
 	 * 'false' si la longitud de la cadena recibida sobrepasa
 	 * los 40 caracteres
 	 */
@@ -86,7 +86,7 @@ public class ValidatorEmailAvailable implements Validator {
 	 * en el atributo {@link #EMAIL_PATTERN}.
 	 * @param email direccion de email que se comprueba
 	 * @return
-	 * 'true' si la cadena recibida cumple el formato de email <br/>
+	 * 'true' si la cadena recibida cumple el formato de email <br>
 	 * 'false' si la cadena recibida no cumple el formato de email
 	 */
 	private boolean validateRegex(String email) {
@@ -102,7 +102,7 @@ public class ValidatorEmailAvailable implements Validator {
 	 * o por el contrario esta siendo utilizada por algun usuario no eliminado.
 	 * @param email direccion de email que se comprueba
 	 * @return
-	 * 'true' si el email no esta siendo utilizado por ningun usuario <br/>
+	 * 'true' si el email no esta siendo utilizado por ningun usuario <br>
 	 * 'false' si el email ya esta siendo utilizado por otro usuario
 	 */
 	private boolean verifyNotEmailExistsForNotRemovedUser(String email) {

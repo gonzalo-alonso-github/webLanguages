@@ -11,7 +11,7 @@ import com.loqua.persistence.exception.EntityNotPersistedException;
 /**
  * Da acceso a los procedimientos, dirigidos a la capa de persistencia,
  * correspondientes a las transacciones de las entidades
- * {@link Feed} y {@link FeedCategory}. <br/>
+ * {@link Feed} y {@link FeedCategory}. <br>
  * Este paquete de clases implementa el patron Transaction Script y
  * es el que, junto al modelo, concentra gran parte de la logica de negocio
  * @author Gonzalo

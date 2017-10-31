@@ -18,17 +18,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.loqua.presentation.bean.BeanUserEditProfile;
+
 import com.loqua.model.User;
 
 /**
  * Define el filtro que se aplica sobre todas las paginas exclusivas
  * de usuarios registrados no administradores.
  * Este filtro impide que ningun usuario de otro tipo acceda a dichas paginas.
- * <br/>
+ * <br>
  * El ciclo de JSF es interceptado por el Filtro antes de que el navegador
  * muestre la pagina sobre la que este se aplica, y se ejecuta inmediatamene
  * despues de los manejadores de navegacion (NavigationHandler) y de vista
- * (ViewHandler). <br/>
+ * (ViewHandler). <br>
  * Puesto que se definen varios filtros sobre las mismas paginas, es coveniente
  * indicar, en el fichero web.xml, el orden en que se aplican.
  * @author Gonzalo
@@ -163,7 +165,7 @@ public class FilterAuthorizationRegisteredUser implements Filter {
 	 * @param loggedUser usuario que se verifica
 	 * @param req peticion HTTP
 	 * @return
-	 * 'true' si el usuario esta desactivado <br/>
+	 * 'true' si el usuario esta desactivado <br>
 	 * 'false' si el usuario no esta desactivado
 	 */
 	private boolean isDeactivated(User loggedUser, HttpServletRequest req){
@@ -185,10 +187,10 @@ public class FilterAuthorizationRegisteredUser implements Filter {
 	/**
 	 * Comprueba si la pagina de perfil que visita el usuario es la suya propia,
 	 * o si es el perfil de otro usuario.
-	 * @param loggedUser usuario que se verifica
+	 * @param loggedUserId usuario que se verifica
 	 * @param req peticion HTTP
 	 * @return
-	 * 'true' si el usuario esta visitando su propio perfil <br/>
+	 * 'true' si el usuario esta visitando su propio perfil <br>
 	 * 'false' si el usuario esta visitando un perfil ajeno
 	 */
 	private boolean visitOwnUserProfile(
@@ -216,7 +218,7 @@ public class FilterAuthorizationRegisteredUser implements Filter {
 	 * @param loggedUser usuario que se verifica
 	 * @param req peticion HTTP
 	 * @return
-	 * 'true' si el usuario ya tenia una sesion iniciada <br/>
+	 * 'true' si el usuario ya tenia una sesion iniciada <br>
 	 * 'false' si el usuario no tiene otra sesion iniciada
 	 */
 	private boolean userRepeatedlyLogged(User loggedUser,

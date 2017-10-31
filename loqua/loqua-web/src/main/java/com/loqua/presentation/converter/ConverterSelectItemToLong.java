@@ -6,7 +6,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
 /**
- * Deine un conversor encargado de cambiar al tipo 'Long' el valor
+ * Define un conversor encargado de cambiar al tipo 'Long' el valor
  * del componente SelectItem sobre el que se aplica;
  * valor que por defecto siempre es de tipo 'String'.
  * @author Gonzalo

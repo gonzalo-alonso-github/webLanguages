@@ -20,7 +20,7 @@ public interface ServiceFeed {
 	 * @return Feed cuyo atributo 'id' coincide con el parametro dado
 	 * @throws EntityNotFoundException
 	 */
-	Feed getFeedByID(Long feedID) throws EntityNotFoundException;
+	Feed getFeedByID(Long feedId) throws EntityNotFoundException;
 	
 	/**
 	 * Consulta todas las fuentes de noticias (Feed) disponibles

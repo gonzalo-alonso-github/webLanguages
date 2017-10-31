@@ -28,7 +28,7 @@ public class RestTarget {
 	
 	/**
 	 * Inicializa los objetos {@link #serviceForumThread} y {@link #serviceFeed}
-	 * que invocaran las peticiones HTTP hacia los servicios remotos REST.<br/>
+	 * que invocaran las peticiones HTTP hacia los servicios remotos REST.<br>
 	 * Utiliza la API de JAX-RS 2.0 para convertir las interfaces
 	 * de los RestService (ver {@link RestServiceForumThread} y
 	 * {@link RestServiceForumThread}) en objetos capaces de invocar
@@ -50,12 +50,14 @@ public class RestTarget {
 	// GETTERS
 	// // // //
 	
-	/** Devuelve la instancia estatica del objeto {@link #serviceForumThread} */
+	/** Halla la instancia estatica del objeto {@link #serviceForumThread}
+	 * @return el atributo #serviceForumThread de la clase */
 	public static RestServiceForumThread getServiceForumThreadStatic() {
 		return serviceForumThread;
 	}
 
-	/** Devuelve la instancia estatica del objeto {@link #serviceFeed} */
+	/** Devuelve la instancia estatica del objeto {@link #serviceFeed}
+	 * @return el atributo #serviceFeed de la clase */
 	public static RestServiceFeed getServiceFeedStatic() {
 		return serviceFeed;
 	}

@@ -18,10 +18,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * Representa un logro conseguido por un usuario en la aplicacion.<br/>
+ * Representa un logro conseguido por un usuario en la aplicacion.<br>
  * Todos los objetos Achievement tienen asociado uno de los objetos
  * {@link Event} cuyo atributo 'isAchievement' es igual a 'true',
- * para indicar el 'evento' que ha dado lugar al logro.<br/><br/>
+ * para indicar el 'evento' que ha dado lugar al logro.<br><br>
  * Mas detalladamente: un usuario puede provocar un mismo 'evento'
  * varias veces; del mismo modo algunos 'eventos' pueden generar un logro,
  * pero nunca se creara repetidamente un logro que ya haya sido alcanzado.
@@ -45,7 +45,7 @@ public class Achievement implements Serializable {
 	private Date dateAchievement;
 	
 	/** Valor del Achievement que lo distingue de otros objetos Achievement
-	 * generados por el mismo User y por el mismo Event.<br/>
+	 * generados por el mismo User y por el mismo Event.<br>
 	 * Ejemplos:
 	 * <ul><li>Si el 'evento' indica que el usuario entra
 	 * en el top-X de la clasificacion de puntos, este eventValue es la variable

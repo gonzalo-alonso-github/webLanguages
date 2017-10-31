@@ -60,7 +60,7 @@ public class ValidatorNickAvailable implements Validator {
 	 * @param nick pseudonimo (o 'nick') que se comprueba
 	 * @return
 	 * 'true' si la longitud de la cadena recibida no supera
-	 * los 20 caracteres <br/>
+	 * los 20 caracteres <br>
 	 * 'false' si la longitud de la cadena recibida sobrepasa
 	 * los 20 caracteres
 	 */
@@ -76,7 +76,7 @@ public class ValidatorNickAvailable implements Validator {
 	 * o por el contrario esta siendo utilizado por algun usuario no eliminado
 	 * @param nick pseudonimo (o 'nick') que se comprueba
 	 * @return
-	 * 'true' si el pseudonimo no esta siendo utilizado por ningun usuario<br/>
+	 * 'true' si el pseudonimo no esta siendo utilizado por ningun usuario<br>
 	 * 'false' si el pseudonimo ya esta siendo utilizado por otro usuario
 	 */
 	private boolean verifyNotNickExistsForNotRemovedUser(String nick) {

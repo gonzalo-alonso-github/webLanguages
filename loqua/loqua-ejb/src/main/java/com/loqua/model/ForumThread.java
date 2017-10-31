@@ -54,7 +54,7 @@ public class ForumThread implements Serializable {
 	private Date dateAggregated;
 	/** Fecha del comenario mas reciente publicado en el hilo */
 	private Date dateLastComment;
-	/** Nombre de la fuente original. <br/>
+	/** Nombre de la fuente original. <br>
 	 * Este campo se utiliza para que persista ese dato en caso de que
 	 * la fuente original sea eliminada */
 	private String feedName;
@@ -114,8 +114,8 @@ public class ForumThread implements Serializable {
 	no deben modificarse los setter convencionales,
 	sino agregar a la clase estos nuevos setter con un nombre distinto */
 	
-	/**
-	 * Relacion entre entidades:<br>
+	/*
+	 * Relacion entre entidades:
 	 *  1 Thread <--> 1 ThreadInfo
 	 */
 	@XmlTransient

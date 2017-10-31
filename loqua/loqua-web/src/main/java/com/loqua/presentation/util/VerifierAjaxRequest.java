@@ -10,7 +10,7 @@ public abstract class VerifierAjaxRequest {
 	 * Comprueba si la peticion HTTP indicada es una peticion Ajax.
 	 * @param req peticion HTTP que se comprueba
 	 * @return
-	 * 'true' si la peticion HTTP es una peticion Ajax. <br/>
+	 * 'true' si la peticion HTTP es una peticion Ajax. <br>
 	 * 'false' si no es una peticion Ajax.
 	 */
 	public static boolean isAJAXRequest(HttpServletRequest req) {

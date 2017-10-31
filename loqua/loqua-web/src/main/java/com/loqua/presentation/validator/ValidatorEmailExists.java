@@ -80,7 +80,7 @@ public class ValidatorEmailExists implements Validator {
 	 * @param email direccion de email que se comprueba
 	 * @return
 	 * 'true' si la longitud de la cadena recibida no supera
-	 * los 40 caracteres <br/>
+	 * los 40 caracteres <br>
 	 * 'false' si la longitud de la cadena recibida sobrepasa
 	 * los 40 caracteres
 	 */
@@ -96,7 +96,7 @@ public class ValidatorEmailExists implements Validator {
 	 * en el atributo {@link #EMAIL_PATTERN}.
 	 * @param email direccion de email que se comprueba
 	 * @return
-	 * 'true' si la cadena recibida cumple el formato de email <br/>
+	 * 'true' si la cadena recibida cumple el formato de email <br>
 	 * 'false' si la cadena recibida no cumple el formato de email
 	 */
 	private boolean validateRegex(String email) {
@@ -111,7 +111,7 @@ public class ValidatorEmailExists implements Validator {
 	 * con la direccion dada de email.
 	 * @param email direccion de email que se comprueba
 	 * @return
-	 * 'true' si el email ya esta siendo utilizado por otro usuario <br/>
+	 * 'true' si el email ya esta siendo utilizado por otro usuario <br>
 	 * 'false' si el email no esta siendo utilizado por ningun usuario
 	 */
 	private boolean verifyEmailExistsForNotRemovedUser(String email) {
@@ -134,8 +134,9 @@ public class ValidatorEmailExists implements Validator {
 	}
 	
 	/**
-	 * Devuelve el usuario cuyo email coincide con la direccion de email
+	 * Halla el usuario cuyo email coincide con la direccion de email
 	 * indicada en el UIComponent (sera null si no se encuentra dicho usuario).
+	 * @return el usuario encontrado
 	 */
 	public static User getUser(){
 		return userExists;

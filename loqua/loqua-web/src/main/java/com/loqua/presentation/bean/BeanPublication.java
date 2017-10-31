@@ -50,9 +50,9 @@ public class BeanPublication implements Serializable {
 	
 	/** Indica si la lista de publicaciones, mostradas en la pagina personal
 	 * de un usuario, deberia incluir aquellas realizadas
-	 * por los contactos del mismo. <br/>
+	 * por los contactos del mismo. <br>
 	 * Deberia ser asi cuando el usuario este visitando su propia pagina
-	 * de inicio. <br/> No deberia ser asi cuando el usuario este visitando
+	 * de inicio. <br> No deberia ser asi cuando el usuario este visitando
 	 * su propia pagina de perfil (no confundir con la pagina de inicio),
 	 * o la pagina de perfil de otro usuario.*/
 	private boolean includePubsByContacts;
@@ -133,13 +133,11 @@ public class BeanPublication implements Serializable {
 	 * @param user el autor de la publicacion que se introduce, necesario para
 	 * generar el nuevo objeto Publication y para para recargar
 	 * la lista {@link #visiblePubsByUser} de este bean, una vez editada.
-	 * @param includePubsByContacts define si la lista de publicaciones del bean
-	 * incluye las de los contactos del usuario dado. Util para recargar
-	 * la lista de publicaciones una vez editada.
 	 * @param beanActionResult bean que se encarga de imprimir en la vista el
 	 * resultado de la accion, exitoso o no.
 	 */
-	public void generatePublication(User user,BeanActionResult beanActionResult){
+	public void generatePublication(
+			User user, BeanActionResult beanActionResult){
 		beanActionResult.setFinish(false);
 		beanActionResult.setSuccess(false);
 		// las propiedades 'content' y 'privacity' ya se han establecido
@@ -165,8 +163,6 @@ public class BeanPublication implements Serializable {
 	 * @param user el perfil de usuario donde esta la lista de publicaciones,
 	 * util para recargar la lista {@link #visiblePubsByUser} de este bean,
 	 * una vez editada.
-	 * @param includePubsByContacts define si la lista de publicaciones del bean
-	 * incluye las de los contactos del usuario dado. Util para recargar
 	 * la lista de publicaciones una vez editada.
 	 * @param beanActionResult bean que se encarga de imprimir en la vista el
 	 * resultado de la accion, exitoso o no.
@@ -191,9 +187,6 @@ public class BeanPublication implements Serializable {
 	 * @param user el perfil de usuario donde esta la lista de publicaciones,
 	 * util para recargar la lista {@link #visiblePubsByUser} de este bean,
 	 * una vez editada.
-	 * @param includePubsByContacts define si la lista de publicaciones del bean
-	 * incluye las de los contactos del usuario dado. Util para recargar
-	 * la lista de publicaciones una vez editada.
 	 * @param beanActionResult bean que se encarga de imprimir en la vista el
 	 * resultado de la accion, exitoso o no.
 	 */
@@ -220,9 +213,9 @@ public class BeanPublication implements Serializable {
 	 * debe incluir las de los contactos del usuario dado.
 	 * @param beanActionResult bean que se encarga de imprimir en la vista el
 	 * resultado de la accion, exitoso o no.
-	 * @return Si alsoByContacts==false:<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;lista de publicaciones del usuario dado<br/>
-	 * Si alsoByContacts==true:<br/>
+	 * @return Si alsoByContacts==false:<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;lista de publicaciones del usuario dado<br>
+	 * Si alsoByContacts==true:<br>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;lista de publicaciones del usuario
 	 * y de sus contactos
 	 */
@@ -254,9 +247,9 @@ public class BeanPublication implements Serializable {
 	 * debe incluir las de los contactos del usuario dado.
 	 * @param beanActionResult bean que se encarga de imprimir en la vista el
 	 * resultado de la accion, exitoso o no.
-	 * @return Si alsoByContacts==false:<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;lista de publicaciones del usuario dado<br/>
-	 * Si alsoByContacts==true:<br/>
+	 * @return Si alsoByContacts==false:<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;lista de publicaciones del usuario dado<br>
+	 * Si alsoByContacts==true:<br>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;lista de publicaciones del usuario
 	 * y de sus contactos
 	 */
@@ -366,10 +359,10 @@ public class BeanPublication implements Serializable {
 	 * Recorta el texto de la Publicacion
 	 * (texto predefinido en los ficheros 'events_X.properties') para obtener
 	 * la parte previa al parametro se&ntilde;alado con el caracter '?1'.
-	 * Por ejemplo, si el texto de la Publicacion es:<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;"ha alcanzado los ?1 comentarios"<br/>
-	 * entonces este metodo devolvera:<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;"ha alcanzado los"<br/>
+	 * Por ejemplo, si el texto de la Publicacion es:<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;"ha alcanzado los ?1 comentarios"<br>
+	 * entonces este metodo devolvera:<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;"ha alcanzado los"<br>
 	 * @param publication Publicacion de la cual se desea obtener el texto
 	 * @return Primera parte del texto de una publicacion
 	 */
@@ -382,10 +375,10 @@ public class BeanPublication implements Serializable {
 	 * Recorta el texto de la Publicacion
 	 * (texto predefinido en los ficheros 'events_X.properties') para obtener
 	 * la parte posterior al parametro se&ntilde;alado con el caracter '?1'.
-	 * Por ejemplo, si el texto de la Publicacion es:<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;"ha alcanzado los ?1 comentarios"<br/>
-	 * entonces este metodo devolvera:<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;"comentarios"<br/>
+	 * Por ejemplo, si el texto de la Publicacion es:<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;"ha alcanzado los ?1 comentarios"<br>
+	 * entonces este metodo devolvera:<br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;"comentarios"<br>
 	 * @param publication Publicacion de la cual se desea obtener el texto
 	 * @return Segunda parte del texto de una publicacion
 	 */
@@ -416,7 +409,7 @@ public class BeanPublication implements Serializable {
 	
 	/**
 	 * Dada una publicacion, y a raiz del objeto Event asociado a esta, obtiene
-	 * el modo en que debe mostrarse el valor eventValue de la publicacion.<br/>
+	 * el modo en que debe mostrarse el valor eventValue de la publicacion.<br>
 	 * Las publicaciones pueden estar asociadas con 'eventos' predefinidos,
 	 * en cuyo caso el parametro {@link Publication#eventValue}
 	 * puede hacer referencia a un objeto Comment, Correction, o User.
@@ -429,7 +422,7 @@ public class BeanPublication implements Serializable {
 	 * <li>si se devuelve 3, el valor de la publicacion
 	 * sera un enlace a una correccion</li>
 	 * <li>si se devuelve 4, el valor de la publicacion
-	 * sera un enlace a un perfil de usuario</li> 
+	 * sera un enlace a un perfil de usuario</li></ul>
 	 */
 	public int getPublicationValueType(Publication pub){
 		if( pub.getEvent()==null){ return 1; }
@@ -493,7 +486,7 @@ public class BeanPublication implements Serializable {
 	 * todas las publicaciones visibles (y por tanto, deberia seguir
 	 * mostrandose el boton de 'Ver mas').
 	 * @return
-	 * 'true' si hay publicaciones sin consultar <br/>
+	 * 'true' si hay publicaciones sin consultar <br>
 	 * 'false' si ya se estan mostrando todas las publicaciones del usuario
 	 */
 	public boolean exsistOlderPublicationsByUser(){

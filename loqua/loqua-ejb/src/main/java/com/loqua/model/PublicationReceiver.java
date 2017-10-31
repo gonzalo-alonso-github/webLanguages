@@ -14,11 +14,11 @@ import com.loqua.model.compoundkeys.PublicationReceiverKey;
 
 /**
  * Representa la recepcion de una publicacion por parte de un usuario.
- * Es una clase asociativa entre {@link Publication} y {@link User}. <br/><br/>
+ * Es una clase asociativa entre {@link Publication} y {@link User}. <br><br>
  * Si bien los 'eventos' siempre generan publicaciones, cada una de estas
  * tiene como minimo un PublicationReceiver referenciando al mismo usuario
  * que la ha provocado. Ademas de este, y si el atributo
- * {@link Publication.privacity} es 'PUBLIC o 'CONTACTS', se genera
+ * {@link Publication#privacity} es 'PUBLIC o 'CONTACTS', se genera
  * tambien un PublicationReceiver por cada contacto del usuario
  * @author Gonzalo
  */

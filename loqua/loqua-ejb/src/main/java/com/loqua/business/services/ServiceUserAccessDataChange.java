@@ -50,7 +50,7 @@ public interface ServiceUserAccessDataChange {
 	 * maximo de cambios de email permitidos en distintos lapsos de tiempo
 	 * @return
 	 * Si la accion se produce sin ningun error, retorna la cadena 'noError'.
-	 * <br/>
+	 * <br>
 	 * Si se alcanza el limite de cambios de email permitidos
 	 * en cierto lapso de tiempo, se devuelve una cadena mas descriptiva:
 	 * <ul><li>'limitEmailChangesAtLastHour'</li>
@@ -113,7 +113,7 @@ public interface ServiceUserAccessDataChange {
 	 * lapsos de tiempo
 	 * @return
 	 * Si la accion se produce sin ningun error, retorna la cadena 'noError'.
-	 * <br/>
+	 * <br>
 	 * Si se alcanza el limite de restauraciones de contrase&ntilde;a permitidas
 	 * en cierto lapso de tiempo, se devuelve una cadena mas descriptiva:
 	 * <ul><li>'limitPasswordRestoresAtLastHour'</li>
@@ -140,7 +140,7 @@ public interface ServiceUserAccessDataChange {
 	 * lapsos de tiempo
 	 * @return
 	 * Si la accion se produce sin ningun error, retorna la cadena 'noError'.
-	 * <br/>
+	 * <br>
 	 * Si se alcanza el limite de ediciones de contrase&ntilde;a permitidas
 	 * en cierto lapso de tiempo, se devuelve una cadena mas descriptiva:
 	 * <ul><li>'limitPasswordEditsAtLastHour'</li>

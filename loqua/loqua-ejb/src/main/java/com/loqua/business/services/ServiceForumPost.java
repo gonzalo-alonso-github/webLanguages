@@ -20,7 +20,7 @@ public interface ServiceForumPost {
 	 * @return ForumPost cuyo atributo 'id' coincide con el parametro dado,
 	 * o null si no existe
 	 */
-	ForumPost getForumPostById(Long phorumPostId);
+	ForumPost getForumPostById(Long forumPostId);
 	
 	/*
 	 * Halla los ForumPost creados por el usuario dado; esto es, 

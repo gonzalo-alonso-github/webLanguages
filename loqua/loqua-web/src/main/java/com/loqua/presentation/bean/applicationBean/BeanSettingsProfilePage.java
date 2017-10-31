@@ -93,7 +93,7 @@ public class BeanSettingsProfilePage implements Serializable {
 	/**
 	 * Comprueba que la propiedad 'numberOfPublicationsPerPage'
 	 * del fichero 'profile.properties' esta inicializada
-	 * con un valor aceptable, y si es asi devuelve su valor.<br/>
+	 * con un valor aceptable, y si es asi devuelve su valor.<br>
 	 * Si no es asi, devuelve el valor por defecto:
 	 * {@link #DEFAULT_NUM_PUBS_PER_PAGE}.
 	 * @return
@@ -114,7 +114,7 @@ public class BeanSettingsProfilePage implements Serializable {
 	/**
 	 * Comprueba que la propiedad 'numberOfNotifications'
 	 * del fichero 'profile.properties' esta inicializada
-	 * con un valor aceptable, y si es asi devuelve su valor.<br/>
+	 * con un valor aceptable, y si es asi devuelve su valor.<br>
 	 * Si no es asi, devuelve el valor por defecto:
 	 * {@link #DEFAULT_NUM_NOTIFICATIONS}.
 	 * @return

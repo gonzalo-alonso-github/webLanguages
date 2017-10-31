@@ -5,7 +5,7 @@ import java.util.Date;
 import javax.persistence.EntityExistsException;
 import javax.persistence.NoResultException;
 
-import com.loqua.business.services.impl.MapEntityCounterByDate;
+import com.loqua.business.services.impl.utils.security.MapOccurrCounterByDate;
 import com.loqua.model.ChangeEmail;
 import com.loqua.persistence.exception.EntityAlreadyPersistedException;
 import com.loqua.persistence.exception.EntityNotPersistedException;
@@ -64,19 +64,19 @@ public class ChangeEmailJPA {
 	}
 	
 	/**
-	 * Genera una instancia de MapEntityCounterByDate y carga dicho Map
+	 * Genera una instancia de {@link MapOccurrCounterByDate} y carga dicho Map
 	 * realizando varias consultas a la base de datos
 	 * @param userID atributo 'id' del usuario que se desea consultar
-	 * @return una instancia de MapEntityCounterByDate que almacena la 
+	 * @return una instancia de MapOccurrCounterByDate que almacena la 
 	 * cantidad de veces que el usuario dado ha agregado elementos ChangeEmail
 	 * a base de datos a lo largo de varios lapsos de tiempo (el Map clasifica
 	 * los siguientes lapsos: por hora, por dia, por semana, por mes
 	 * y por a&ntilde;o)
 	 * @throws EntityNotPersistedException
 	 */
-	public MapEntityCounterByDate getNumLastEmailChangesByUser(Long userID) 
+	public MapOccurrCounterByDate getNumLastEmailChangesByUser(Long userID) 
 			throws EntityNotPersistedException {
-		MapEntityCounterByDate result = new MapEntityCounterByDate();
+		MapOccurrCounterByDate result = new MapOccurrCounterByDate();
 		Date periodToSearch = new Date();
 		long currentDateLong = periodToSearch.getTime();
 		long lastHour = currentDateLong-3600000;

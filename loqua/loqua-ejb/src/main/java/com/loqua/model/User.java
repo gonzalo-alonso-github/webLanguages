@@ -78,7 +78,8 @@ public class User implements Serializable, Cloneable{
 	private boolean removed;
 	/** Codigo de dos letras de la configuracion regional
 	 * asociada al usuario. No es necesario que coincida con algun valor de
-	 * {@link Country#codeIso3166}. Este atributo permite, por ejemplo,
+	 * {@link Language#locale} ni de {@link Country#codeIso3166}.
+	 * Este atributo permite, por ejemplo,
 	 * decidir en que idioma se envian los correos electronicos al usuario */
 	private String locale;
 	/** Cadena aleatoria (de al menos 26 caracteres) que permite identificar
@@ -919,7 +920,7 @@ public class User implements Serializable, Cloneable{
 	}
 	/** Elimina una desaprobacion de una correccion de la lista de ellas
 	 * que posee el usuario
-	 * @param correctionAgree objeto CorrectionAgree que se elimina
+	 * @param correctionDisagree objeto CorrectionDisagree que se elimina
 	 */
 	public void removeCorrectionDisagree(CorrectionDisagree correctionDisagree){
 		correctionDisagreements.remove(correctionDisagree);

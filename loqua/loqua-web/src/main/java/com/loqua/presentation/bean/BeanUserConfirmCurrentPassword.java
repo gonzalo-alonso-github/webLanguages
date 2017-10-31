@@ -81,11 +81,11 @@ public class BeanUserConfirmCurrentPassword implements Serializable{
 	/**
 	 * Comprueba que el usuario logueado ha introducido correctamente
 	 * su contrase&ntilde;a. Si el usuario falla al introducir su
-	 * contrase&ntilde;a, inicializa el atributo {@ #msgActionResult}
+	 * contrase&ntilde;a, inicializa el atributo {@link #msgActionResult}
 	 * que mostrara en la vista la advertencia del fallo.
 	 * @return
 	 * Tanto si el usuario introduce correctamente su contrase&ntilde;a,
-	 * como si falla al hacerlo, se devuelve valor 'null'. <br/>
+	 * como si falla al hacerlo, se devuelve valor 'null'. <br>
 	 * Si se produce alguna excepcion, devuelve la regla de navegacion
 	 * que redirige a la pagina de error desconocido ('errorUnexpected').
 	 */
@@ -127,7 +127,7 @@ public class BeanUserConfirmCurrentPassword implements Serializable{
 	 * el valor del atributo, sino que ademas lo inicializa a su valor
 	 * por defecto, con el fin de evitar que el mensaje de error
 	 * se siga mostrando durante mas peticiones Ajax.
-	 * @return el atributo {@link #error}
+	 * @return el atributo {@link #msgActionResult}
 	 */
 	public String getMsgActionResult() {
 		String message = msgActionResult;

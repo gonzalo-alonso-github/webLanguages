@@ -13,21 +13,19 @@ import com.loqua.business.services.locator.LocatorLocalEjbServices;
 import com.loqua.business.services.locator.LocatorRemoteEjbServices;
 import com.loqua.business.services.serviceLocal.LocalServiceCorrection;
 import com.loqua.business.services.serviceRemote.RemoteServiceCorrection;
-import com.loqua.model.Comment;
 import com.loqua.model.Correction;
 import com.loqua.model.CorrectionAgree;
 import com.loqua.model.CorrectionDisagree;
-import com.loqua.model.User;
 
 /**
  * Da acceso a las transacciones correspondientes a las entidades
  * {@link Correction}, {@link CorrectionAgree} y {@link CorrectionDisagree}.
- * <br/>
+ * <br>
  * La intencion de esta 'subcapa' de EJBs no es albergar mucha logica de negocio
  * (de ello se ocupa el modelo y el Transaction Script), sino hacer
  * que las transacciones sean controladas por el contenedor de EJB
  * (Wildfly en este caso), quien se ocupa por ejemplo de abrir las conexiones
- * a la base de datos mediate un datasource y de realizar los rollback. <br/>
+ * a la base de datos mediate un datasource y de realizar los rollback. <br>
  * Al ser un EJB de sesion sin estado no puede ser instanciado desde un cliente
  * o un Factory Method, sino que debe ser devuelto mediante el registro JNDI.
  * Forma parte del patron Service Locator y se encapsula tras las fachadas
@@ -106,16 +104,21 @@ public class EjbServiceCorrection
 	}
 	
 	@Override
+	public void deleteAgreementForTest(Long userId, Correction correction)
+			throws EntityNotFoundException {
+		transactionCorr.deleteAgreementForTest(userId, correction);
+	}
+	
+	@Override
 	public void dissuadeCorrection(Long userId, Long correctionId)
 			throws EntityAlreadyFoundException {
 		transactionCorr.dissuadeCorrection(userId, correctionId);
 	}
 	
 	@Override
-	public Correction sendCorrection(Comment commentToCorrect,
-			String text, String code, User user)
+	public Correction sendCorrection(Correction correction)
 			throws EntityAlreadyFoundException, EntityNotFoundException{
-		return transactionCorr.sendCorrection(commentToCorrect, text, code, user);
+		return transactionCorr.sendCorrection(correction);
 	}
 
 	@Override

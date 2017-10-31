@@ -81,6 +81,13 @@ public class BeanCache implements Serializable {
 	public List<Language> getAllLanguages(){
 		return allLanguages;
 	}
+	/**
+	 * Version estatica del metodo {@link #getAllLanguages}.
+	 * @return atributo {@link #allLanguages}
+	 */
+	public static List<Language> getAllLanguagesStatic(){
+		return new BeanCache().allLanguages;
+	}
 	
 	/**
 	 * Carga el Map de todos los paises disponibles (atributo

@@ -12,9 +12,10 @@ import com.loqua.business.services.ServiceContact;
 import com.loqua.business.services.ServiceLanguage;
 import com.loqua.business.services.ServiceMessage;
 import com.loqua.business.services.ServicePublication;
-import com.loqua.business.services.impl.ManagementEmail;
-import com.loqua.business.services.impl.MapEntityCounterByDate;
+import com.loqua.business.services.impl.utils.externalAccounts.ManagementEmail;
+import com.loqua.business.services.impl.utils.security.MapOccurrCounterByDate;
 import com.loqua.business.services.locator.LocatorLocalEjbServices;
+import com.loqua.model.Comment;
 import com.loqua.model.PrivacityData;
 import com.loqua.model.Publication;
 import com.loqua.model.PublicationReceiver;
@@ -30,7 +31,7 @@ import com.loqua.persistence.exception.EntityNotPersistedException;
  * Da acceso a los procedimientos, dirigidos a la capa de persistencia,
  * correspondientes a las transacciones de las entidades
  * {@link User}, {@link UserInfo}, {@link UserInfoPrivacity}
- * y {@link PrivacityData}.<br/>
+ * y {@link PrivacityData}.<br>
  * Este paquete de clases implementa el patron Transaction Script y
  * es el que, junto al modelo, concentra gran parte de la logica de negocio
  * @author Gonzalo
@@ -62,7 +63,7 @@ public class TransactionUser {
 		try{
 			result = userJPA.getUserById(userID);
 		}catch (EntityNotPersistedException ex) {
-			throw new EntityNotFoundException(ex);
+			result = null;
 		}
 		return result;
 	}
@@ -198,16 +199,37 @@ public class TransactionUser {
 	}
 	
 	/**
-	 * Agrega un nuevo usuario al sistema
+	 * Decrementa el numero de comentarios totales, mensuales y anuales
+	 * enviados por un usuario en el foro. <br> Por ejemplo, al eliminar
+	 * un comentario en el foro, el usuario perdera el punto que obtuviera
+	 * por haberlo publicado.
+	 * @param comment Comentario que, al ser eliminado, provoca el decremento
+	 * de puntos del usuario que lo publico
+	 * @throws EntityNotFoundException
+	 */
+	public void decrementCountComments(Comment comment) 
+			throws EntityNotFoundException {
+		User userToUpdate = comment.getUser();
+		UserInfo userInfoToUpdate = userToUpdate.getUserInfo();
+		userInfoToUpdate.decrementPointsByDeletedComment(comment);
+		userToUpdate.setUserInfo(userInfoToUpdate);
+		updateAllDataByUser(userToUpdate);
+	}
+	
+	/**
+	 * Agrega un nuevo usuario al sistema.
 	 * @param userToCreate User que se desea agregar
+	 * @return el usuario agregado
 	 * @throws EntityAlreadyFoundException
 	 */
-	public void createUser(User userToCreate) throws EntityAlreadyFoundException {
+	public User createUser(User userToCreate) throws EntityAlreadyFoundException {
+		User result = null;
 		try {
-			userJPA.create(userToCreate);
+			result = userJPA.create(userToCreate);
 		} catch (EntityAlreadyPersistedException ex) {
 			throw new EntityAlreadyFoundException(ex);
 		}
+		return result;
 	}
 	
 	/**
@@ -313,7 +335,7 @@ public class TransactionUser {
 	 * lapsos de tiempo
 	 * @return
 	 * Si la accion se produce sin ningun error, retorna la cadena 'noError'.
-	 * <br/>
+	 * <br>
 	 * Si se alcanza el limite de registros de usuarios permitidos
 	 * en cierto lapso de tiempo, se devuelve la cadena 'limitTooRegistrations'
 	 */
@@ -339,14 +361,14 @@ public class TransactionUser {
 	 * @return
 	 * Si no se alcanza el limite de registros de usuarios permitidos
 	 * en cierto lapso de tiempo, retorna la cadena 'noError'.
-	 * <br/>
+	 * <br>
 	 * Si se alcanza el limite de registros de usuarios permitidos
 	 * en cierto lapso de tiempo, se devuelve la cadena 'limitTooRegistrations'
 	 */
 	private String validateNumLastRegistrations(
 			Map<String, Integer> mapActionsLimits){
 		String result = "noError";
-		MapEntityCounterByDate numOccurrences =
+		MapOccurrCounterByDate numOccurrences =
 				getNumLastRegistrationsFromDB();
 		if( numOccurrences.getOccurrencesLastMinute() >= 
 				mapActionsLimits.get("limitRegistrationsAtLastMinute") 
@@ -375,12 +397,12 @@ public class TransactionUser {
 	 * (el Map clasifica los siguientes lapsos: por minuto, por cinco minutos,
 	 * por cuarto de hora, por hora, por dia, por semana y por mes)
 	 */
-	public MapEntityCounterByDate getNumLastRegistrationsFromDB(){
-		MapEntityCounterByDate result = new MapEntityCounterByDate();
+	public MapOccurrCounterByDate getNumLastRegistrationsFromDB(){
+		MapOccurrCounterByDate result = new MapOccurrCounterByDate();
 		try {
 			result = userJPA.getNumLastRegistrations();
 		} catch (EntityNotPersistedException ex) {
-			result = new MapEntityCounterByDate();
+			result = new MapOccurrCounterByDate();
 		}
 		return result;
 	}
@@ -447,18 +469,20 @@ public class TransactionUser {
 	}
 	
 	/**
-	 * Elimina del sistema los datos privados de un usuario.<br/>
+	 * Elimina del sistema los datos privados de un usuario.<br>
 	 * No se eliminan las participaciones del usuario en el foro
-	 * ni los 'votos' que haya dado a las participaciones de otros. <br/>
+	 * ni los 'votos' que haya dado a las participaciones de otros. <br>
 	 * Tampoco se elimina como destinatario de sus mensajes recibidos,
 	 * aunque si se elimina como destinatario de las publicaciones recibidas,
 	 * y tambien se eliminan los mensajes que el envio
 	 * y las publicaciones/notificaciones creadas/logradas por el
 	 * @param user User que se desea eliminar
+	 * @return el usuario eliminado
 	 * @throws EntityNotFoundException
 	 */
-	public void deleteUserAccount(User user) throws EntityNotFoundException {
+	public User deleteUserAccount(User user) throws EntityNotFoundException {
 		try {
+			user.removeUserData();
 			userJPA.deleteUserAccount(user);
 			user.getUserInfo().unlink();
 			user.getUserInfoPrivacity().unlink();
@@ -466,14 +490,32 @@ public class TransactionUser {
 			deleteAllContacts(user);
 			deleteAllContactRequests(user);
 			deleteAllUserLanguages(user);
-			// no se eliminan las participaciones del usuario en el foro
-			// ni los 'votos' que haya dado a las participaciones de otros.
-			// Tampoco se elimina como destinatario de sus mensajes recibidos,
-			// aunque si se elimina como destinatario de las publicaciones recibidas,
-			// y tammbien eliminan los mensajes que el envio
-			// y las publicaciones/notificaciones creadas/logradas por el
+			/* no se eliminan las participaciones del usuario en el foro
+			ni los 'votos' que haya dado a las participaciones de otros.
+			Tampoco se elimina como destinatario de sus mensajes recibidos,
+			aunque si se elimina como destinatario de las publicaciones
+			recibidas, y tammbien eliminan los mensajes que el envio
+			y las publicaciones/notificaciones creadas/logradas por el */
 			deleteSentMessagesByUser(user);
 			deletePublicationsByUser(user);
+			
+			updateDataByUser(user);
+			// se recupera el estado del usuario eliminado, para el return:
+			user = userJPA.getUserById(user.getId());
+		} catch (EntityNotPersistedException ex) {
+			throw new EntityNotFoundException(ex);
+		}
+		return user;
+	}
+	
+	/**
+	 * Elimina del sistema el usuario indicado (objeto User).
+	 * @param user User que se desea eliminar
+	 * @throws EntityNotFoundException
+	 */
+	public void deleteUser(User user) throws EntityNotFoundException {
+		try {
+			userJPA.deleteUser(user);
 		} catch (EntityNotPersistedException ex) {
 			throw new EntityNotFoundException(ex);
 		}
@@ -538,7 +580,7 @@ public class TransactionUser {
 	
 	/**
 	 * Elimina todos los objetos Publication enviados y recibidos
-	 * por un usuario. <br/> No es necesario llamar a un metodo que se encargue
+	 * por un usuario. <br> No es necesario llamar a un metodo que se encargue
 	 * especificamente de eliminar los objetos PublicationReceiver, ya que estos
 	 * se eliminan automaticamente al haber borrado sus Publication asociados
 	 * @param user User asociado a las Publication que se eliminan
@@ -553,7 +595,7 @@ public class TransactionUser {
 
 	/**
 	 * Comprueba si es necesaria la generacion de alguna Publication cuando
-	 * el usuario alcanza cierta posicion en la clasificacion de puntos. <br/>
+	 * el usuario alcanza cierta posicion en la clasificacion de puntos. <br>
 	 * Las Publication se generaran si el usuario asciende al
 	 * top de los primeros 100 usuarios, o 50, o 25, o 20, o 15, o 10, o 5
 	 * o superiores
@@ -609,7 +651,7 @@ public class TransactionUser {
 	 * @return
 	 * true: si el numero dado esta en la serie
 	 * 100, 50, 25, 20, 15, 10, 5, (...), 1
-	 * <br/>
+	 * <br>
 	 * false: si el numero dado no esta la serie
 	 * 100, 50, 25, 20, 15, 10, 5, (...), 1
 	 */

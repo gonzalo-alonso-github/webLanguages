@@ -20,10 +20,10 @@ import com.loqua.presentation.logging.LoquaLogger;
 /**
  * Administra los datos del usuario que son manejados en las vistas.
  * A diferencia del {@link BeanUserData}, este bean almacena
- * datos que deben persistir unicamente durante el ambito de vista. <br/>
+ * datos que deben persistir unicamente durante el ambito de vista. <br>
  * Las vistas (paginas y snippets) donde el usuario edita sus propios datos
  * utilizan este bean para guardarlos de forma temporal, mientras
- * no termine con exito la actualizacion de los mismos en base de datos. <br/>
+ * no termine con exito la actualizacion de los mismos en base de datos. <br>
  * Por ejemplo: en el snippet 'modal_windows.xhtml' (incluido en la pagina
  * 'profile_edit.xhtml'), al editar el email de usuario, ese dato se almacena
  * temporalmente en la propiedad user.email de este BeanUserView antes de
@@ -38,18 +38,18 @@ public class BeanUserView implements Serializable{
 	private final LoquaLogger log = new LoquaLogger(getClass().getSimpleName());
 	
 	/** Parametro 'user' recibido en la URL, que indica el identificador
-	 * del usuario cuya pagina de perfil se consulta. <br/>
-	 * Solo se utiliza cuando se visita un perfil ajeno. <br/>
+	 * del usuario cuya pagina de perfil se consulta. <br>
+	 * Solo se utiliza cuando se visita un perfil ajeno. <br>
 	 * Se inicializa en la vista 'profile_user.xhtml',
 	 * mediante el &lt;f:viewParam&gt; que invoca al metodo set del atributo. */
 	private String urlUserId;
 	
 	/** Usuario (objeto {@link User}) cuyos datos se consultan. Si el atributo
 	 * {@link #urlUserId} de esta clase esta inicializado se corresponde con
-	 * el identificador de este objeto User. <br/>
+	 * el identificador de este objeto User. <br>
 	 * En la vista 'profile_user.xhtml' se inicializa mediante
 	 * el &lt;viewAction&gt; que invoca al metodo {@link #setUserByGivenUrl}.
-	 * <br/>
+	 * <br>
 	 * En la vista 'profile_me.xhtml' se inicializa mediante
 	 * el &lt;viewAction&gt; que invoca al metodo 'set' del atributo,
 	 * y coincide con el usuario logueado almacenado en
@@ -172,7 +172,7 @@ public class BeanUserView implements Serializable{
 	 * usuario logueado.
 	 * @return Si la sesion ha caducado, o si por cualquier motivo se ha cerrado
 	 * la sesion del usuario, devuelve la regla de navegacion que conduce a la
-	 * pagina de error por defecto. </br>
+	 * pagina de error por defecto. <br>
 	 * De lo contrario, devuelve la regla de navegacion que conduce a la pagina
 	 * de inicio del usuario logueado.
 	 */
@@ -198,7 +198,7 @@ public class BeanUserView implements Serializable{
 	 * Comprueba si el usuario cuyos datos se consultan (atributo {@link #user}
 	 * del Bean) no se halla en estado eliminado.
 	 * @return
-	 * 'true' si el usuario esta eliminado <br/>
+	 * 'true' si el usuario esta eliminado <br>
 	 * 'false' si el usuario no esta eliminado
 	 */
 	public boolean existsNotRemovedUser(){
@@ -217,7 +217,7 @@ public class BeanUserView implements Serializable{
 	 * el valor de la propiedad {@link Event#editablePrivacity}.
 	 * @param publication publicacion que se consulta
 	 * @return
-	 * 'true' si la privacidad de la publicacion dada puede ser editada <br/>
+	 * 'true' si la privacidad de la publicacion dada puede ser editada <br>
 	 * 'false' si la privacidad no puede ser editada
 	 */
 	public boolean showEditablePrivacity(Publication publication){
@@ -246,7 +246,7 @@ public class BeanUserView implements Serializable{
 	 * @param authorOfData usuario autor del dato que se consulta
 	 * @param privacityOfData privacidad del dato que se consulta
 	 * @return
-	 * 'true' si la publicacion dada es visible para el usuario logueado <br/>
+	 * 'true' si la publicacion dada es visible para el usuario logueado <br>
 	 * 'false' si la publicacion no es visible
 	 */
 	public boolean shouldBeShownByPrivacity(User authorOfData,
@@ -261,7 +261,7 @@ public class BeanUserView implements Serializable{
 	 * @param authorOfData usuario autor del dato
 	 * @param privacityOfData privacidad del dato
 	 * @return
-	 * 'true' si la publicacion dada es visible para el usuario logueado <br/>
+	 * 'true' si la publicacion dada es visible para el usuario logueado <br>
 	 * 'false' si la publicacion no es visible
 	 * @see #shouldBeShownByPrivacity
 	 */
@@ -294,7 +294,7 @@ public class BeanUserView implements Serializable{
 	 * @param authorOfData el usuario que si es autor del dato que se comprueba
 	 * @return
 	 * 'true' si el usuario que consulta la informacion es administrador
-	 * o autor del dato indicado <br/>
+	 * o autor del dato indicado <br>
 	 * 'false' si el usuario no es administrador ni autor del dato
 	 */
 	public boolean loggedUserIsAdminOrAuthorOfData(User authorOfData){
@@ -304,7 +304,7 @@ public class BeanUserView implements Serializable{
 	/**
 	 * Comprueba si el usuario logueado es administrador
 	 * @return
-	 * 'true' si el usuario es administrador <br/>
+	 * 'true' si el usuario es administrador <br>
 	 * 'false' si el usuario no es administrador
 	 */
 	public boolean loggedUserIsAdmin(){
@@ -320,7 +320,7 @@ public class BeanUserView implements Serializable{
 	 * @param authorOfData el usuario que si es autor del dato que se comprueba
 	 * @return
 	 * 'true' si el usuario que consulta la informacion es autor
-	 * del dato indicado <br/>
+	 * del dato indicado <br>
 	 * 'false' si el usuario no es autor del dato
 	 */
 	public boolean loggedUserIsAuthorOfData(User authorOfData){
@@ -379,7 +379,7 @@ public class BeanUserView implements Serializable{
 	 * @param user usuario cuyo pais de origen se consulta
 	 * @return
 	 * 'true' si el pais de origen del usuario dado es visible
-	 * para el usuario logueado <br/>
+	 * para el usuario logueado <br>
 	 * 'false' si el pais de origen no es visible
 	 */
 	public boolean isCountryOriginAvailable(User user){
@@ -398,7 +398,7 @@ public class BeanUserView implements Serializable{
 	 * @param user usuario cuyo pais de ubicacion se consulta
 	 * @return
 	 * 'true' si el pais de ubicacion del usuario dado es visible
-	 * para el usuario logueado <br/>
+	 * para el usuario logueado <br>
 	 * 'false' si el pais de ubicacion no es visible
 	 */
 	public boolean isCountryLocationAvailable(User user){
@@ -413,11 +413,12 @@ public class BeanUserView implements Serializable{
 	/**
 	 * Comprueba si el pais de ubicacion del usuario dado sera mostrado
 	 * al usuario logueado (al usuario que lo consulta), segun coincida con
-	 * el pais de origen. <br/>
+	 * el pais de origen. <br>
 	 * Este metodo existe porque, por cuestion estetica, desde las vistas solo
 	 * se muestra el pais de ubicacion del usuario si es distinto del de origen.
 	 * @param user usuario cuyo pais de ubicacion se consulta
-	 * @return
+	 * @return true si el pais de ubicacion de un perfil es visible para
+	 * el usuario que lo consulta
 	 */
 	public boolean showCountryLocation(User user){
 		// En el snippet "profile_header_userData" se llama a este metodo asi:

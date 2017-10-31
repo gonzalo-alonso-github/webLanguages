@@ -22,12 +22,12 @@ import com.loqua.model.UserPracticingLanguage;
 /**
  * Da acceso a las transacciones correspondientes a las entidades
  * {@link Language}, {@link UserNativeLanguage}
- * y {@link UserPracticingLanguage}.<br/>
+ * y {@link UserPracticingLanguage}.<br>
  * La intencion de esta 'subcapa' de EJBs no es albergar mucha logica de negocio
  * (de ello se ocupa el modelo y el Transaction Script), sino hacer
  * que las transacciones sean controladas por el contenedor de EJB
  * (Wildfly en este caso), quien se ocupa por ejemplo de abrir las conexiones
- * a la base de datos mediate un datasource y de realizar los rollback. <br/>
+ * a la base de datos mediate un datasource y de realizar los rollback. <br>
  * Al ser un EJB de sesion sin estado no puede ser instanciado desde un cliente
  * o un Factory Method, sino que debe ser devuelto mediante el registro JNDI.
  * Forma parte del patron Service Locator y se encapsula tras las fachadas
@@ -92,39 +92,21 @@ public class EjbServiceLanguage
 	}
 	
 	@Override
-	public void createUserNativeLanguage( User user,
+	public void updateNativeLanguages( User user,
 			List<Long> originalNativeLanguagesIDs,
 			List<Long> editedNativeLanguagesIDs)
 			throws EntityAlreadyFoundException, EntityNotFoundException {
-		transactionLanguage.createUserNativeLanguage(
+		transactionLanguage.updateNativeLanguages(
 				user, originalNativeLanguagesIDs, editedNativeLanguagesIDs);
 	}
 	
 	@Override
-	public void deleteUserNativeLanguage(User userLogged,
+	public void updatePracticedLanguages( User user,
 			List<Long> originalNativeLanguagesIDs,
 			List<Long> editedNativeLanguagesIDs)
-			throws EntityNotFoundException {
-		transactionLanguage.deleteUserNativeLanguage(userLogged,
-				originalNativeLanguagesIDs, editedNativeLanguagesIDs);
-	}
-	
-	@Override
-	public void createUserPracticedLanguage(User user,
-			List<Long> originalPracticedLanguagesIDs,
-			List<Long> editedPracticedLanguagesIDs)
 			throws EntityAlreadyFoundException, EntityNotFoundException {
-		transactionLanguage.createUserPracticedLanguage(user,
-				originalPracticedLanguagesIDs, editedPracticedLanguagesIDs);
-	}
-	
-	@Override
-	public void deleteUserPracticedLanguage(User userLogged,
-			List<Long> originalPracticedLanguagesIDs,
-			List<Long> editedPracticedLanguagesIDs) 
-			throws EntityNotFoundException {
-		transactionLanguage.deleteUserPracticedLanguage(userLogged,
-				originalPracticedLanguagesIDs, editedPracticedLanguagesIDs);
+		transactionLanguage.updatePracticedLanguages(
+				user, originalNativeLanguagesIDs, editedNativeLanguagesIDs);
 	}
 	
 	@Override

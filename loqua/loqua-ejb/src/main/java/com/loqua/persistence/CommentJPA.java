@@ -1,7 +1,6 @@
 package com.loqua.persistence;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityExistsException;
@@ -10,7 +9,6 @@ import javax.persistence.NoResultException;
 import com.loqua.model.Comment;
 import com.loqua.model.CommentQuoteTo;
 import com.loqua.model.CommentVoter;
-import com.loqua.model.ForumThread;
 import com.loqua.model.User;
 import com.loqua.persistence.exception.EntityAlreadyPersistedException;
 import com.loqua.persistence.exception.EntityNotPersistedException;
@@ -189,26 +187,14 @@ public class CommentJPA {
 	/**
 	 * Genera un objeto Comment a partir de los parametros recibidos
 	 * y lo agrega a la base de datos
-	 * @param thread ForumThread al que pertenece el Comment que se genera
-	 * @param posIndex atributo homonimo del Comment que se genera
-	 * @param text atributo homonimo del Comment que se genera
-	 * @param code atributo 'textHtml' del Comment que se genera
-	 * @param user User autor del Comment que se genera
-	 * @return el Comment que ha agregado a la base de datos
+	 * @param comment el Comment que se va a agregar a la base de datos
+	 * @return el Comment agregado a la base de datos
 	 * @throws EntityAlreadyPersistedException
 	 * @throws EntityNotPersistedException
 	 */
-	public Comment createComment(ForumThread thread, int posIndex,
-			String text, String code, User user)
+	public Comment createComment(Comment comment)
 			throws EntityAlreadyPersistedException, EntityNotPersistedException {
-		Comment comment = null;
 		try{
-			comment = new Comment();
-			comment.setTextThis(text).setTextHtmlThis(code).setNumVotesThis(0)
-				.setPositionIndexThis(posIndex)
-				.setUserThis(user).setForumThreadThis(thread)
-				.setDateThis(new Date())
-				/*.setPostType("TypeComment")*/;
 			JPA.getManager().persist(comment);
 			JPA.getManager().flush();
 			JPA.getManager().refresh(comment);
@@ -285,7 +271,7 @@ public class CommentJPA {
 	
 	/**
 	 * Actualiza en la base de datos el objeto Comment dado
-	 * @param objectChangeEmail objeto Comment que se desea actualizar
+	 * @param commentToUpdate objeto Comment que se desea actualizar
 	 * @throws EntityNotPersistedException
 	 */
 	public void updateComment(Comment commentToUpdate)

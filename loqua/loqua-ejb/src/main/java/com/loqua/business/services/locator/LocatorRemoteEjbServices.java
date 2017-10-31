@@ -16,6 +16,7 @@ import com.loqua.business.services.ServiceMessage;
 import com.loqua.business.services.ServiceForumThread;
 import com.loqua.business.services.ServiceForumPost;
 import com.loqua.business.services.ServicePublication;
+import com.loqua.business.services.ServiceSuggestion;
 import com.loqua.business.services.ServiceUser;
 import com.loqua.business.services.ServiceUserAccessDataChange;
 
@@ -126,6 +127,14 @@ public class LocatorRemoteEjbServices implements ServicesFactory {
 			+ "EjbServiceCredentials!"
 			+ "com.loqua.business.services.serviceRemote"
 			+ ".RemoteServiceCredentials";
+	
+	/** Nombre en el registro JNDI del objeto que implementa a
+	 * RemoteServiceSuggestion */
+	private static final String SERVICE_SUGGESTION_JNDI_KEY =
+			"loqua-ear/loqua-ejb/"
+			+ "EjbServiceSuggestion!"
+			+ "com.loqua.business.services.serviceRemote"
+			+ ".RemoteServiceSuggestion";
 	
 	@Override
 	public ServiceComment getServiceComment() {
@@ -254,6 +263,17 @@ public class LocatorRemoteEjbServices implements ServicesFactory {
 			Context ctx = new InitialContext();
 			return (ServiceCredentials) 
 					ctx.lookup( SERVICE_CREDENTIALS_JNDI_KEY );
+		} catch (NamingException e) {
+			throw new RuntimeException("JNDI problem", e);
+		}
+	}
+	
+	@Override
+	public ServiceSuggestion getServiceSuggestion() {
+		try {
+			Context ctx = new InitialContext();
+			return (ServiceSuggestion) 
+					ctx.lookup( SERVICE_SUGGESTION_JNDI_KEY );
 		} catch (NamingException e) {
 			throw new RuntimeException("JNDI problem", e);
 		}

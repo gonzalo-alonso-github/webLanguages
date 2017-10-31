@@ -41,12 +41,12 @@ public class BeanUserContacts implements Serializable{
 	 * la de otros usuarios. */
 	private List<ContactRequest> pendingContactRequests;
 	
-	/** Representa el usuario que posee al contacto {@link #userContact}.<br/>
+	/** Representa el usuario que posee al contacto {@link #userContact}.<br>
 	 * Ambos atributos son utilizados para obtener la relacion de contactos
 	 * entre dos usuarios, necesaria en los metodos de eliminacion de contactos,
 	 * y de aceptacion o rechazo de solicitudes de contacto. */
 	private User user;
-	/** Representa el contacto del usuario {@link #user}.<br/>
+	/** Representa el contacto del usuario {@link #user}.<br>
 	 * Ambos atributos son utilizados para obtener la relacion de contactos
 	 * entre dos usuarios, necesaria en los metodos de eliminacion de contactos,
 	 * y de aceptacion o rechazo de solicitudes de contacto. */
@@ -114,10 +114,6 @@ public class BeanUserContacts implements Serializable{
 	
 	/**
 	 * Elimina a los dos usuarios dados de sus respectivas listas de contactos
-	 * @param user el primero de los usuarios que conforman la relacion de
-	 * contactos
-	 * @param userContact el segundo de los usuarios que conforman la relacion
-	 * de contactos
 	 * @param beanActionResult el bean que mostrara en la vista
 	 * el resultado de la accion
 	 */
@@ -149,10 +145,10 @@ public class BeanUserContacts implements Serializable{
 		beanActionResult.setSuccess(false);
 		try {
 			Factories.getService().getServiceContact()
-				.acceptRequest(user.getId(), userContact.getId());
+				.acceptRequest(userContact.getId(), user.getId());
 			beanActionResult.setSuccess(true);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Unexpected Exception at 'acceptRequest()'");
 		}
 		// resetear la lista de contactos del usuario:
 		resetContacts(user.getId());
@@ -173,7 +169,7 @@ public class BeanUserContacts implements Serializable{
 		beanActionResult.setSuccess(false);
 		try {
 			Factories.getService().getServiceContact()
-				.deleteRequest(user.getId(), userContact.getId());
+				.deleteRequest(userContact.getId(), user.getId());
 			beanActionResult.setSuccess(true);
 		} catch (Exception e) {
 			log.error("Unexpected Exception at 'rejectRequest()'");

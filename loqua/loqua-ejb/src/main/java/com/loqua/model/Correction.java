@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlTransient;
 /**
  * Representa una correccion de un comentario publicada por un usuario
  * en el foro.
- * Es una clase heredada de {@link ForumPost}, al igual que {@link Correction}
+ * Es una clase heredada de {@link ForumPost}, al igual que {@link Comment}
  * @author Gonzalo
  */
 @XmlRootElement(name = "correction")
@@ -63,6 +63,10 @@ public class Correction extends ForumPost implements Serializable {
 	@OneToMany(mappedBy="correction")
 	private Set<CorrectionDisagree> correctionDisagreements = 
 			new HashSet<CorrectionDisagree>();
+	
+	/** Lista de sugerencias aportadas por esta correccion */
+	@OneToMany(mappedBy="correction")
+	private Set<Suggestion> suggestions = new HashSet<Suggestion>();
 	
 	// // // // // // //
 	// CONSTRUCTORES
@@ -128,6 +132,17 @@ public class Correction extends ForumPost implements Serializable {
 	}
 	Set<CorrectionDisagree> _getCorrectionDisagreements() {
 		return correctionDisagreements;
+	}
+	
+	/* Relacion entre entidades:
+	 *  1 Correction <--> * Suggestions
+	 */
+	@XmlTransient
+	public Set<Suggestion> getSuggestions() {
+		return Collections.unmodifiableSet(suggestions);
+	}
+	Set<Suggestion> _getSuggestions() {
+		return suggestions;
 	}
 	
 	// // // // // // //
@@ -208,7 +223,6 @@ public class Correction extends ForumPost implements Serializable {
 	/* Relacion entre entidades:
 	 *  1 Correction <--> * CorrectionAgrees <--> 1 User
 	 */
-	
 	/** Agrega una recomendacion de correccion a la lista de ellas
 	 * que posee la correccion 
 	 * @param correctionAgree objeto CorrectionAgree que se agrega
@@ -229,7 +243,6 @@ public class Correction extends ForumPost implements Serializable {
 	/* Relacion entre entidades:
 	 *  1 Correction <--> * CorrectionDisagrees <--> 1 User
 	 */
-	
 	/** Agrega una desaprobacion a la lista de ellas 
 	 * que posee la correccion
 	 * @param correctionDisagree objeto CorrectionDisagree que se agrega
@@ -245,6 +258,24 @@ public class Correction extends ForumPost implements Serializable {
 	public void removeCorrectionDisagree(CorrectionDisagree correctionDisagree){
 		correctionDisagreements.remove(correctionDisagree);
 		correctionDisagree._setCorrection(null);
+	}
+	
+	/* Relacion entre entidades:
+	 *  1 Correction <--> * Suggestions
+	 */
+	/** Agrega una sugerencia a la lista de ellas que posee la correccion
+	 * @param suggestion objeto Suggestion que se agrega
+	 */
+	public void addSuggestion(Suggestion suggestion){
+		suggestions.add(suggestion);
+		suggestion._setCorrection(this);
+	}
+	/** Elimina una sugerencia de la lista de ellas que posee la correccion
+	 * @param suggestion objeto Suggestion que se elimina
+	 */
+	public void removeSuggestion(Suggestion suggestion){
+		suggestions.remove(suggestion);
+		suggestion._setCorrection(null);
 	}
 	
 	// // // // // // // //

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 //import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 //import javax.ws.rs.POST;
@@ -19,7 +20,7 @@ import com.loqua.rest.impl.ImplRestServiceForumThread;
 
 /** Proxy REST a traves del cual esta aplicacion cliente recibe peticiones
  * que seran atendidas por la implementacion de esta interfaz
- * ({@link ImplRestServiceForumThread}). <br/>
+ * ({@link ImplRestServiceForumThread}). <br>
  * Mediante las anotaciones de JAX-RS de cada metodo, la especificacion
  * RESTEasy podra convertir las llamadas a ellos en peticiones HTTP
  * dirigidas a la URL indicada en el fichero 'web.xml'
@@ -43,7 +44,7 @@ public interface RestServiceForumThread {
 	
 	/**
 	 * Agrega al sistema el objeto ForumThread indicado (nuevo hilo del foro).
-	 * <br/>
+	 * <br>
 	 * Invoca al metodo 'createForumThread'
 	 * del servicio {@link ServiceForumThread}
 	 * (implementado en el proyecto 'loqua-ejb').
@@ -58,7 +59,7 @@ public interface RestServiceForumThread {
 	
 	/**
 	 * Agrega al sistema los objetos ForumThread indicados
-	 * (nuevos hilos del foro).<br/>
+	 * (nuevos hilos del foro).<br>
 	 * Invoca al metodo 'createForumThreadsByList'
 	 * del servicio {@link ServiceForumThread}
 	 * (implementado en el proyecto 'loqua-ejb').
@@ -70,4 +71,19 @@ public interface RestServiceForumThread {
 		MediaType.APPLICATION_XML + ";charset=UTF-8",
 		MediaType.APPLICATION_JSON + ";charset=UTF-8"})
 	void createForumThreadsByList(List<ForumThread> forumThreads);
+	
+	/**
+	 * Elimina del sistema los objetos ForumThread indicados
+	 * (nuevos hilos del foro).<br>
+	 * Invoca al metodo 'createForumThreadsByList'
+	 * del servicio {@link ServiceForumThread}
+	 * (implementado en el proyecto 'loqua-ejb').
+	 * @param forumThreads lista de objetos ForumThread que se agregan
+	 */
+	@DELETE
+	@Path("deleteForumThreadByList")
+	@Consumes({ 
+		MediaType.APPLICATION_XML + ";charset=UTF-8",
+		MediaType.APPLICATION_JSON + ";charset=UTF-8"})
+	void deleteForumThreadsByList(List<ForumThread> forumThreads);
 }

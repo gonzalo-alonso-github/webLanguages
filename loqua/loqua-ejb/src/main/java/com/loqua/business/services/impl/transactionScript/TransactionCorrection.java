@@ -25,7 +25,7 @@ import com.loqua.persistence.exception.EntityNotPersistedException;
  * Da acceso a los procedimientos, dirigidos a la capa de persistencia,
  * correspondientes a las transacciones de las entidades
  * {@link Correction}, {@link CorrectionAgree} y {@link CorrectionDisagree}.
- * <br/>
+ * <br>
  * Este paquete de clases implementa el patron Transaction Script y
  * es el que, junto al modelo, concentra gran parte de la logica de negocio
  * @author Gonzalo
@@ -139,7 +139,7 @@ public class TransactionCorrection {
 	 * @param userId atributo 'id' del User que se consulta
 	 * @param correctionId atributo 'id' de la Correction que se consulta 
 	 * @return
-	 * true: si el usuario ha dado su recomendacion a la correccion<br/>
+	 * true: si el usuario ha dado su recomendacion a la correccion<br>
 	 * false: si el usuario aun no ha dado su recomendacion a la correccion
 	 * @throws EntityNotFoundException
 	 */
@@ -160,7 +160,7 @@ public class TransactionCorrection {
 	 * @param userId atributo 'id' del User que se consulta
 	 * @param correctionId atributo 'id' de la Correction que se consulta 
 	 * @return
-	 * true: si el usuario ha dado su desaprobacion a la correccion<br/>
+	 * true: si el usuario ha dado su desaprobacion a la correccion<br>
 	 * false: si el usuario aun no ha dado su desaprobacion a la correccion
 	 * @throws EntityNotFoundException
 	 */
@@ -189,6 +189,7 @@ public class TransactionCorrection {
 		} catch (EntityNotPersistedException ex) {
 			throw new EntityNotFoundException(ex);
 		}
+		;
 	}
 	 
 	/**
@@ -210,7 +211,7 @@ public class TransactionCorrection {
 	}
 	
 	/**
-	 * Cambia el atributo 'approved' de una Correction dada al valor 'true',
+	 * Cambia el atributo 'approved' de una Correction al valor 'true',
 	 * incrementa la puntuacion del usuario autor de dicha correccion,
 	 * comprueba si es preciso generar una publicacion para el evento
 	 * y actualiza todos los cambios en la base de datos
@@ -237,16 +238,22 @@ public class TransactionCorrection {
 	 * otra correccion aceptada para dicho comentario
 	 * @param correction Correccion que se pretende aceptar
 	 * @throws EntityNotFoundException
+	 * @throws EntityNotFoundException 
 	 */
 	private void checkIfAnotherCorrectionIsAccepted(Correction correction)
-			throws EntityNotFoundException {
+			throws EntityNotFoundException, EntityNotFoundException {
 		Long commentId = correction.getComment().getId();
 		Correction prevCorrection = getApprovedCorrectionByComment(commentId);
 		if( prevCorrection == null ){ return; }
 		// Si ya existia una correccion aprobada para este comentario,
 		// la pone como "no aprobada":
 		prevCorrection.setApprovedThis(false);
-		updateCorrection(prevCorrection);
+		//updateCorrection(prevCorrection);
+		try{
+			correctionJPA.setApprovedFalse(prevCorrection.getId());
+		}catch(EntityNotPersistedException e){
+			throw new EntityNotFoundException(e);
+		}
 		// y le quita los puntos al autor de dicha correccion:
 		User user = prevCorrection.getUser();
 		user.getUserInfo().decrementPointsByDeletedCorrection(prevCorrection);
@@ -256,14 +263,14 @@ public class TransactionCorrection {
 	/**
 	 * Comprueba si es necesaria la generacion de alguna Publication tras
 	 * producirse la aceptacion de una correccion. Las Publication se generaran
-	 * en los siguientes casos: <br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;- Siempre que una correccion es aceptada<br/>
+	 * en los siguientes casos: <br>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;- Siempre que una correccion es aceptada<br>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;- El usuario autor de la correccion ha alcanzado
-	 * las '10/25/50/100/250/500/(...) correcciones aprobadas <br/>
+	 * las '10/25/50/100/250/500/(...) correcciones aprobadas <br>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;- El incremento en la puntuacion del usuario
 	 * hace que este ascienda en la clasificacion hasta el
 	 * top de los primeros 100 usuarios, o 50, o 25, o 20, o 15, o 10, o 5
-	 * o superiores <br/>
+	 * o superiores <br>
 	 * @param corr Correccion que, por haber sido aceptada, genera 
 	 * alguna Publication
 	 * @throws EntityNotFoundException
@@ -329,7 +336,7 @@ public class TransactionCorrection {
 	 * publcadas por un usuario
 	 * @return
 	 * true: si el numero dado esta en la serie '10/25/50/100/250/500...'
-	 * <br/>
+	 * <br>
 	 * false: si el numero dado no esta la serie '10/25/50/100/250/500...'
 	 */
 	private boolean reachedXApprovedCorrections(Integer numCorrections) {
@@ -349,14 +356,19 @@ public class TransactionCorrection {
 	
 	/**
 	 * Elimina del foro la correccion dada
-	 * @param correction objeto Correction que se desea eliminar
+	 * @param corr objeto Correction que se desea eliminar
 	 * @throws EntityNotFoundException
 	 */
-	public void deleteCorrection(Correction correction)
+	public void deleteCorrection(Correction corr)
 			throws EntityNotFoundException {
 		try {
-			transactionPub.editPubsForDeletedPost(correction);
-			correctionJPA.deleteCorrection(correction);
+			transactionPub.editPubsForDeletedPost(corr);
+			correctionJPA.deleteCorrection(corr);
+			if( corr.getApproved() ){
+				User user = corr.getUser();
+				user.getUserInfo().decrementPointsByDeletedCorrection(corr);
+				transactionUser.updateAllDataByUser(user);
+			}
 		} catch (EntityNotPersistedException ex) {
 			throw new EntityNotFoundException(ex);
 		}
@@ -387,12 +399,27 @@ public class TransactionCorrection {
 	}
 	
 	/**
+	 * Elimina la asociacion CorrectionAgree entre el User dado
+	 * y la Correction indicada.
+	 * @param userId usuario asociado al CorrectionAgree eliminado
+	 * @param correction correccion asociada al CorrectionAgree eliminado
+	 * @throws EntityNotFoundException
+	 */
+	public void deleteAgreementForTest(Long userId, Correction correction)
+			throws EntityNotFoundException {
+		try {
+			correctionJPA.deleteAgreement(userId, correction.getId());
+		} catch (EntityNotPersistedException ex) {
+			throw new EntityNotFoundException(ex);
+		}
+	}
+	
+	/**
 	 * Crea la asociacion CorrectionDisagree entre el User dado y la Correction
 	 * indicada, y actualiza todos los cambios en la base de datos
 	 * @param userId atributo 'id' del User que recomienda la correccion dada
 	 * @param correctionId atributo 'id' de la Correction que se actualiza
 	 * @throws EntityAlreadyFoundException
-	 * @throws EntityNotFoundException
 	 */
 	public void dissuadeCorrection(Long userId, Long correctionId)
 			throws EntityAlreadyFoundException {
@@ -407,26 +434,22 @@ public class TransactionCorrection {
 	 * Genera una correccion en un hilo del foro, comprueba si es preciso
 	 * generar una publicacion para el evento y actualiza todos los cambios
 	 * en la base de datos
-	 * @param commentToCorrect comentario que recibe la correccion
-	 * @param text texto plano de la correccion creada
-	 * @param code texto HTML de la correccion creada
-	 * @param user User autor de la Correction creada
-	 * @return el objet Correction que se genera
+	 * @param correctionData la correccion que se va a agregar
+	 * @return el objeto Correction generado
 	 * @throws EntityAlreadyFoundException
 	 * @throws EntityNotFoundException
 	 */
-	public Correction sendCorrection(Comment commentToCorrect,
-			String text, String code, User user)
+	public Correction sendCorrection(Correction correctionData)
 			throws EntityAlreadyFoundException, EntityNotFoundException{
 		try {
-			Correction correction = correctionJPA.createCorrection(
-					commentToCorrect, text, code, user);
+			Correction correctionResult = correctionJPA.createCorrection(
+					correctionData);
 			// Se crean las Publication necesarias:
-			generatePublicationsToSendCorr(commentToCorrect, user, correction);
+			generatePublicationsToSendCorr(correctionData);
 			// Se actualiza la noticia:
-			// ForumThread thread = commentToCorrect.getForumThread();
+			// ForumThread thread = correctionData.getForumThread();
 			// transactionThread.updateDataByThread(thread, true);
-			return correction;
+			return correctionResult;
 		} catch (EntityAlreadyPersistedException ex) {
 			throw new EntityAlreadyFoundException(ex);
 		} catch (EntityNotPersistedException ex) {
@@ -435,18 +458,16 @@ public class TransactionCorrection {
 	}
 	
 	/**
-	 * Genera las Publication para el usuario que recibe la correccion,
-	 * y tambien genera las Publication para el usuario que realiza la Correccion
-	 * @param commentToCorrect comentario que recibe la correccion
-	 * @param user usuario que realiza la correccion
+	 * Genera las Publication para el usuario que recibe la correccion y
+	 * tambien genera las Publication para el usuario que realiza la Correccion
 	 * @param correction Correction que, por haber sido creada,
 	 * provoca la creacion de Publication
 	 * @throws EntityNotFoundException
 	 * @throws EntityAlreadyFoundException
 	 */
-	private void generatePublicationsToSendCorr(Comment commentToCorrect,
-			User user, Correction correction)
+	private void generatePublicationsToSendCorr(Correction correction)
 			throws EntityNotFoundException, EntityAlreadyFoundException {
+		Comment commentToCorrect = correction.getComment();
 		/* TypePrivacity.CONTACTS, porque esta publicacion
 		no tendria sentido si solo fuera privada,
 		ya que va dirigida a los contactos del usuario, mas que a el mismo */
@@ -454,6 +475,6 @@ public class TransactionCorrection {
 				commentToCorrect.getId(), 101L, commentToCorrect.getUser());
 		// TypePrivacity.CONTACTS, por el mismo motivo
 		transactionPub.generatePublication(TypePrivacity.CONTACTS,
-				correction.getId(), 201L, user);
+				correction.getId(), 201L, correction.getUser());
 	}
 }

@@ -12,7 +12,7 @@ import com.loqua.presentation.bean.BeanSettingsSession;
 /**
  * Define un validador encargado de comprobar si el valor del componente
  * UIComponent sobre el que se aplica tiene una longitud de caracteres que
- * no sobrepasa un limite dado. <br/> Este validador verifica que dicho valor
+ * no sobrepasa un limite dado. <br> Este validador verifica que dicho valor
  * no sea null, pero no comprueba si dicho valor no esta vacio;
  * de ello se encargaria la propiedad 'required' del UIComponent.
  * @author Gonzalo

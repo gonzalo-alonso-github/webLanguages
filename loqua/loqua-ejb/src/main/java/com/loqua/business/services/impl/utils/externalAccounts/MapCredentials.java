@@ -1,4 +1,4 @@
-package com.loqua.business.services.impl;
+package com.loqua.business.services.impl.utils.externalAccounts;
 
 import java.util.HashMap;
 import java.util.Map;

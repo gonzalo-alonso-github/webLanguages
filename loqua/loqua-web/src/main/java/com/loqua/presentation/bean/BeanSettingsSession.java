@@ -117,13 +117,11 @@ public class BeanSettingsSession implements Serializable {
 	}
 	
 	/**
-	 * Halla el objeto Locale que utiliza el sitio web.</br>
+	 * Halla el objeto Locale que utiliza el sitio web.<br>
 	 * Si el usuario de la sesion es anonimo, el Locale se obtiene a partir
-	 * de la informacion del navegador.</br>
+	 * de la informacion del navegador.<br>
 	 * Si el usuario de la sesion esta registrado, el Locale se obtiene a partir
 	 * de su informacion asociada en la base de datos.
-	 * @return
-	 * objeto Locale del sitio web
 	 */
 	private void loadLocale() {
 		if( beanLogin.getLoggedUser() == null ){
@@ -168,8 +166,7 @@ public class BeanSettingsSession implements Serializable {
 	 * Obtiene, a partir de la informacion guardada en la base de datos, el
 	 * objeto Locale correspondiente al usuario logueado
 	 * ({@link BeanLogin#loggedUser}).
-	 * @return
-	 * Objeto Locale del usuario registrado
+	 * @return objeto Locale del usuario registrado
 	 * @throws EntityNotFoundException
 	 * @throws NullPointerException
 	 */
@@ -182,11 +179,10 @@ public class BeanSettingsSession implements Serializable {
 	}	
 	
 	/**
-	 * Obtiene el objeto Locale guardado en el Bean.</br>
+	 * Obtiene el objeto Locale guardado en el Bean.<br>
 	 * Si el Bean no tiene inicializado dicho objeto, realiza una llamada al
 	 * metodo encargado de cargar el Locale.
-	 * @return
-	 * Objeto Locale para el sitio web
+	 * @return objeto Locale para el sitio web
 	 */
 	public Locale getLocale() {
 		if( locale == null ){
@@ -209,7 +205,6 @@ public class BeanSettingsSession implements Serializable {
 	 * por el lenguaje seleccionado.
 	 * Si el usuario esta registrado actualiza su locale en la base de datos.
 	 * @param localeLanguage clave ISO 639 del lenguage seleccionado
-	 * @see {@link #getTranslation}
 	 */
 	public void setLocaleLanguage(String localeLanguage){
 		locale = new Locale(localeLanguage);
@@ -245,7 +240,6 @@ public class BeanSettingsSession implements Serializable {
 	 * @param key clave, en el fichero 'bundle.properties',
 	 * de la cadena de texto solicitada
 	 * @return texto perteneciente a la clave dada
-	 * @see {@link #getTranslation}
 	 */
 	public static String getTranslationStatic(String key) {
 		ResourceBundle resourceBundle = 
@@ -289,8 +283,8 @@ public class BeanSettingsSession implements Serializable {
 	}
 	/**
 	 * Version estatica del metodo {@link #getTranslationEvents}.
-	 * @param key clave, en el fichero 'countriesAndLocales.properties',
-	 * de la cadena de texto del lenguage correspondiente.
+	 * @param key clave, en el fichero 'events.properties',
+	 * de la cadena de texto solicitada
 	 * @return texto perteneciente a la clave dada
 	 */
 	public static String getTranslationEventsStatic(String key) {
@@ -301,11 +295,9 @@ public class BeanSettingsSession implements Serializable {
 	
 	/**
 	 * Traduce el formato de una fecha dada en funcion del atributo
-	 * {@link #Locale}
-	 * @param date
-	 * fecha que se va a formatear
-	 * @return
-	 * Cadena de texto correspondiente a la fecha formateada
+	 * {@link #locale}
+	 * @param date fecha que se va a formatear
+	 * @return cadena de texto correspondiente a la fecha formateada
 	 */
 	public String getFormattedDate(Date date){
 		DateFormat dateFormat = 
@@ -316,11 +308,9 @@ public class BeanSettingsSession implements Serializable {
 	
 	/**
 	 * Traduce el formato de una fecha y hora dada en funcion del atributo
-	 * {@link #Locale}
-	 * @param date
-	 * fecha y hora que se va a formatear
-	 * @return
-	 * Cadena de texto correspondiente a la fecha y hora formateada
+	 * {@link #locale}
+	 * @param date fecha y hora que se va a formatear
+	 * @return cadena de texto correspondiente a la fecha y hora formateada
 	 */
 	public String getFormattedDateTime(Date date){
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(

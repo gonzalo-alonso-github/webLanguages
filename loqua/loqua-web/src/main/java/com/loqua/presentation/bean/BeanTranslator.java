@@ -12,7 +12,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-import com.loqua.business.services.impl.TranslatorMicrosoftKey;
+import com.loqua.business.services.impl.utils.externalAccounts.TranslatorMicrosoftKey;
 import com.loqua.presentation.logging.LoquaLogger;
 import com.memetix.mst.language.Language;
 import com.memetix.mst.translate.Translate;
@@ -31,7 +31,7 @@ public class BeanTranslator implements Serializable {
 	
 	/** Nombre del idioma, elegido por el usuario en el componente SelectItem
 	 * de la vista, que indica el idioma original del texto
-	 * que se desea traducir.<br/>
+	 * que se desea traducir.<br>
 	 * Los idiomas de dicho SelectItem no tienen nada que ver con la entidad
 	 * {@link com.loqua.model.Language}, sino que vienen dados por la API
 	 * de Microsoft Translator. */
@@ -39,7 +39,7 @@ public class BeanTranslator implements Serializable {
 	
 	/** Nombre del idioma, elegido por el usuario en el componente SelectItem
 	 * de la vista, que indica el idioma al cual se desea traducir el texto
-	 * introducido.<br/>
+	 * introducido.<br>
 	 * Los idiomas de dicho SelectItem no tienen nada que ver con la entidad
 	 * {@link com.loqua.model.Language}, sino que vienen dados por la API
 	 * de Microsoft Translator. */
@@ -111,12 +111,14 @@ public class BeanTranslator implements Serializable {
 	}
 	
 	/**
-	 * Traduce el texto de {#inputText} guardando el resultado en {#outputText}.
+	 * Traduce el texto de {@link #inputText} guardando el resultado en
+	 * {@link #outputText}.
 	 * Para ello emplea la API de Text Translator de Microsoft
 	 * Cognitive Services.
 	 * @param inputLanguage indica el idioma original del texto que se desea 
 	 * @param outputLanguage indica el idioma al cual se desea traducir
-	 * el texto de {#inputText}
+	 * el texto de {@link #inputText}
+	 * @throws Exception
 	 */
 	private void microsoftTranslatorText(
 			Language inputLanguage, Language outputLanguage) throws Exception {
@@ -197,7 +199,7 @@ public class BeanTranslator implements Serializable {
 	
 	/**
 	 * Proporciona a las vistas .xhtml la lista de lenguajes
-	 * soportados por la API de Text Translator de Microsoft Cognitive Services.
+	 * soportados por la API de Translator Text de Microsoft Cognitive Services.
 	 * Los elementos de dicha lista son objetos
 	 * SelectItem creados a partir de los lemguajes soportados por la API.
 	 * @return
@@ -208,7 +210,8 @@ public class BeanTranslator implements Serializable {
 		// Trata de cargar todos los idiomas incluidos en java.util.Locale
 		for( String keyLanguage : Locale.getISOLanguages() ) {
 			// Si el idioma de Locale es soportado por el traductor, se agrega
-			Language validLanguage = Language.fromString(keyLanguage);
+			com.memetix.mst.language.Language validLanguage =
+					com.memetix.mst.language.Language.fromString(keyLanguage);
 			if( validLanguage!=null ){
 				String langName = BeanSettingsSession
 						.getTranslationCountriesStatic(keyLanguage);

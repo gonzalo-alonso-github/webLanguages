@@ -4,11 +4,9 @@ import java.util.List;
 
 import com.loqua.business.exception.EntityAlreadyFoundException;
 import com.loqua.business.exception.EntityNotFoundException;
-import com.loqua.model.Comment;
 import com.loqua.model.Correction;
 import com.loqua.model.CorrectionAgree;
 import com.loqua.model.CorrectionDisagree;
-import com.loqua.model.User;
 
 /**
  * Define la fachada que encapsula el acceso al objeto EJB que maneja
@@ -63,7 +61,7 @@ public interface ServiceCorrection {
 	 * @param userId atributo 'id' del User que se consulta
 	 * @param correctionId atributo 'id' de la Correction que se consulta 
 	 * @return
-	 * true: si el usuario ha dado su recomendacion a la correccion<br/>
+	 * true: si el usuario ha dado su recomendacion a la correccion<br>
 	 * false: si el usuario aun no ha dado su recomendacion a la correccion
 	 * @throws EntityNotFoundException
 	 */
@@ -75,7 +73,7 @@ public interface ServiceCorrection {
 	 * @param userId atributo 'id' del User que se consulta
 	 * @param correctionId atributo 'id' de la Correction que se consulta 
 	 * @return
-	 * true: si el usuario ha dado su desaprobacion a la correccion<br/>
+	 * true: si el usuario ha dado su desaprobacion a la correccion<br>
 	 * false: si el usuario aun no ha dado su desaprobacion a la correccion
 	 * @throws EntityNotFoundException
 	 */
@@ -114,12 +112,22 @@ public interface ServiceCorrection {
 			throws EntityAlreadyFoundException, EntityNotFoundException;
 	
 	/**
+	 * Elimina la asociacion CorrectionAgree entre el User dado
+	 * y la Correction indicada.
+	 * @param userId usuario asociado al CorrectionAgree eliminado
+	 * @param correction correccion asociada al CorrectionAgree eliminado
+	 * @throws EntityAlreadyFoundException
+	 * @throws EntityNotFoundException
+	 */
+	void deleteAgreementForTest(Long userId, Correction correction)
+			throws EntityAlreadyFoundException, EntityNotFoundException;
+	
+	/**
 	 * Crea la asociacion CorrectionDisagree entre el User dado y la Correction
 	 * indicada, y actualiza todos los cambios en la base de datos
 	 * @param userId atributo 'id' del User que recomienda la correccion dada
 	 * @param correctionId atributo 'id' de la Correction que se actualiza
 	 * @throws EntityAlreadyFoundException
-	 * @throws EntityNotFoundException
 	 */
 	void dissuadeCorrection(Long userId, Long correctionId)
 			throws EntityAlreadyFoundException;
@@ -128,16 +136,12 @@ public interface ServiceCorrection {
 	 * Genera una correccion en un hilo del foro, comprueba si es preciso
 	 * generar una publicacion para el evento y actualiza todos los cambios
 	 * en la base de datos
-	 * @param commentToCorrect comentario que recibe la correccion
-	 * @param text texto plano de la correccion creada
-	 * @param code texto HTML de la correccion creada
-	 * @param user User autor de la Correction creada
+	 * @param correction la correccion que se va a agregar
 	 * @return el objet Correction que se genera
 	 * @throws EntityAlreadyFoundException
 	 * @throws EntityNotFoundException
 	 */
-	Correction sendCorrection(Comment commentToCorrect,
-			String text, String code, User user)
+	Correction sendCorrection(Correction correction)
 			throws EntityAlreadyFoundException, EntityNotFoundException;
 	
 	/**

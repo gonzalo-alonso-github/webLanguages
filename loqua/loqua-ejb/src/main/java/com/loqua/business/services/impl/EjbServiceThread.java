@@ -20,12 +20,12 @@ import com.loqua.model.Language;
 
 /**
  * Da acceso a las transacciones correspondientes a las entidades
- * {@link ForumThread}, {@link ForumThreadInfo} y {@link ForumThreadVoter}.<br/>
+ * {@link ForumThread}, {@link ForumThreadInfo} y {@link ForumThreadVoter}.<br>
  * La intencion de esta 'subcapa' de EJBs no es albergar mucha logica de negocio
  * (de ello se ocupa el modelo y el Transaction Script), sino hacer
  * que las transacciones sean controladas por el contenedor de EJB
  * (Wildfly en este caso), quien se ocupa por ejemplo de abrir las conexiones
- * a la base de datos mediate un datasource y de realizar los rollback. <br/>
+ * a la base de datos mediate un datasource y de realizar los rollback. <br>
  * Al ser un EJB de sesion sin estado no puede ser instanciado desde un cliente
  * o un Factory Method, sino que debe ser devuelto mediante el registro JNDI.
  * Forma parte del patron Service Locator y se encapsula tras las fachadas
@@ -73,7 +73,7 @@ public class EjbServiceThread
 	*/
 	
 	@Override
-	public List<ForumThread> getThreadsByLanguagesAndCategoryFromDB(
+	public List<ForumThread> getThreadsByLangsAndCategory(
 			List<Language> listLanguages, Long categoryId,
 			Integer offset, int limitNumThreads) {
 		return transactionThread.getThreadsByLanguagesAndCategoryFromDB(
@@ -81,7 +81,7 @@ public class EjbServiceThread
 	}
 	
 	@Override
-	public Integer getNumThreadsByLanguagesAndCategoryFromDB(
+	public Integer getNumThreadsByLanguagesAndCategory(
 			List<Language> listLanguages, Long categoryId){
 		return transactionThread.getNumThreadsByLanguagesAndCategoryFromDB(
 				listLanguages, categoryId);
@@ -100,7 +100,7 @@ public class EjbServiceThread
 	*/
 	
 	@Override
-	public List<ForumThread> getThreadsByCategoryFromDB(Long categoryId,
+	public List<ForumThread> getThreadsByCategory(Long categoryId,
 			Integer offset, int limitNumThreads) {
 		return transactionThread.getThreadsByCategoryFromDB(
 				categoryId, offset, limitNumThreads);
@@ -112,7 +112,7 @@ public class EjbServiceThread
 	}
 	
 	@Override
-	public List<ForumThread> getMostValuedThreadsOfTheMonthFromDB() {
+	public List<ForumThread> getMostValuedThreadsOfTheMonth() {
 		return transactionThread.getMostValuedThreadsOfTheMonthFromDB();
 	}
 	
@@ -139,10 +139,10 @@ public class EjbServiceThread
 	}
 	
 	@Override
-	public void restCreateForumThread(ForumThread threadToCreate) 
+	public ForumThread restCreateForumThread(ForumThread threadToCreate) 
 			throws EntityAlreadyFoundException, Exception {
 		// Para el cliente Aggregator
-		transactionThread.restCreateForumThread(threadToCreate);
+		return transactionThread.restCreateForumThread(threadToCreate);
 	}
 	/*
 	@Override
@@ -153,6 +153,14 @@ public class EjbServiceThread
 		transactionThread.restCreateForumThreadsByList(threadsToCreate,justNow);
 	}
 	*/
+	
+	@Override
+	public void deleteForumThreadForTest(Long threadId)
+			throws EntityNotFoundException{
+		transactionThread.deleteForumThread(threadId);
+	}
+
+	
 	/*
 	@Override
 	public void updateAllDataByThread(ForumThread threadToUpdate)
@@ -172,6 +180,12 @@ public class EjbServiceThread
 		// Este metodo lanza "EntityAlreadyFoundException"
 		// porque crea en bdd una entidad "CommentVoter"
 		return transactionThread.voteThread(userId, threadToVote);
+	}
+	
+	@Override
+	public void deleteThreadVoterForTest(Long userId, ForumThread thread)
+			throws EntityNotFoundException {
+		transactionThread.deleteThreadVoter(userId, thread);
 	}
 
 	@Override

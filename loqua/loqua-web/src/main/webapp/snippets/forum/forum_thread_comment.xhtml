@@ -26,6 +26,7 @@ f:viewAction action="#{beanComment.onLoad()}"
 	<div id="general_header">	
 		<ui:param name="titleHeader" value="#{msgs.titleForumIndex}" />
 		<ui:include src="/snippets/general/menu_horizontal/menu_with_searcherTranslator.xhtml" />
+		<ui:include src="/snippets/general/menu_horizontal/menu_elements/menu_elements_modal_windows.xhtml" />
 	</div>
 	
 	<!-- Cuerpo bajo la barra de cabecera. Esta estructurado en 2 columnas, que son: -->
@@ -158,6 +159,9 @@ f:viewAction action="#{beanComment.onLoad()}"
 			</div>
 			</article>
 			</o:form>
+			
+			<ui:include src="/snippets/forum/forum_thread_suggestions.xhtml" />
+			
 		</div>
 		
 		<!-- Columna derecha -->
@@ -177,6 +181,7 @@ f:viewAction action="#{beanComment.onLoad()}"
 		</h:form>
 		</div>
 		</div>
+		
 	</div>
 	
 </div>

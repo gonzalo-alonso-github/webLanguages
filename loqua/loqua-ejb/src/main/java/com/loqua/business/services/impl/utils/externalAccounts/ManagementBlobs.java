@@ -1,5 +1,8 @@
-package com.loqua.business.services.impl;
+package com.loqua.business.services.impl.utils.externalAccounts;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.util.List;
@@ -67,7 +70,7 @@ public class ManagementBlobs {
 	 * cuenta de almacenamiento de Azure.
 	 * Si no encuentra la imagen con la extension indicada,
 	 * comprobara si la imagen existe con alguna de las extensiones de la lista
-	 * recibida. <br/>Este metodo acelera la busqueda de la imagen cuando desde
+	 * recibida. <br>Este metodo acelera la busqueda de la imagen cuando desde
 	 * el cliente se conoce de antemano su extension, en cuyo caso no se
 	 * perderia tiempo en buscarla en todas las extensiones.
 	 * Por ejemplo, conociendo que todos los iconos de banderas de paises
@@ -93,6 +96,7 @@ public class ManagementBlobs {
     		String containerName, String expectedExtension,
     		List<String> extensions)
     		throws Exception {
+		if( ! testInternetConnection() ){ return null; }
     	CloudBlobContainer container = loadAzureContainer(containerName);
         CloudBlockBlob blob = 
         		container.getBlockBlobReference(imageCode+"."+expectedExtension);
@@ -122,17 +126,37 @@ public class ManagementBlobs {
     public static byte[] getImageFromAzureStorage(String imageCode, 
     		String containerName, List<String> extensions)
     		throws Exception {
+    	if( ! testInternetConnection() ){ return null; }
     	CloudBlobContainer container = loadAzureContainer(containerName);
         CloudBlockBlob blob = verifyBlobAllExtensions(
         		imageCode, container, extensions);
         return downloadBlobToBytes(blob);
     }
-    
+
+    private static boolean testInternetConnection() {
+		boolean resultIsRunning = false;
+		Socket sock = new Socket();
+		InetSocketAddress addressTest;
+		String[] sitesToTest = {"google.com", "amazon.com"};
+		for(int i=0; i<sitesToTest.length && !resultIsRunning; i++){
+			addressTest = new InetSocketAddress(sitesToTest[i],80);
+			try {
+				sock.connect(addressTest,2000);
+				resultIsRunning= true;
+			}catch (IOException e){
+			}finally{
+				try { sock.close(); }
+				catch (IOException e){}
+			}
+		}
+		return resultIsRunning;
+	}
+	
     /**
      * Comprueba que la imagen solicitada existe en el contenedor de Azure,
      * en alguna de las extensiones de la lista recibida por parametro
-     * @param nombre de la imagen que se solicita
-	 * @param containerName nombre del contenedor de la cuenta de
+     * @param imageCode nombre de la imagen que se solicita
+	 * @param container nombre del contenedor de la cuenta de
 	 * almacenamiento de Azure, donde se busca la imagen solicitada
      * @param extensions lista de extensiones en las que se buscara
 	 * la imagen solicitada

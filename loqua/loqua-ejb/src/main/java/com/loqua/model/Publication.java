@@ -23,12 +23,12 @@ import javax.xml.bind.annotation.XmlTransient;
 import com.loqua.model.types.TypePrivacity;
 
 /**
- * Representa una publicacion generada por un usuario. <br/>
+ * Representa una publicacion generada por un usuario. <br>
  * Todos los objetos Publication cuyo atributo 'selfGenerated'
  * es igual a 'true', tienen asociado un objeto {@link Event}
- * para indicar el 'evento' que ha dado lugar a la publicacion.<br/><br/>
+ * para indicar el 'evento' que ha dado lugar a la publicacion.<br><br>
  * Mas detalladamente: un usuario puede provocar un mismo 'evento'
- * varias veces; del mismo modo cada 'evento' genera una publicacion.<br/>
+ * varias veces; del mismo modo cada 'evento' genera una publicacion.<br>
  * Por otro lado existe una manera mas de crear publicaciones: se da
  * cuando el usuario escribe un texto en su pagina de perfil y lo publica
  * (en este caso el atributo 'selfGenerated' de la publicacion creada
@@ -49,10 +49,10 @@ public class Publication implements Serializable {
 	/** Identificador del objeto y clave primaria de la entidad */
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) private Long id;
 	
-	/** Texto de la publicacion.<br/>Si la publicacion ha sido generada
+	/** Texto de la publicacion.<br>Si la publicacion ha sido generada
 	 * automaticamente al provocar un evento, este 'content' es null
 	 * (y en tal caso el texto de la publicacion estara indicado por
-	 * {@link Event#content}).<br/>
+	 * {@link Event#content}).<br>
 	 * Si la publicacion ha sido generada intencionadamente por el usuario
 	 * al escribir un texto en su perfil, este 'content' es dicho texto */
 	private String content;
@@ -61,7 +61,7 @@ public class Publication implements Serializable {
 	private Date datePub;
 	
 	/** Si es 'true', indica que la publicacion ha sido generada
-	 * automaticamente cuando el usuario ha provocado algun 'evento'.<br/>
+	 * automaticamente cuando el usuario ha provocado algun 'evento'.<br>
 	 * Si es 'false', indica que ha sido generada
 	 * intencionadamente por el usuario cuando este ha escrito un texto en su
 	 * pagina de perfil
@@ -76,11 +76,11 @@ public class Publication implements Serializable {
 	private TypePrivacity privacity;
 	
 	/** Valor de la Publication que la distingue de otros objetos Publication
-	 * generados por el mismo User y por el mismo Event. <br/>
+	 * generados por el mismo User y por el mismo Event. <br>
 	 * Si bien el atributo {@link Event#content} referencia el texto
 	 * de plantilla que se mostrara en la publicacion (establecido en los
 	 * ficheros .properties de internacionalizacion del proyecto 'loqua-web'),
-	 * este eventValue indica el valor que completa dicho texto.<br/>
+	 * este eventValue indica el valor que completa dicho texto.<br>
 	 * Ejemplos:
 	 * <ul><li>Si el 'evento' indica que el usuario entra
 	 * en el top-X de la clasificacion de puntos, este eventValue es la variable
@@ -90,7 +90,7 @@ public class Publication implements Serializable {
 	 * que indica si ese valor X es 500, 1000, 5000...</li></ul> */
 	private Long eventValue;
 	
-	/** Indica si el usuario ya ha leido la publicacion. <br/>
+	/** Indica si el usuario ya ha leido la publicacion. <br>
 	 * En la practica este atributo solo resulta de utilidad en caso de que
 	 * la publicacion se muestre como una notificacion
 	 * (dato indicado por {@link Event#showAsNotification}), puesto que

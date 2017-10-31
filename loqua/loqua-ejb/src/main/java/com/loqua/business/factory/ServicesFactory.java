@@ -11,6 +11,7 @@ import com.loqua.business.services.ServiceForumThread;
 import com.loqua.business.services.ServiceLanguage;
 import com.loqua.business.services.ServiceMessage;
 import com.loqua.business.services.ServicePublication;
+import com.loqua.business.services.ServiceSuggestion;
 import com.loqua.business.services.ServiceUser;
 import com.loqua.business.services.ServiceUserAccessDataChange;
 import com.loqua.business.services.impl.EjbServiceComment;
@@ -25,6 +26,8 @@ import com.loqua.business.services.impl.EjbServicePublication;
 import com.loqua.business.services.impl.EjbServiceThread;
 import com.loqua.business.services.impl.EjbServiceUser;
 import com.loqua.business.services.impl.EjbServiceUserAccessDataChange;
+import com.loqua.business.services.impl.EjbServiceSuggestion;
+import com.loqua.business.services.impl.EjbServiceCredentials;
 import com.loqua.model.ChangeEmail;
 import com.loqua.model.ChangePassword;
 import com.loqua.model.Comment;
@@ -44,6 +47,8 @@ import com.loqua.model.ForumThreadInfo;
 import com.loqua.model.ForumThreadVoter;
 import com.loqua.model.Language;
 import com.loqua.model.PrivacityData;
+import com.loqua.model.Message;
+import com.loqua.model.MessageReceiver;
 import com.loqua.model.Publication;
 import com.loqua.model.PublicationReceiver;
 import com.loqua.model.User;
@@ -51,6 +56,7 @@ import com.loqua.model.UserInfo;
 import com.loqua.model.UserInfoPrivacity;
 import com.loqua.model.UserNativeLanguage;
 import com.loqua.model.UserPracticingLanguage;
+import com.loqua.model.Suggestion;
 
 /**
  * Define la fachada que encapsula todos los servicios de la capa de negocio
@@ -110,7 +116,7 @@ public interface ServicesFactory{
 	/**
 	 * Halla en el registro JNDI el objeto {@link EjbServiceMessage}
 	 * que da acceso a las transacciones correspondientes a las entidades
-	 * {@link 'Message'} y {@link 'MessageReceiver'}
+	 * {@link Message} y {@link MessageReceiver}
 	 * @return objeto EJB que implementa a {@link ServiceMessage}
 	 */
 	public ServiceMessage getServiceMessage();
@@ -159,10 +165,18 @@ public interface ServicesFactory{
 	public ServiceUserAccessDataChange getServiceUserAccessDataChange();
 	
 	/**
-	 * Halla en el registro JNDI el objeto {@link EjbServiceUserCredentials}
+	 * Halla en el registro JNDI el objeto {@link EjbServiceCredentials}
 	 * que da acceso a las transacciones correspondientes a la entidad
 	 * {@link Credentials}
 	 * @return objeto EJB que implementa a {@link ServiceCredentials}
 	 */
 	public ServiceCredentials getServiceCredentials();
+	
+	/**
+	 * Halla en el registro JNDI el objeto {@link EjbServiceSuggestion}
+	 * que da acceso a las transacciones correspondientes a la entidad
+	 * {@link Suggestion}
+	 * @return objeto EJB que implementa a {@link ServiceSuggestion}
+	 */
+	public ServiceSuggestion getServiceSuggestion();
 }

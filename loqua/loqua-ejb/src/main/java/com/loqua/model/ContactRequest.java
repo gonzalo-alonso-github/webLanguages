@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * Representa una solicitud de contacto que un usuario ha enviado a otro
- * y aun no ha sido aceptada o rechazada por este. <br/><br/>
+ * y aun no ha sido aceptada o rechazada por este. <br><br>
  * @author Gonzalo
  */
 @XmlRootElement(name = "contactRequest")

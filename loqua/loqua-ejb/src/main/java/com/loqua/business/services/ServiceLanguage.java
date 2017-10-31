@@ -67,6 +67,21 @@ public interface ServiceLanguage {
 	public void updateLanguage(Language language) throws EntityNotFoundException;
 	
 	/**
+	 * Actualiza la lista de lenguajes nativos del usuario.
+	 * @param user User asociado a los Language indicados
+	 * @param originalNativeLanguagesIDs lista de lenguajes maternos del
+	 * usuario, antes de ser editada en los formularios de la pagina
+	 * @param editedNativeLanguagesIDs lista de lenguajes maternos del
+	 * usuario, despues de ser editada en los formularios de la pagina
+	 * @throws EntityAlreadyFoundException
+	 * @throws EntityNotFoundException
+	 */
+	public void updateNativeLanguages(User user,
+			List<Long> originalNativeLanguagesIDs,
+			List<Long> editedNativeLanguagesIDs)
+			throws EntityAlreadyFoundException,EntityNotFoundException;
+	
+	/**
 	 * Crea las asociaciones UserNativeLanguage entre el User dado y
 	 * los Language indicados (es decir, la relacion de 'Laguage es el idioma
 	 * materno de User')
@@ -77,11 +92,11 @@ public interface ServiceLanguage {
 	 * usuario, despues de ser editada en los formularios de la pagina
 	 * @throws EntityAlreadyFoundException
 	 * @throws EntityNotFoundException
-	 */
+	 *//*
 	void createUserNativeLanguage(User user,
 			List<Long> originalNativeLanguagesIDs,
 			List<Long> editedNativeLanguagesIDs)
-			throws EntityAlreadyFoundException, EntityNotFoundException;
+			throws EntityAlreadyFoundException, EntityNotFoundException;*/
 	
 	/**
 	 * Elimina las asociaciones UserNativeLanguage entre el User dado y
@@ -94,7 +109,24 @@ public interface ServiceLanguage {
 	 * usuario, despues de ser editada en los formularios de la pagina
 	 * @throws EntityNotFoundException
 	 */
+	/*
 	void deleteUserNativeLanguage(User user,
+			List<Long> originalNativeLanguagesIDs,
+			List<Long> editedNativeLanguagesIDs)
+			throws EntityAlreadyFoundException,EntityNotFoundException;
+	*/
+	
+	/**
+	 * Actualiza la lista de lenguajes practicados del usuario.
+	 * @param user User asociado a los Language indicados
+	 * @param originalNativeLanguagesIDs lista de lenguajes practicados del
+	 * usuario, antes de ser editada en los formularios de la pagina
+	 * @param editedNativeLanguagesIDs lista de lenguajes practicados del
+	 * usuario, despues de ser editada en los formularios de la pagina
+	 * @throws EntityAlreadyFoundException
+	 * @throws EntityNotFoundException
+	 */
+	public void updatePracticedLanguages(User user,
 			List<Long> originalNativeLanguagesIDs,
 			List<Long> editedNativeLanguagesIDs)
 			throws EntityAlreadyFoundException,EntityNotFoundException;
@@ -111,11 +143,12 @@ public interface ServiceLanguage {
 	 * @throws EntityAlreadyFoundException
 	 * @throws EntityNotFoundException
 	 */
+	/*
 	void createUserPracticedLanguage(User user,
 			List<Long> originalPracticedLanguagesIDs,
 			List<Long> editedPracticedLanguagesIDs)
 			throws EntityAlreadyFoundException, EntityNotFoundException;
-	
+	*/
 	/**
 	 * Elimina las asociaciones (UserPracticingLanguage) entre el User dado y
 	 * los Language indicados (es decir, la relacion de 'Laguage es
@@ -127,11 +160,12 @@ public interface ServiceLanguage {
 	 * el usuario, despues de ser editada en los formularios de la pagina
 	 * @throws EntityNotFoundException
 	 */
+	/*
 	void deleteUserPracticedLanguage(User user,
 			List<Long> originalPracticedLanguagesIDs,
 			List<Long> editedPracticedLanguagesIDs)
 			throws EntityAlreadyFoundException,EntityNotFoundException;
-
+	 */
 	/**
 	 * Elimina todas las relaciones UserNativeLanguage del usuario dado
 	 * (es decir, elimina el conjunto de lenguajes nativos de un usuario)

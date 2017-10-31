@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * Representa un suceso significativo (un 'evento') alcanzado o recibido
  * por un usuario en la aplicacion. Los objetos Event ya estan predefinidos
  * (se obtienen de la base de datos) y nunca se van a crear
- * nuevos objetos Event en tiempo de ejecucion.<br/>
+ * nuevos objetos Event en tiempo de ejecucion.<br>
  * Ejemplos de eventos:
  * <ul><li>El usuario entra en el top-X de la clasificacion de puntos</li>
  * <li>El usuario alcanza una cantidad X de comentarios
@@ -57,13 +57,13 @@ public class Event implements Serializable {
 	 * generadas por este 'evento'*/
 	private boolean editablePrivacity;
 	/** Si es 'true', indica que la publicacion asociada al 'evento'
-	 * se deberia mostrar en su pagina de perfil. <br/>
+	 * se deberia mostrar en su pagina de perfil. <br>
 	 * Si es 'false', no se deberia mostrar en dicha vista
 	 */
 	private boolean showAsPublication;
 	/** Si es 'true', indica que la publicacion asociada al 'evento'
 	 * se deberia mostrar en el menu horizontal superior de la pagina,
-	 * o en la pagina de notificaciones. <br/>
+	 * o en la pagina de notificaciones. <br>
 	 * Si es 'false', no se deberia mostrar en dichas vistas
 	 */
 	private boolean showAsNotification;
@@ -223,9 +223,9 @@ public class Event implements Serializable {
 	/** Elimina un logro de la lista de ellos que posee el evento
 	 * @param achievement objeto Achievement que se elimina
 	 */
-	public void removeAchievement(Achievement a){
-		achievements.remove(a);
-		a._setEvent(null);
+	public void removeAchievement(Achievement achievement){
+		achievements.remove(achievement);
+		achievement._setEvent(null);
 	}
 	
 	// // // // // // // //

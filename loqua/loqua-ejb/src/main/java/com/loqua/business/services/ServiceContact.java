@@ -32,7 +32,7 @@ public interface ServiceContact {
 	
 	/**
 	 * Consulta las peticiones de contacto recibidas por el usuario dado
-	 * @param user atributo 'id' del User que se consulta
+	 * @param userId atributo 'id' del User que se consulta
 	 * @return lista de ContactRequest cuyo atributo 'userReceiver'
 	 * coincide con el parametro dado
 	 */
@@ -84,24 +84,23 @@ public interface ServiceContact {
 			throws EntityAlreadyFoundException, EntityNotFoundException;
 
 	/**
-	 * 
+	 * Acepta una peticion de contacto. Para ello genera las relaciones
+	 * (Contact) entre los usuaros indicados y despues elimina la solicitud
+	 * de contacto, que estaba pendiente de aceptacion
 	 * @param userReceiverId
 	 * @param userSenderId
 	 * @throws EntityAlreadyFoundException
 	 * @throws EntityNotFoundException
 	 */
-	void acceptRequest(Long userReceiverId, Long userSenderId)
+	void acceptRequest(Long userSenderId, Long userReceiverId)
 			throws EntityAlreadyFoundException, EntityNotFoundException;
 	
 	/**
-	 * Acepta una peticion de contacto. Para ello genera las relaciones
-	 * (Contact) entre los usuaros indicados y despues elimina la solicitud
-	 * de contacto, que estaba pendiente de aceptacion
+	 * Elimina una peticion de contacto.
 	 * @param userReceiverId usuario que recibe la solicitud de contacto
 	 * @param userSenderId usuario que envia la solicitud de contacto
-	 * @throws EntityAlreadyFoundException
 	 * @throws EntityNotFoundException
 	 */
-	void deleteRequest(Long userReceiverId, Long userSenderId)
+	void deleteRequest(Long userSenderId, Long userReceiverId)
 			throws EntityNotFoundException;
 }

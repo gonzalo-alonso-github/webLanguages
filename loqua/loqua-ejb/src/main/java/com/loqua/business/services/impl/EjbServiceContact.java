@@ -14,15 +14,16 @@ import com.loqua.business.services.serviceRemote.RemoteServiceContact;
 import com.loqua.model.Contact;
 import com.loqua.model.ContactRequest;
 import com.loqua.model.User;
+import com.loqua.business.services.ServiceContact;
 
 /**
  * Da acceso a las transacciones correspondientes a las entidades
- * {@link Contact} y {@link ContactRequest}. <br/>
+ * {@link Contact} y {@link ContactRequest}. <br>
  * La intencion de esta 'subcapa' de EJBs no es albergar mucha logica de negocio
  * (de ello se ocupa el modelo y el Transaction Script), sino hacer
  * que las transacciones sean controladas por el contenedor de EJB
  * (Wildfly en este caso), quien se ocupa por ejemplo de abrir las conexiones
- * a la base de datos mediate un datasource y de realizar los rollback. <br/>
+ * a la base de datos mediate un datasource y de realizar los rollback. <br>
  * Al ser un EJB de sesion sin estado no puede ser instanciado desde un cliente
  * o un Factory Method, sino que debe ser devuelto mediante el registro JNDI.
  * Forma parte del patron Service Locator y se encapsula tras las fachadas
@@ -82,14 +83,14 @@ public class EjbServiceContact
 	}
 	
 	@Override
-	public void acceptRequest(Long userReceiverId, Long userSenderId)
+	public void acceptRequest(Long userSenderId, Long userReceiverId)
 			throws EntityAlreadyFoundException, EntityNotFoundException{
-		transactionContact.acceptRequest(userReceiverId, userSenderId);
+		transactionContact.acceptRequest(userSenderId, userReceiverId);
 	}
 	
 	@Override
-	public void deleteRequest(Long userReceiverId, Long userSenderId)
+	public void deleteRequest(Long userSenderId, Long userReceiverId)
 			throws EntityNotFoundException{
-		transactionContact.deleteRequest(userReceiverId, userSenderId);
+		transactionContact.deleteRequest(userSenderId, userReceiverId);
 	}
 }

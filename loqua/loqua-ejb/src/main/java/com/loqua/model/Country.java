@@ -37,7 +37,8 @@ public class Country implements Serializable{
 	/** Nombre del pais */
 	private String name;
 	
-	/** Codigo ISO 3166 (de dos letras) del pais */
+	/** Codigo ISO 3166 (de dos letras) del pais. No es necesario
+	 * que coincida con algun valor de {@link Language#locale} */
 	private String codeIso3166;
 	
 	/** Icono de la bandera del pais */

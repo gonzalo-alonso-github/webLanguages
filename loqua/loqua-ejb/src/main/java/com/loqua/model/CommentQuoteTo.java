@@ -33,7 +33,7 @@ public class CommentQuoteTo implements Serializable {
 	@Id @GeneratedValue( strategy = GenerationType.IDENTITY ) private Long id;
 	
 	/** Texto plano original del comentario citado ({@link #quotedComment}).
-	 * <br/> Este campo se utiliza para que persista ese dato en caso de que
+	 * <br> Este campo se utiliza para que persista ese dato en caso de que
 	 * el comentario citado sea eliminado o editado */
 	private String quotedText;
 	

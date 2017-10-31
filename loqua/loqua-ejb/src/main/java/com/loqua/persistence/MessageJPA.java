@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.NoResultException;
 
 import com.loqua.model.Message;
+import com.loqua.model.MessageReceiver;
 import com.loqua.model.User;
 import com.loqua.persistence.exception.EntityNotPersistedException;
 import com.loqua.persistence.exception.PersistenceRuntimeException;
@@ -13,7 +14,7 @@ import com.loqua.persistence.util.JPA;
 
 /**
  * Efectua en la base de datos las operaciones 'CRUD' de elementos
- * {@link 'Message'} y {@link 'MessageReceiver'}
+ * {@link Message} y {@link MessageReceiver}
  * @author Gonzalo
  */
 public class MessageJPA {

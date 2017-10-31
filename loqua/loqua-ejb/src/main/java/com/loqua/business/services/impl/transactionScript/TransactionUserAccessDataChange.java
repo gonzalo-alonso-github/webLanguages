@@ -10,8 +10,8 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import com.loqua.business.exception.EntityAlreadyFoundException;
 import com.loqua.business.exception.EntityNotFoundException;
-import com.loqua.business.services.impl.ManagementEmail;
-import com.loqua.business.services.impl.MapEntityCounterByDate;
+import com.loqua.business.services.impl.utils.externalAccounts.ManagementEmail;
+import com.loqua.business.services.impl.utils.security.MapOccurrCounterByDate;
 import com.loqua.model.ChangeEmail;
 import com.loqua.model.ChangePassword;
 import com.loqua.model.User;
@@ -23,7 +23,7 @@ import com.loqua.persistence.exception.EntityNotPersistedException;
 /**
  * Da acceso a los procedimientos, dirigidos a la capa de persistencia,
  * correspondientes a las transacciones de las entidades
- * {@link ChangeEmail}, {@link ChangePassword}.<br/>
+ * {@link ChangeEmail}, {@link ChangePassword}.<br>
  * Este paquete de clases implementa el patron Transaction Script y
  * es el que, junto al modelo, concentra gran parte de la logica de negocio
  * @author Gonzalo
@@ -93,7 +93,7 @@ public class TransactionUserAccessDataChange {
 	 * maximo de cambios de email permitidos en distintos lapsos de tiempo
 	 * @return
 	 * Si la accion se produce sin ningun error, retorna la cadena 'noError'.
-	 * <br/>
+	 * <br>
 	 * Si se alcanza el limite de cambios de email permitidos
 	 * en cierto lapso de tiempo, se devuelve una cadena mas descriptiva:
 	 * <ul><li>'limitEmailChangesAtLastHour'</li>
@@ -164,7 +164,7 @@ public class TransactionUserAccessDataChange {
 	 * @return
 	 * Si no se alcanza el limite de cambios de email permitidos
 	 * en cierto lapso de tiempo, retorna la cadena 'noError'.
-	 * <br/>
+	 * <br>
 	 * Si se alcanza el limite de cambios de email permitidos
 	 * en cierto lapso de tiempo, se devuelve una cadena mas descriptiva:
 	 * <ul><li>'limitEmailChangesAtLastHour'</li>
@@ -176,7 +176,7 @@ public class TransactionUserAccessDataChange {
 	private String validateNumLastEmailChanges(
 			Long userID, Map<String, Integer> mapActionsLimits){
 		String result = "noError";
-		MapEntityCounterByDate numOccurrences = 
+		MapOccurrCounterByDate numOccurrences = 
 				getNumLastEmailChangesByUser(userID);
 		if( numOccurrences.getOccurrencesLastHour() >=
 				mapActionsLimits.get("limitEmailChangesAtLastHour") ){
@@ -232,14 +232,14 @@ public class TransactionUserAccessDataChange {
 	 * los siguientes lapsos: por hora, por dia, por semana, por mes y por
 	 * a&ntilde;o)
 	 */
-	private MapEntityCounterByDate getNumLastEmailChangesByUser(Long userID)
+	private MapOccurrCounterByDate getNumLastEmailChangesByUser(Long userID)
 			/*throws EntityNotFoundException*/ {
-		MapEntityCounterByDate result = new MapEntityCounterByDate();
+		MapOccurrCounterByDate result = new MapOccurrCounterByDate();
 		try {
 			result = ChangeEmailJPA.getNumLastEmailChangesByUser(userID);
 		} catch (EntityNotPersistedException ex) {
 			//throw new EntityNotFoundException(ex);
-			result = new MapEntityCounterByDate();
+			result = new MapOccurrCounterByDate();
 		}
 		return result;
 	}
@@ -275,7 +275,7 @@ public class TransactionUserAccessDataChange {
 	 * lapsos de tiempo
 	 * @return
 	 * Si la accion se produce sin ningun error, retorna la cadena 'noError'.
-	 * <br/>
+	 * <br>
 	 * Si se alcanza el limite de restauraciones de contrase&ntilde;a permitidas
 	 * en cierto lapso de tiempo, se devuelve una cadena mas descriptiva:
 	 * <ul><li>'limitPasswordRestoresAtLastHour'</li>
@@ -310,7 +310,7 @@ public class TransactionUserAccessDataChange {
 	 * @return
 	 * Si no se alcanza el limite de restauraciones de contrase&ntilde;a
 	 * permitidas en cierto lapso de tiempo, retorna la cadena 'noError'.
-	 * <br/>
+	 * <br>
 	 * Si se alcanza el limite de restauraciones de contrase&ntilde;a permitidas
 	 * en cierto lapso de tiempo, se devuelve una cadena mas descriptiva:
 	 * <ul><li>'limitPasswordRestoresAtLastHour'</li>
@@ -322,7 +322,7 @@ public class TransactionUserAccessDataChange {
 	private String validateNumLastPasswordRestores(
 			Long userID, Map<String, Integer> mapActionsLimits){
 		String result = "noError";
-		MapEntityCounterByDate numOccurrences =
+		MapOccurrCounterByDate numOccurrences =
 				getNumLastPasswordChangesByUser(userID, ChangePassword.RESTORE);
 		if( numOccurrences.getOccurrencesLastHour() >=
 				mapActionsLimits.get("limitPasswordRestoresAtLastHour") ){
@@ -406,7 +406,7 @@ public class TransactionUserAccessDataChange {
 	 * lapsos de tiempo
 	 * @return
 	 * Si la accion se produce sin ningun error, retorna la cadena 'noError'.
-	 * <br/>
+	 * <br>
 	 * Si se alcanza el limite de ediciones de contrase&ntilde;a permitidas
 	 * en cierto lapso de tiempo, se devuelve una cadena mas descriptiva:
 	 * <ul><li>'limitPasswordEditsAtLastHour'</li>
@@ -441,7 +441,7 @@ public class TransactionUserAccessDataChange {
 	 * @return
 	 * Si no se alcanza el limite de ediciones de contrase&ntilde;a permitidas
 	 * en cierto lapso de tiempo, retorna la cadena 'noError'.
-	 * <br/>
+	 * <br>
 	 * Si se alcanza el limite de ediciones de contrase&ntilde;a permitidas
 	 * en cierto lapso de tiempo, se devuelve una cadena mas descriptiva:
 	 * <ul><li>'limitPasswordEditsAtLastHour'</li>
@@ -453,7 +453,7 @@ public class TransactionUserAccessDataChange {
 	private String validateNumLastPasswordEdits(
 			Long userID, Map<String, Integer> mapActionsLimits){
 		String result = "noError";
-		MapEntityCounterByDate numOccurrences =
+		MapOccurrCounterByDate numOccurrences =
 				getNumLastPasswordChangesByUser(userID, ChangePassword.EDIT);
 		if( numOccurrences.getOccurrencesLastHour() >=
 				mapActionsLimits.get("limitPasswordEditsAtLastHour") ){
@@ -547,16 +547,16 @@ public class TransactionUserAccessDataChange {
 	 * los siguientes lapsos: por hora, por dia, por semana, por mes y por
 	 * a&ntilde;o)
 	 */
-	public MapEntityCounterByDate getNumLastPasswordChangesByUser(
+	public MapOccurrCounterByDate getNumLastPasswordChangesByUser(
 			Long userID, String typeChangePassword) 
 			/*throws EntityNotFoundException*/ {
-		MapEntityCounterByDate result = new MapEntityCounterByDate();
+		MapOccurrCounterByDate result = new MapOccurrCounterByDate();
 		try {
 			result=changePasswordJPA.getNumLastPasswordChangesByUser(
 					userID, typeChangePassword);
 		} catch (EntityNotPersistedException ex) {
 			//throw new EntityNotFoundException(ex);
-			result = new MapEntityCounterByDate();
+			result = new MapOccurrCounterByDate();
 		}
 		return result;
 	}

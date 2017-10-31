@@ -45,7 +45,7 @@ public class ValidatorBirthDate implements Validator {
 	 * @param birthDate fecha que se comprueba
 	 * @return
 	 * 'true' si la fecha dada tiene una antig&uuml;edad superior a
-	 * la mayoia de edad predefinida <br/>
+	 * la mayoia de edad predefinida <br>
 	 * 'true' si la fecha dada tiene una antig&uuml;edad inferior a
 	 * la mayoia de edad predefinida
 	 */

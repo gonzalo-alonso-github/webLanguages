@@ -105,7 +105,7 @@ public class BeanUserClasification implements Serializable{
 	 * clasifiacion esta el en ultimo lugar.
 	 * @param position posicion de un usuario en la clasificacion de puntos
 	 * @return
-	 * 'true' si el usuario es el ultimo clasificado <br/>
+	 * 'true' si el usuario es el ultimo clasificado <br>
 	 * 'false' si el usuario no es el ultimo clasificado
 	 */
 	public boolean isTheVeryLastUser( int position ){

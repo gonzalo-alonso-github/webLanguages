@@ -6,8 +6,6 @@ import com.loqua.business.exception.EntityAlreadyFoundException;
 import com.loqua.business.exception.EntityNotFoundException;
 import com.loqua.model.Comment;
 import com.loqua.model.CommentQuoteTo;
-import com.loqua.model.ForumThread;
-import com.loqua.model.User;
 
 /**
  * Define la fachada que encapsula el acceso al objeto EJB que maneja
@@ -18,7 +16,7 @@ import com.loqua.model.User;
 public interface ServiceComment {
 	
 	/**
-	 * Obtiene los comentarios citados por el comentario dado. <br/>
+	 * Obtiene los comentarios citados por el comentario dado. <br>
 	 * En esta version de la aplicacion no se permite que un comentario cite
 	 * a mas de un comentario. Por eso la lista devuelta solo
 	 * contiene un elemento a lo sumo.
@@ -71,7 +69,7 @@ public interface ServiceComment {
 	 * @param userId atributo 'id' del User que se consulta
 	 * @param commentId atributo 'id' del Comment que se consulta
 	 * @return
-	 * true: si el usuario dado ya ha votado el comentario indicado <br/>
+	 * true: si el usuario dado ya ha votado el comentario indicado <br>
 	 * false: si el usuario dado nunca ha votado el comentario indicado
 	 */
 	boolean commentAlreadyVotedByUser(Long userId, Long commentId)
@@ -95,15 +93,12 @@ public interface ServiceComment {
 	 * Genera un comentario en un hilo del foro, incrementa la puntuacion
 	 * del usuario, comprueba si es preciso generar una publicacion para el
 	 * evento y actualiza todos los cambios en la base de datos
-	 * @param thread hilo del foro al que pertenece el comentario creado
-	 * @param text texto plano del comentario creado
-	 * @param code texto HTML del comentario creado
-	 * @param user User autor del comentario creado
+	 * @param comment los datos del comentario que se va a agregar
 	 * @return el Comment generado
 	 * @throws EntityAlreadyFoundException
 	 * @throws EntityNotFoundException
 	 */
-	Comment sendComment(ForumThread thread, String text, String code, User user)
+	Comment sendComment(Comment comment)
 			throws EntityAlreadyFoundException, EntityNotFoundException;
 	
 	/** Elimina del foro el comentario dado
@@ -127,15 +122,12 @@ public interface ServiceComment {
 	 * (objeto CommentQuoteTo) entre el comentario resultante y
 	 * el comentario 'commentToQuote'
 	 * @param commentToQuote comentario que queda citado en el foro
-	 * @param text texto plano del comentario generado en el foro
-	 * @param code texto HTML del comentario generado en el foro
-	 * @param user User autor del comentario generado en el foro
+	 * @param commentToCreate datos del comentario que se va a agregar
 	 * @return comentario generado en el foro, que cita al 'commentToQuote'
 	 * dado
 	 * @throws EntityAlreadyFoundException
 	 * @throws EntityNotFoundException
 	 */
-	Comment quoteComment(Comment commentToQuote, String text,
-			String code, User user)
+	Comment quoteComment(Comment commentToQuote, Comment commentToCreate)
 			throws EntityAlreadyFoundException, EntityNotFoundException;
 }
